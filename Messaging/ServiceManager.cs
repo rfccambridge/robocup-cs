@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.Design;
 
-namespace ControlForm
+namespace Messaging
 {
-    class ServiceManager
+    public class ServiceManager
     {
         static ServiceManager manager = new ServiceManager();
 
