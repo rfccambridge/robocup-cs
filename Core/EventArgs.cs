@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Core
+namespace RFC.Core
 {
     /// <summary>
     /// EventArguments class with arbitrary data item. Useful for custom events.

@@ -5,7 +5,7 @@ using System.Text;
 using Core;
 using Messaging;
 
-namespace RefBox
+namespace RFC.RefBox
 {
     class RefboxStateMessage : Message
     {

@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using Core;
 using Messaging;
 
-namespace RefBox
+namespace RFC.RefBox
 {
     public class MulticastRefBoxListener : RefBoxHandler
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 
-namespace RefBox
+namespace RFC.RefBox
 {
     internal static class Parameters
     {

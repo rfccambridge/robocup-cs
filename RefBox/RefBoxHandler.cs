@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Core;
 
-namespace RefBox
+namespace RFC.RefBox
 {
     abstract public class RefBoxHandler
     {

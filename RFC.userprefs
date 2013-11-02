@@ -1,0 +1,37 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="CoreRobotics\AveragingPredictor.cs">
+    <Files>
+      <File FileName="CoreRobotics\Vision.cs" Line="8" Column="21" />
+      <File FileName="Core\VisionMessage.cs" Line="8" Column="2" />
+      <File FileName="Core\RobotInfo.cs" Line="6" Column="14" />
+      <File FileName="CoreRobotics\AveragingPredictor.cs" Line="266" Column="4" />
+      <File FileName="SSLVisionLib\SSLClient.cs" Line="18" Column="24" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Core" expanded="True" />
+          <Node name="CoreRobotics" expanded="True">
+            <Node name="References" expanded="True" />
+            <Node name="AveragingPredictor.cs" selected="True" />
+          </Node>
+          <Node name="Messaging" expanded="True" />
+          <Node name="RefBox" expanded="True" />
+          <Node name="SSLVisionLib" expanded="True" />
+          <Node name="Utilities" expanded="True" />
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
