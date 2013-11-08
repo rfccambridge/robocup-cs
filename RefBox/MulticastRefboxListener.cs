@@ -91,8 +91,10 @@ namespace RFC.RefBox
                 {
                     packet.setVals(buffer);
 
+                    char lastCommand;
                     lock (lastPacketLock)
                     {
+                        lastCommand = _lastPacket.cmd;
                         _lastReceivedTime = DateTime.Now;
                         _lastPacket = packet;
                     }
@@ -101,8 +103,11 @@ namespace RFC.RefBox
                         + " blue: " + packet.goals_blue + " yellow: " + packet.goals_yellow+
                         " time left: " + packet.time_remaining);*/
 
-                    RefboxStateMessage message = new RefboxStateMessage();
-                    message.SetCurrentPlayType(packet.cmd);
+                    Score score = new Score();
+                    score.GoalsBlue = packet.goals_blue;
+                    score.GoalsYellow = packet.goals_yellow;
+
+                    RefboxStateMessage message = new RefboxStateMessage(score, packet.cmd, lastCommand);
                     ServiceManager.getServiceManager().SendMessage(message);
                 }
                 else

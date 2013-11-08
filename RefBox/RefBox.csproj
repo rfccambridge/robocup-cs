@@ -46,7 +46,6 @@
     <Compile Include="Parameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RefBoxHandler.cs" />
-    <Compile Include="RefboxStateMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
