@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Messaging;
+using RFC.Messaging;
 
-namespace Logging
+namespace RFC.Logging
 {
     public class LogHandler
     {

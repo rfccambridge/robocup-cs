@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using RFC.Geometry;
-using RFC.Messaging;
+using RFC.Core;
 
-namespace RFC.Core
+namespace RFC.Messaging
 {
 	public class VisionMessage : Message
 	{        

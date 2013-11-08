@@ -43,6 +43,9 @@ namespace RFC.Messaging
 
         Dictionary<Type, HandlerHolder> handlers = new Dictionary<Type, HandlerHolder>();
 
+		//buffer of last messages
+		Dictionary<Type, Message> buffer = new Dictionary<Type, Message> ();
+
         // the argument here is just a function that takes an argument of a subtype of message
         public void RegisterListener<T>(Handler<T> handler) where T : Message
         {
@@ -66,8 +69,26 @@ namespace RFC.Messaging
             {
                 if (handlers.ContainsKey(type))
                     handlers[type].Invoke(message);
+
+				// adding message to buffer system
+				buffer.Add(type, message);
             }
         }
+		
+		/// <summary>
+		///  returns the last message seen of the given type.
+		///  if there has been no message, return null.
+		/// </summary>
+		/// <returns>The last message of Type type.</returns>
+		/// <param name="type">Type.</param>
+		public Message LastMessage(Type type)
+		{
+			Message m;
+			if (buffer.TryGetValue (type, out m))
+				return m;
+			else
+				return null;
+		}
 
         // gives all the parent types of a type, used to send to listeners of a parent type
         static IEnumerable<Type> AllTypes(Type type)

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Core;
-using Messaging;
+using RFC.Core;
+using RFC.Messaging;
 
-namespace RefBox
+namespace RFC.RefBox
 {
     public class RefboxStateMessage : Message
     {

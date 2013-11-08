@@ -11,6 +11,12 @@ namespace RFC.Core
         Blue
     }
 
+	public enum FieldHalf
+	{
+		Left,
+		Right
+	}
+
     public enum PlayType
     {
         NormalPlay,
