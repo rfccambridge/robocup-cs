@@ -1,23 +1,26 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Core\Interfaces.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Messaging\BallMovedMessage.cs">
     <Files>
-      <File FileName="CoreRobotics\Vision.cs" Line="1" Column="1" />
-      <File FileName="Core\RobotInfo.cs" Line="7" Column="2" />
-      <File FileName="Messaging\ServiceManager.cs" Line="72" Column="5" />
-      <File FileName="CoreRobotics\AveragingPredictor.cs" Line="559" Column="19" />
-      <File FileName="Core\Interfaces.cs" Line="164" Column="101" />
-      <File FileName="CoreRobotics\IVisionInfoAcceptor.cs" Line="15" Column="1" />
+      <File FileName="Messaging\BallVisionMessage.cs" Line="9" Column="3" />
+      <File FileName="Messaging\RobotVisionMessage.cs" Line="22" Column="4" />
+      <File FileName="Messaging\VisionMessage.cs" Line="60" Column="37" />
+      <File FileName="Messaging\BallMarkMessage.cs" Line="8" Column="9" />
+      <File FileName="CoreRobotics\AveragingPredictor.cs" Line="317" Column="3" />
+      <File FileName="Messaging\BallMovedMessage.cs" Line="3" Column="15" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="Core" expanded="True">
-            <Node name="Interfaces.cs" selected="True" />
+            <Node name="Properties" expanded="True" />
           </Node>
           <Node name="CoreRobotics" expanded="True" />
           <Node name="Logging" expanded="True" />
-          <Node name="Messaging" expanded="True" />
+          <Node name="Messaging" expanded="True">
+            <Node name="BallMovedMessage.cs" selected="True" />
+          </Node>
+          <Node name="RefBox" expanded="True" />
         </State>
       </Pad>
       <Pad Id="ClassPad">

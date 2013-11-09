@@ -4,10 +4,7 @@ namespace RFC.Messaging
 {
 	public class BallMovedMessage
 	{
-		public bool moved
-		{
-			get { return moved; }
-		} 
+		public bool moved;
 
 		public BallMovedMessage (bool moved)
 		{

@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geometry", "Geometry\Geomet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{644CF1D1-4066-4E97-A75C-DA16E710443E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "ClassLibrary2\Logging.csproj", "{3B5ADD21-FC9B-4C02-BC92-205A11A60073}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.csproj", "{AFD94145-D3FB-4143-9925-6AC7B766E224}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

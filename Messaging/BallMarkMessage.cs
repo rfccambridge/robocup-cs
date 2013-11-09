@@ -5,10 +5,7 @@ namespace RFC.Messaging
 {
 	public class BallMarkMessage
 	{
-		public BallMarkAction action
-		{
-			get { return action; }
-		} 
+		public BallMarkAction action;
 
 		public BallMarkMessage (BallMarkAction action)
 		{
