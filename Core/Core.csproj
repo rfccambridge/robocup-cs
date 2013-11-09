@@ -51,6 +51,12 @@
     <Compile Include="Constants.cs" />
     <Compile Include="INavigator.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Geometry\Geometry.csproj">
+      <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
+      <Name>Geometry</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -59,10 +65,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <ProjectReference Include="..\Geometry\Geometry.csproj">
-      <Project>{8E0FD38E-7E9D-4CA3-B187-B254F858CCDF}</Project>
-      <Name>Geometry</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

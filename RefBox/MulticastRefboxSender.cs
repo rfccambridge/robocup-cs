@@ -12,7 +12,6 @@ namespace RFC.RefBox
         byte cmd_counter = 0;    // counter for current command
         int goals_blue = 0;      // current score for blue team
         int goals_yellow = 0;    // current score for yellow team
-        int time_remaining = 0; // seconds remaining for current game stage (network byte order)
 
         override public void Connect(String addr, int port)
         {
