@@ -122,7 +122,7 @@ namespace RFC.CoreRobotics
 				#region Update robots
 				lock (robotsLock)
 				{
-					foreach (RFC.Core.VisionMessage.RobotData newRobotData in msg.Robots)
+					foreach (RFC.Messaging.VisionMessage.RobotData newRobotData in msg.Robots)
 					{
 						RobotInfo newRobot = new RobotInfo(newRobotData.Position, new Vector2(0, 0), 0,
 						                                   newRobotData.Orientation, newRobotData.Team, newRobotData.ID);
@@ -268,8 +268,8 @@ namespace RFC.CoreRobotics
 
 			LoadConstants();
 			messenger = ServiceManager.getServiceManager();
-			messenger.RegisterListener(Update);
-			messenger.RegisterListener(UpdateBallMark);
+			messenger.RegisterListener<VisionMessage>(Update);
+			messenger.RegisterListener<BallMarkMessage>(UpdateBallMark);
 
 
 
@@ -552,10 +552,10 @@ namespace RFC.CoreRobotics
 				BallMovedMessage move_msg = new BallMovedMessage (hasBallMoved ());
 
 				// sending message that new data is ready
-				messenger.SendMessage(ball_msg);
-				messenger.SendMessage(robots_msg);
+				messenger.SendMessage<BallVisionMessage>(ball_msg);
+				messenger.SendMessage<RobotVisionMessage>(robots_msg);
 				if (move_msg.moved)
-					messenger.SendMessage (move_msg);
+					messenger.SendMessage<BallMovedMessage>(move_msg);
 
 				combineTimerSync = 0;
 			}

@@ -6,7 +6,7 @@
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F0B9FED5-BCD3-4827-8BA5-D4B9AB801D97}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>CoreRobotics</RootNamespace>
     <AssemblyName>CoreRobotics</AssemblyName>
   </PropertyGroup>
@@ -58,5 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="protobuf-net">
+      <HintPath>..\SSLVisionLib\protobuf-net.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

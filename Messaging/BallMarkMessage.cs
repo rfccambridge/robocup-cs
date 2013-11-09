@@ -3,7 +3,7 @@ using RFC.Core;
 
 namespace RFC.Messaging
 {
-	public class BallMarkMessage
+	public class BallMarkMessage : Message
 	{
 		public BallMarkAction action;
 

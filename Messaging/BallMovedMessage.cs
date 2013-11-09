@@ -2,7 +2,7 @@ using System;
 
 namespace RFC.Messaging
 {
-	public class BallMovedMessage
+	public class BallMovedMessage : Message
 	{
 		public bool moved;
 

@@ -65,38 +65,7 @@ namespace RFC.Core {
 	public interface IPredictor {       
 		//returns information about the robots (position, velocity, orientation)
 		//we don't care where it got its information from
-		List<RobotInfo> getRobots(Team team);
-		List<RobotInfo> getRobots();
 
-		RobotInfo GetRobot(Team team, int id);
-		/// <summary>
-		/// Returns ball position
-		/// </summary>
-		/// <returns></returns>
-		BallInfo GetBall();
-		/// <summary>
-		/// Marks used by hasBallMoved to track if ball has moved
-		/// </summary>
-		void SetBallMark();
-		/// <summary>
-		/// Marks used by hasBallMoved to track if ball has moved
-		/// </summary>
-		void ClearBallMark();
-		/// <summary>
-		/// Tracks if the ball has moved (does not use getBallInfo, of course); 
-		/// use set/clearBallMark() to manage the tracking
-		/// </summary>
-		/// <returns></returns>
-		bool HasBallMoved();
-		/// <summary>
-		/// Sets the type of play. A Predictor uses the PlayType if configured 
-		/// to return an assumed ball position (based on referee box state).
-		/// </summary>
-		void SetPlayType(PlayType newPlayType);
-		/// <summary>
-		/// Re-initialize constant values from the Constants database
-		/// </summary>
-		void LoadConstants();
 	}
 
 	/// <summary>
