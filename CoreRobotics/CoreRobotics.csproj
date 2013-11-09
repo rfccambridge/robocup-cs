@@ -32,6 +32,7 @@
   <ItemGroup>
     <Compile Include="Vision.cs" />
     <Compile Include="AveragingPredictor.cs" />
+    <Compile Include="IVisionInfoAcceptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

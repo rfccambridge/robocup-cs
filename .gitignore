@@ -1,3 +1,4 @@
+# ignoring compiled version
 *.exe
 */obj/*
 */bin/*

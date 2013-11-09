@@ -38,6 +38,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enumerations.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="WheelSpeeds.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="INavigator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

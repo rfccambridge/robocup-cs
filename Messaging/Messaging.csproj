@@ -45,6 +45,10 @@
     <Compile Include="RefboxStateMessage.cs" />
     <Compile Include="ServiceManager.cs" />
     <Compile Include="VisionMessage.cs" />
+    <Compile Include="RobotVisionMessage.cs" />
+    <Compile Include="BallVisionMessage.cs" />
+    <Compile Include="BallMarkMessage.cs" />
+    <Compile Include="BallMovedMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Geometry\Geometry.csproj">

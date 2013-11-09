@@ -39,14 +39,6 @@ namespace RFC.Core {
 		void UpdateBallInfo(BallInfo ballInfo);
 	}
 
-	public interface IVisionInfoAcceptor {
-		/// <summary>
-		/// Updates the state of (usually) a Predictor based on a vision message.
-		/// </summary>
-		/// <param name="msg">The message received from Vision</param>
-		void Update(VisionMessage msg);
-	}
-
 	/// <summary>
 	/// An interface for things that will take and handle info about the current state,
 	/// usually to later give it back out.  More specifically, for when there are multiple
@@ -73,8 +65,8 @@ namespace RFC.Core {
 	public interface IPredictor {       
 		//returns information about the robots (position, velocity, orientation)
 		//we don't care where it got its information from
-		List<RobotInfo> GetRobots(Team team);
-		List<RobotInfo> GetRobots();
+		List<RobotInfo> getRobots(Team team);
+		List<RobotInfo> getRobots();
 
 		RobotInfo GetRobot(Team team, int id);
 		/// <summary>

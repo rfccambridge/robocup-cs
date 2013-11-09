@@ -55,4 +55,10 @@ namespace RFC.Core
 
         CANCEL = 'c'
     }
+
+	public enum BallMarkAction
+	{
+		Clear,
+		Set
+	}
 }

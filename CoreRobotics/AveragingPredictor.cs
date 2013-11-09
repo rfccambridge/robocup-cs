@@ -17,6 +17,8 @@ namespace RFC.CoreRobotics
 	{
 		const int NUM_CAMERAS = 2;
 
+		private ServiceManager messenger;
+
 		// The state of the field believed in by a camera
 		private class FieldState
 		{
@@ -265,63 +267,32 @@ namespace RFC.CoreRobotics
 			}
 
 			LoadConstants();
-			ServiceManager.getServiceManager().RegisterListener(Update);
+			messenger = ServiceManager.getServiceManager();
+			messenger.RegisterListener(Update);
+			messenger.RegisterListener(UpdateBallMark);
 
 
 
 			combineTimer.Elapsed += combineTimer_Elapsed;
 			combineTimer.Start();
 		}
-
-		public void LoadConstants()
-		{
-			combineTimer.Interval = (1.0 / Constants.Time.COMBINE_FREQUENCY) * 1000; // Convert hz -> secs -> ms
-		}
-
+		
 		public void Update(VisionMessage msg)
 		{
 			fieldStates[msg.CameraID].Update(msg);
 		}
 
-		public BallInfo GetBall()
+		public void UpdateBallMark(BallMarkMessage msg)
 		{
-			lock (ballLock)
-			{
-				return ball;
-			}
+			if (msg.action == BallMarkAction.Clear)
+				clearBallMark ();
+			else if (msg.action == BallMarkAction.Set)
+				setBallMark ();
 		}
 
-		public List<RobotInfo> GetRobots(Team team)
+		private void setBallMark()
 		{
-			lock (robotsLock)
-			{
-				return robots[team];
-			}
-		}
-
-		public List<RobotInfo> GetRobots()
-		{
-			List<RobotInfo> combined = new List<RobotInfo>();
-			foreach (Team team in Enum.GetValues(typeof(Team)))
-				combined.AddRange(GetRobots(team));
-			return combined;
-		}
-		public RobotInfo GetRobot(Team team, int id)
-		{
-			// TODO: this is frequently executed: change to use a dictionary
-			List<RobotInfo> robots = GetRobots(team);
-			RobotInfo robot = robots.Find((RobotInfo r) => r.ID == id);
-			if (robot == null)
-			{
-				throw new ApplicationException("AveragingPredictor.GetRobot: no robot with id=" +
-				                               id.ToString() + " found on team " + team.ToString());
-			}
-			return robot;
-		}
-
-		public void SetBallMark()
-		{
-			BallInfo ball = GetBall();
+			BallInfo ball = getBall();
 			if (ball == null)
 			{
 				//throw new ApplicationException("Cannot mark ball position because no ball is seen.");
@@ -330,24 +301,39 @@ namespace RFC.CoreRobotics
 			markedPosition = ball != null ? new Vector2(ball.Position) : null;
 		}
 
-		public void ClearBallMark()
+		private void clearBallMark()
 		{
 			markedPosition = null;
 		}
 
-		public bool HasBallMoved()
+		private bool hasBallMoved()
 		{
-			BallInfo ball = GetBall();
+			BallInfo ball = getBall();
 			double BALL_MOVED_DIST = Constants.Plays.BALL_MOVED_DIST;
 			bool ret = (ball != null && markedPosition == null) || (ball != null &&
 			                                                        markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
 			return ret;
 		}
 
-		public void SetPlayType(PlayType newPlayType)
+		private void LoadConstants()
 		{
-			// Do nothing: this method is for assumed ball: returning clever values for the ball
-			// based on game state -- i.e. center of field during kick-off
+			combineTimer.Interval = (1.0 / Constants.Time.COMBINE_FREQUENCY) * 1000; // Convert hz -> secs -> ms
+		}
+
+		private BallInfo getBall()
+		{
+			lock (ballLock)
+			{
+				return ball;
+			}
+		}
+
+		private List<RobotInfo> getRobots(Team team)
+		{
+			lock (robotsLock)
+			{
+				return robots[team];
+			}
 		}
 
 		private BallInfo lastBall = null;
@@ -559,6 +545,17 @@ namespace RFC.CoreRobotics
 				combineBall();
 				foreach (Team team in Enum.GetValues(typeof(Team)))
 					combineRobots(team);
+
+				// preparing messages
+				BallVisionMessage ball_msg = new BallVisionMessage (getBall());
+				RobotVisionMessage robots_msg = new RobotVisionMessage (Team.Blue, getRobots(Team.Blue), Team.Yellow, getRobots(Team.Yellow));
+				BallMovedMessage move_msg = new BallMovedMessage (hasBallMoved ());
+
+				// sending message that new data is ready
+				messenger.SendMessage(ball_msg);
+				messenger.SendMessage(robots_msg);
+				if (move_msg.moved)
+					messenger.SendMessage (move_msg);
 
 				combineTimerSync = 0;
 			}
