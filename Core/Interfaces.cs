@@ -66,6 +66,12 @@ namespace RFC.Core {
 		//returns information about the robots (position, velocity, orientation)
 		//we don't care where it got its information from
 
+        /// <summary>
+        /// Returns ball position
+        /// </summary>
+        /// <returns></returns>
+        BallInfo GetBall();
+
 	}
 
 	/// <summary>

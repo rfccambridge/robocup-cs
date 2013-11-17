@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2A163721-DE91-4AD9-A7C7-29573095A2B3}</ProjectGuid>
+    <ProjectGuid>{0AEDCDCC-BBCD-4CAC-9A45-F13E9DCDB0EC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Core</RootNamespace>
-    <AssemblyName>Core</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>Simulator</RootNamespace>
+    <AssemblyName>Simulator</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,29 +32,50 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enumerations.cs" />
-    <Compile Include="EventArgs.cs" />
-    <Compile Include="Generics.cs" />
+    <Compile Include="PhysicsEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Score.cs" />
-    <Compile Include="RobotInfo.cs" />
-    <Compile Include="Interfaces.cs" />
-    <Compile Include="WheelSpeeds.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="INavigator.cs" />
+    <Compile Include="Referees.cs" />
+    <Compile Include="SimulatedScenario.cs" />
+    <Compile Include="SimulatorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SimulatorForm.Designer.cs">
+      <DependentUpon>SimulatorForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CoreRobotics\CoreRobotics.csproj">
+      <Project>{f0b9fed5-bcd3-4827-8ba5-d4b9ab801d97}</Project>
+      <Name>CoreRobotics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{2a163721-de91-4ad9-a7c7-29573095a2b3}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Geometry\Geometry.csproj">
       <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
       <Name>Geometry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RefBox\RefBox.csproj">
+      <Project>{7a3ea1da-8a49-4732-aca2-0b48ac1095ca}</Project>
+      <Name>RefBox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SSLVisionLib\SSLVisionLib.csproj">
+      <Project>{814ff38e-f4a4-4647-912c-067fbdff3419}</Project>
+      <Name>SSLVisionLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{644cf1d1-4066-4e97-a75c-da16e710443e}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
