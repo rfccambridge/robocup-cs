@@ -6,7 +6,7 @@ using RFC.Core;
 
 namespace RFC.CoreRobotics
 {
-    public class RobotCommand : Robocup.MessageSystem.IByteSerializable<RobotCommand>
+    public class RobotCommand : RFC.Messaging.IByteSerializable<RobotCommand>
     {
         public enum Command
         {
