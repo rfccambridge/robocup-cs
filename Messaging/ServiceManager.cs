@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.ComponentModel.Design;
+using System.Threading.Tasks;
 
 namespace RFC.Messaging
 {
@@ -29,49 +31,58 @@ namespace RFC.Messaging
         }
         class HandlerHolder<T> : HandlerHolder
         {
-            Handler<T> handler;
-            public void AddHandler(Handler<T> handler)
+            List<Tuple<Handler<T>, object>> handlers;
+            public void AddHandler(Handler<T> handler, object lockObject)
             {
-                this.handler += handler;
+                lock (this)
+                {
+                    this.handlers.Add(new Tuple<Handler<T>, object>(handler, lockObject));
+                }
             }
 
             public override void Invoke(object message)
             {
-                handler.Invoke((T)message);
+                lock (this) {
+                    foreach(Tuple<Handler<T>, object> handler in handlers) {
+                        Task.Factory.StartNew(() => {
+                            lock (handler.Item2)
+                            {
+                                handler.Item1.Invoke((T)message);
+                            }
+                        });
+                    }
+                }
             }
         }
 
-        Dictionary<Type, HandlerHolder> handlers = new Dictionary<Type, HandlerHolder>();
+        ConcurrentDictionary<Type, HandlerHolder> handlers = new ConcurrentDictionary<Type, HandlerHolder>();
 
 		//buffer of last messages
-		Dictionary<Type, Message> messageBuffer = new Dictionary<Type, Message> ();
+		ConcurrentDictionary<Type, Message> messageBuffer = new ConcurrentDictionary<Type, Message> ();
 
-        // the argument here is just a function that takes an argument of a subtype of message
-        public void RegisterListener<T>(Handler<T> handler) where T : Message
+        /// <summary>
+        /// Register a listener for messages
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="handler">a function that takes an argument of a subtype of message that should be called when that type of message is sent</param>
+        /// <param name="lockObject">an object to lock when calling the handler</param>
+        public void RegisterListener<T>(Handler<T> handler, object lockObject) where T : Message
         {
             Type type = typeof(T);
-            if (handlers.ContainsKey(type))
-            {
-                HandlerHolder<T> holder = (HandlerHolder<T>)handlers[type];
-                holder.AddHandler(handler);
-            }
-            else
-            {
-                HandlerHolder<T> holder = new HandlerHolder<T>();
-                holder.AddHandler(handler);
-                handlers.Add(type, holder);
-            }
+            HandlerHolder holder = handlers.GetOrAdd(type, new HandlerHolder<T>());
+            ((HandlerHolder<T>)holder).AddHandler(handler, lockObject);
         }
 
         public void SendMessage<T>(T message) where T : Message
         {
             foreach (Type type in AllTypes(typeof(T)))
             {
-                if (handlers.ContainsKey(type))
-                    handlers[type].Invoke(message);
+                HandlerHolder holder;
+                if (handlers.TryGetValue(type, out holder))
+                    holder.Invoke(message);
 
 				// adding message to buffer system
-				messageBuffer.Add(type, message);
+				messageBuffer.AddOrUpdate(type, message, (t, m) => message);
             }
         }
 		
