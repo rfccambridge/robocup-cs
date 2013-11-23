@@ -28,7 +28,14 @@ namespace RFC.Utilities
         private volatile bool isRunning;
         private Object isRunningLock = new Object();
 
-        public FunctionLoop(LoopFunction fn)
+        private object functionRunningLock;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fn">the function to call periodically</param>
+        /// <param name="lockObject">the object to lock when calling the function, should be the same object as any message handlers that share data</param>
+        public FunctionLoop(LoopFunction fn, object lockObject)
         {
             loopFn = fn;
             sync = 0;
@@ -40,6 +47,8 @@ namespace RFC.Utilities
 
             periodTimer = new HighResTimer();
             loopTimer = new HighResTimer();
+
+            this.functionRunningLock = lockObject;
         }
 
         /// <summary>
@@ -128,7 +137,10 @@ namespace RFC.Utilities
 
                 try
                 {
-                    loopFn();
+                    lock (functionRunningLock)
+                    { 
+                        loopFn();
+                    }
                 }
                 catch (Exception ex)
                 {
