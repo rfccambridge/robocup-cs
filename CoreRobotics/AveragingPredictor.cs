@@ -539,6 +539,7 @@ namespace RFC.CoreRobotics
 
 		void combineTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
+			lock(this);
 			// Throw away event if a previous event is still being handled
 			if (Interlocked.CompareExchange(ref combineTimerSync, 1, 0) == 0)
 			{
@@ -559,6 +560,7 @@ namespace RFC.CoreRobotics
 
 				combineTimerSync = 0;
 			}
+			unlock(this);
 		}
 
 	}
