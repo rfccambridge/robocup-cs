@@ -9,6 +9,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>CoreRobotics</RootNamespace>
     <AssemblyName>CoreRobotics</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -27,19 +30,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="AveragingPredictor.cs" />
     <Compile Include="MovementModeler.cs" />
     <Compile Include="RobotCommand.cs" />
     <Compile Include="Vision.cs" />
-    <Compile Include="AveragingPredictor.cs" />
     <Compile Include="IVisionInfoAcceptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{2A163721-DE91-4AD9-A7C7-29573095A2B3}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RadioMessaging\RadioMessaging.csproj">
+      <Project>{5ba71877-d1ce-4dc9-9a7e-5d82a74b627c}</Project>
+      <Name>RadioMessaging</Name>
     </ProjectReference>
     <ProjectReference Include="..\SSLVisionLib\SSLVisionLib.csproj">
       <Project>{814FF38E-F4A4-4647-912C-067FBDFF3419}</Project>

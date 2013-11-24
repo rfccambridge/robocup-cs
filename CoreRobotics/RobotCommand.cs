@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using RFC.Utilities;
 using RFC.Core;
+using RFC.RadioMessaging;
 
 namespace RFC.CoreRobotics
 {
-    public class RobotCommand : RFC.Messaging.IByteSerializable<RobotCommand>
+    public class RobotCommand : IByteSerializable<RobotCommand>
     {
         public enum Command
         {

@@ -8,6 +8,7 @@ using RFC.CoreRobotics;
 using RFC.SSLVisionLib;
 using RFC.RefBox;
 using RFC.Utilities;
+using RFC.RadioMessaging;
 
 namespace RFC.Simulator
 {
@@ -671,7 +672,7 @@ namespace RFC.Simulator
             return result;
         }
 
-        public BallInfo GetBall()
+        public BallInfo getBall()
         {
             return ball;
         }

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator", "Simulator\Simulator.csproj", "{0AEDCDCC-BBCD-4CAC-9A45-F13E9DCDB0EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadioMessaging", "RadioMessaging\RadioMessaging.csproj", "{5BA71877-D1CE-4DC9-9A7E-5D82A74B627C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{0AEDCDCC-BBCD-4CAC-9A45-F13E9DCDB0EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AEDCDCC-BBCD-4CAC-9A45-F13E9DCDB0EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AEDCDCC-BBCD-4CAC-9A45-F13E9DCDB0EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BA71877-D1CE-4DC9-9A7E-5D82A74B627C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BA71877-D1CE-4DC9-9A7E-5D82A74B627C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BA71877-D1CE-4DC9-9A7E-5D82A74B627C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BA71877-D1CE-4DC9-9A7E-5D82A74B627C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
