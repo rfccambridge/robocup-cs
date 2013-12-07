@@ -70,7 +70,7 @@ namespace RFC.Core {
         /// Returns ball position
         /// </summary>
         /// <returns></returns>
-        BallInfo GetBall();
+        BallInfo getBall();
 
 	}
 

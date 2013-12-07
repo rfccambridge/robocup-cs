@@ -47,7 +47,7 @@ namespace RFC.Simulator
 
         public RefereeDeclaration RunRef(IPredictor predictor)
         {
-            BallInfo ball = predictor.GetBall();
+            BallInfo ball = predictor.getBall();
             if (ball == null)
                 return RefereeDeclaration.DECLARE_NONE;
 
