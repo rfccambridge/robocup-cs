@@ -98,7 +98,7 @@ namespace RFC.Simulator
 
             Referee = new SimpleReferee();
 
-            runLoop = new FunctionLoop(runLoopFunction);
+            runLoop = new FunctionLoop(runLoopFunction, new object());
         }
 
         public void LoadConstants()
