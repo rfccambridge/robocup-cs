@@ -31,7 +31,7 @@ namespace RFC.Messaging
         }
         class HandlerHolder<T> : HandlerHolder
         {
-            List<Tuple<Handler<T>, object>> handlers;
+            List<Tuple<Handler<T>, object>> handlers = new List<Tuple<Handler<T>,object>>();
             public void AddHandler(Handler<T> handler, object lockObject)
             {
                 lock (this)

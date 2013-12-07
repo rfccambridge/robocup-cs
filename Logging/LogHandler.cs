@@ -11,7 +11,7 @@ namespace RFC.Logging
     {
         public LogHandler()
         {
-            ServiceManager.getServiceManager().RegisterListener<LogMessage>(writeLog);
+            ServiceManager.getServiceManager().RegisterListener<LogMessage>(writeLog, new object());
         }
 
         public void writeLog(LogMessage LM)

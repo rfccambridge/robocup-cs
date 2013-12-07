@@ -253,6 +253,8 @@ namespace RFC.CoreRobotics
 		private object ballLock = new object();
 		private object robotsLock = new object();
 
+        private object messageReceivingLock = new object();
+
 		private System.Timers.Timer combineTimer = new System.Timers.Timer();
 		private int combineTimerSync = 0;
 
@@ -268,8 +270,8 @@ namespace RFC.CoreRobotics
 
 			LoadConstants();
 			messenger = ServiceManager.getServiceManager();
-			messenger.RegisterListener<VisionMessage>(Update);
-			messenger.RegisterListener<BallMarkMessage>(UpdateBallMark);
+			messenger.RegisterListener<VisionMessage>(Update, messageReceivingLock);
+			messenger.RegisterListener<BallMarkMessage>(UpdateBallMark, messageReceivingLock);
 
 
 
