@@ -13,7 +13,7 @@ namespace RFC.CoreRobotics
     /// <summary>
     /// A basic implementation of IPredictor that averages values from multiple cameras
     /// </summary>
-    public class AveragingPredictor : IPredictor, IVisionInfoAcceptor
+    public class AveragingPredictor : IVisionInfoAcceptor
     {
         const int NUM_CAMERAS = 2;
 
