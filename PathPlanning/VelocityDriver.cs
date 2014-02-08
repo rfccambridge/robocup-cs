@@ -108,7 +108,7 @@ namespace RFC.PathPlanning
             AGREEMENT_EFFECTIVE_DISTANCE_FACTOR = readDoublePairArray("VD_NUM_AGREEMENT_EFFECTIVE_DISTANCE_FACTOR", "VD_AGREEMENT_EFFECTIVE_DISTANCE_FACTOR_");
         }
 
-        public WheelSpeeds followPath(RobotPath path, IPredictor predictor)
+        public WheelSpeeds followPath(RobotPath path)
         {
             RobotVisionMessage robotMessage = (RobotVisionMessage)ServiceManager.getServiceManager().GetLastMessage(typeof(RobotVisionMessage));
 

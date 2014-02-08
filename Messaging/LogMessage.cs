@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RFC.Messaging;
 
-namespace RFC.Logging
+namespace RFC.Messaging
 {
     public class LogMessage : Message
     {

@@ -21,7 +21,7 @@ namespace RFC.Simulator
         /// Returns a referee declaration, if any.
         /// </summary>
         /// <param name="predictor">The IPredictor object that provides field state information</param>
-        RefereeDeclaration RunRef(IPredictor predictor);
+        RefereeDeclaration RunRef(PhysicsEngine predictor);
         void SetCurrentCommand(char commandToRun);
         /// <summary>
         /// Allows the automated referee to emit command sequences (f.e. stop->free_kick_blue)
@@ -45,7 +45,7 @@ namespace RFC.Simulator
             commandQueueTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
         }
 
-        public RefereeDeclaration RunRef(IPredictor predictor)
+        public RefereeDeclaration RunRef(PhysicsEngine predictor)
         {
             BallInfo ball = predictor.getBall();
             if (ball == null)

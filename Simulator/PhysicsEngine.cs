@@ -12,7 +12,7 @@ using RFC.RadioMessaging;
 
 namespace RFC.Simulator
 {
-    public class PhysicsEngine : IPredictor
+    public class PhysicsEngine
     {
         const double BALL_ROBOT_ELASTICITY = 0.5; //The fraction of the speed kept when bouncing off a robot
         const double BALL_WALL_ELASTICITY = 0.9; //The fraction of the speed kept when bouncing off a wall

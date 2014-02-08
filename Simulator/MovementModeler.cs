@@ -4,7 +4,7 @@ using System.Text;
 using RFC.Core;
 using RFC.Geometry;
 
-namespace RFC.CoreRobotics
+namespace RFC.Simulator
 {
     /// <summary>
     /// A simple proportional model for the relationship between commanded wheel speeds for a robot and

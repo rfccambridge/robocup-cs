@@ -7,7 +7,7 @@ using RFC.Geometry;
 using RFC.SSLVisionLib;
 using RFC.Messaging;
 
-namespace RFC.CoreRobotics
+namespace RFC.Vision
 {
 	public class Vision
 	{

@@ -4,11 +4,10 @@ using System.Text;
 using System.Threading;
 using RFC.Core;
 using RFC.Utilities;
-using RFC.CoreRobotics;
 using RFC.Geometry;
 using RFC.Messaging;
 
-namespace RFC.CoreRobotics
+namespace RFC.Vision
 {
     /// <summary>
     /// A basic implementation of IPredictor that averages values from multiple cameras

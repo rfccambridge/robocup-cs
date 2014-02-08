@@ -34,7 +34,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="MovementModeler.cs" />
     <Compile Include="RobotCommand.cs" />
   </ItemGroup>
   <ItemGroup>

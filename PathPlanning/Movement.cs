@@ -28,7 +28,7 @@ namespace RFC.PathPlanning
             _driver.ReloadConstants();
         }
 
-        public RobotPath PlanMotion(RobotInfo desiredState, IPredictor predictor,
+        public RobotPath PlanMotion(RobotInfo desiredState,
             double avoidBallRadius, RobotPath oldPath, SmoothRRTPlanner.DefenseAreaAvoid leftAvoid, SmoothRRTPlanner.DefenseAreaAvoid rightAvoid)
         {
             RobotPath path = _planner.GetPath(desiredState, avoidBallRadius, oldPath, leftAvoid, rightAvoid);
@@ -44,11 +44,11 @@ namespace RFC.PathPlanning
             return path;
         }
 
-        public WheelSpeeds FollowPath(RobotPath path, IPredictor predictor)
+        public WheelSpeeds FollowPath(RobotPath path)
         {
             try
             {
-                WheelSpeeds speeds = _driver.followPath(path, predictor);
+                WheelSpeeds speeds = _driver.followPath(path);
                 return speeds;
             }
             catch (ApplicationException e)
