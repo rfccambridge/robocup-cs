@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO.Ports;
 using RFC.Utilities;
 
-namespace RFC.RobotCommand
+namespace RFC.Commands
 {
     class SerialSender
     {

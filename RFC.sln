@@ -25,7 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathPlanning", "PathPlannin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vision", "Vision\Vision.csproj", "{7CADA0C4-1262-48A5-B314-7611E3BC8B1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotCommand", "RobotCommand\RobotCommand.csproj", "{6E92DDBB-42A7-462C-9E34-6B88FE64025F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commands", "RobotCommand\Commands.csproj", "{6E92DDBB-42A7-462C-9E34-6B88FE64025F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategy", "Strategy\Strategy.csproj", "{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{6E92DDBB-42A7-462C-9E34-6B88FE64025F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E92DDBB-42A7-462C-9E34-6B88FE64025F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E92DDBB-42A7-462C-9E34-6B88FE64025F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

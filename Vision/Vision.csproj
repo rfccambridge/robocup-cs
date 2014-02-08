@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AveragingPredictor.cs" />
+    <Compile Include="FieldState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vision.cs" />
   </ItemGroup>

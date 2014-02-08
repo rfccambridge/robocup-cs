@@ -4,11 +4,11 @@ using System.Text;
 using System.Threading;
 using RFC.Geometry;
 using RFC.Core;
-using RFC.CoreRobotics;
 using RFC.SSLVisionLib;
 using RFC.RefBox;
 using RFC.Utilities;
 using RFC.InterProcessMessaging;
+using RFC.Commands;
 
 namespace RFC.Simulator
 {
