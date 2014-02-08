@@ -45,6 +45,7 @@
     <Compile Include="EventArgs.cs" />
     <Compile Include="Generics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RobotPath.cs" />
     <Compile Include="Score.cs" />
     <Compile Include="RobotInfo.cs" />
     <Compile Include="Interfaces.cs" />

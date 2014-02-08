@@ -34,11 +34,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="AveragingPredictor.cs" />
     <Compile Include="MovementModeler.cs" />
     <Compile Include="RobotCommand.cs" />
-    <Compile Include="Vision.cs" />
-    <Compile Include="IVisionInfoAcceptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

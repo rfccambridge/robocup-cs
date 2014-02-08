@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging", "Messaging\Messaging.csproj", "{69AE7F48-FFF1-46AA-9CF3-B4A9F5FB2D13}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefBox", "RefBox\RefBox.csproj", "{7A3EA1DA-8A49-4732-ACA2-0B48AC1095CA}"
@@ -22,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadioMessaging", "RadioMessaging\RadioMessaging.csproj", "{5BA71877-D1CE-4DC9-9A7E-5D82A74B627C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathPlanning", "PathPlanning\PathPlanning.csproj", "{9AA1B3BA-FB45-4331-BDFE-3A886AEC876D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vision", "Vision\Vision.csproj", "{7CADA0C4-1262-48A5-B314-7611E3BC8B1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +77,10 @@ Global
 		{9AA1B3BA-FB45-4331-BDFE-3A886AEC876D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AA1B3BA-FB45-4331-BDFE-3A886AEC876D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AA1B3BA-FB45-4331-BDFE-3A886AEC876D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CADA0C4-1262-48A5-B314-7611E3BC8B1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CADA0C4-1262-48A5-B314-7611E3BC8B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CADA0C4-1262-48A5-B314-7611E3BC8B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CADA0C4-1262-48A5-B314-7611E3BC8B1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

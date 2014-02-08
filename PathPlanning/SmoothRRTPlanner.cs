@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RFC.Geometry;
 using RFC.Core;
 using RFC.Utilities;
+using RFC.Messaging;
 
 namespace RFC.PathPlanning
 {
@@ -556,20 +557,24 @@ namespace RFC.PathPlanning
         }
 
         //Try a bunch of paths and take the best one
-        private List<Vector2> GetBestPointPath(Team team, int id, IPredictor predictor, RobotInfo desiredState,
+        private List<Vector2> GetBestPointPath(Team team, int id, RobotInfo desiredState,
             double avoidBallRadius, RobotPath oldPath, List<Geom> obstacles)
         {
+            ServiceManager sm = ServiceManager.getServiceManager();
+            RobotVisionMessage robotVision = (RobotVisionMessage)sm.GetLastMessage(typeof(RobotVisionMessage));
+            BallVisionMessage ballVision = (BallVisionMessage)sm.GetLastMessage(typeof(RobotVisionMessage));
+
             RobotInfo currentState;
             try
-            { currentState = predictor.GetRobot(team, id); }
+            { currentState = robotVision.GetRobot(team, id); }
             catch (ApplicationException)
             { return new List<Vector2>(); }
             currentState = new RobotInfo(currentState);
             if (currentState.Velocity.magnitude() > MAX_OBSERVABLE_VELOCITY)
                 currentState.Velocity = currentState.Velocity.normalizeToLength(MAX_OBSERVABLE_VELOCITY);
 
-            BallInfo ball = predictor.GetBall();
-            List<RobotInfo> robots = predictor.GetRobots();
+            BallInfo ball = ballVision.Ball;
+            List<RobotInfo> robots = robotVision.GetRobots();
 
             if (ball != null)
             {
@@ -675,7 +680,7 @@ namespace RFC.PathPlanning
 
 
         //Top level function
-        public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+        public RobotPath GetPath(RobotInfo desiredState, double avoidBallRadius,
             RobotPath oldPath, List<Geom> obstacles)
         {
             Team team = desiredState.Team;
@@ -685,14 +690,15 @@ namespace RFC.PathPlanning
             RobotInfo curinfo;
             try
             {
-                curinfo = predictor.GetRobot(team, id);
+                RobotVisionMessage msg = (RobotVisionMessage)ServiceManager.getServiceManager().GetLastMessage(typeof(RobotVisionMessage));
+                curinfo = msg.GetRobot(team, id);
             }
             catch (ApplicationException)
             {
                 return new RobotPath(team, id);
             }
 
-            List<Vector2> bestPath = GetBestPointPath(team, id, predictor, new RobotInfo(desiredState), avoidBallRadius, oldPath, obstacles);
+            List<Vector2> bestPath = GetBestPointPath(team, id, new RobotInfo(desiredState), avoidBallRadius, oldPath, obstacles);
 
             //Convert the path
             List<RobotInfo> robotPath = new List<RobotInfo>();
@@ -739,7 +745,7 @@ namespace RFC.PathPlanning
         }
 
         //Top level function
-        public RobotPath GetPath(RobotInfo desiredState, IPredictor predictor, double avoidBallRadius,
+        public RobotPath GetPath(RobotInfo desiredState, double avoidBallRadius,
             RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
         {
             //Build obstacle list
@@ -789,7 +795,7 @@ namespace RFC.PathPlanning
             }*/
 
 
-            return GetPath(desiredState, predictor, avoidBallRadius, oldPath, obstacles);
+            return GetPath(desiredState, avoidBallRadius, oldPath, obstacles);
         }
 
     }

@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9AA1B3BA-FB45-4331-BDFE-3A886AEC876D}</ProjectGuid>
+    <ProjectGuid>{7CADA0C4-1262-48A5-B314-7611E3BC8B1D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PathPlanning</RootNamespace>
-    <AssemblyName>PathPlanning</AssemblyName>
+    <RootNamespace>Vision</RootNamespace>
+    <AssemblyName>Vision</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>..\SSLVisionLib\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -39,11 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Movement.cs" />
+    <Compile Include="AveragingPredictor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SmoothRRTPlanner.cs" />
-    <Compile Include="TwoDTreeMap.cs" />
-    <Compile Include="VelocityDriver.cs" />
+    <Compile Include="Vision.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
@@ -57,6 +58,10 @@
     <ProjectReference Include="..\Messaging\Messaging.csproj">
       <Project>{69ae7f48-fff1-46aa-9cf3-b4a9f5fb2d13}</Project>
       <Name>Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SSLVisionLib\SSLVisionLib.csproj">
+      <Project>{814ff38e-f4a4-4647-912c-067fbdff3419}</Project>
+      <Name>SSLVisionLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{644cf1d1-4066-4e97-a75c-da16e710443e}</Project>
