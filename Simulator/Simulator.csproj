@@ -57,10 +57,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CoreRobotics\CoreRobotics.csproj">
-      <Project>{f0b9fed5-bcd3-4827-8ba5-d4b9ab801d97}</Project>
-      <Name>CoreRobotics</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{2a163721-de91-4ad9-a7c7-29573095a2b3}</Project>
       <Name>Core</Name>
@@ -69,9 +65,9 @@
       <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
       <Name>Geometry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RadioMessaging\RadioMessaging.csproj">
+    <ProjectReference Include="..\RadioMessaging\InterProcessMessaging.csproj">
       <Project>{5ba71877-d1ce-4dc9-9a7e-5d82a74b627c}</Project>
-      <Name>RadioMessaging</Name>
+      <Name>InterProcessMessaging</Name>
     </ProjectReference>
     <ProjectReference Include="..\RefBox\RefBox.csproj">
       <Project>{7a3ea1da-8a49-4732-aca2-0b48ac1095ca}</Project>

@@ -4,7 +4,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace RFC.RadioMessaging
+namespace RFC.InterProcessMessaging
 {
 
     /// <summary>

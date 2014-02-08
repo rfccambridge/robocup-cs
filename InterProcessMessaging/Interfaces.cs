@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
 
-namespace RFC.RadioMessaging
+namespace RFC.InterProcessMessaging
 {
     public interface IByteSerializable<T>
     {

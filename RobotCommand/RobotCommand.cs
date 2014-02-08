@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using RFC.Utilities;
 using RFC.Core;
-using RFC.RadioMessaging;
+using RFC.InterProcessMessaging;
 
-namespace RFC.CoreRobotics
+namespace RFC.RobotCommand
 {
     public class RobotCommand : IByteSerializable<RobotCommand>
     {

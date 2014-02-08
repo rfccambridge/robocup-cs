@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-namespace RFC.RadioMessaging
+namespace RFC.InterProcessMessaging
 {
     public class ConnectionRefusedException : ApplicationException
     {

@@ -8,7 +8,7 @@ using RFC.CoreRobotics;
 using RFC.SSLVisionLib;
 using RFC.RefBox;
 using RFC.Utilities;
-using RFC.RadioMessaging;
+using RFC.InterProcessMessaging;
 
 namespace RFC.Simulator
 {
