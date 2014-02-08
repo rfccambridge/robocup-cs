@@ -63,6 +63,20 @@
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreRobotics\CoreRobotics.csproj">
+      <Project>{f0b9fed5-bcd3-4827-8ba5-d4b9ab801d97}</Project>
+      <Name>CoreRobotics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{2a163721-de91-4ad9-a7c7-29573095a2b3}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Geometry\Geometry.csproj">
+      <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
+      <Name>Geometry</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
