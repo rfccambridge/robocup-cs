@@ -292,6 +292,14 @@ namespace RFC.PathPlanning
                 }
             }
 
+            if (path.Slow)
+            {
+                speeds.lb *= .5;
+                speeds.rb *= .5;
+                speeds.rf *= .5;
+                speeds.lf *= .5;
+            }
+
             //Adjust speeds to cope with a maximum acceleration limit
             WheelSpeeds old = lastSpeeds[id];
             if (old != null)
@@ -303,6 +311,7 @@ namespace RFC.PathPlanning
             }
 
             lastSpeeds[id] = speeds;
+            
             return speeds;
         }
     }
