@@ -5,7 +5,7 @@ using RFC.Utilities;
 using RFC.Core;
 using RFC.InterProcessMessaging;
 
-namespace RFC.Commands
+namespace RFC.Core
 {
     public class RobotCommand : IByteSerializable<RobotCommand>
     {

@@ -67,10 +67,6 @@
       <Project>{5ba71877-d1ce-4dc9-9a7e-5d82a74b627c}</Project>
       <Name>InterProcessMessaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RobotCommand\Commands.csproj">
-      <Project>{6e92ddbb-42a7-462c-9e34-6b88fe64025f}</Project>
-      <Name>Commands</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

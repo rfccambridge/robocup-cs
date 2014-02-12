@@ -145,7 +145,7 @@ namespace RFC.PathPlanning
             try
             {
                 DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
-                DefenseAreaAvoid rightAvoid = (ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>().GetPlayType() == PlayType.SetPlay_Theirs) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
+                DefenseAreaAvoid rightAvoid = (ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>().PlayType == PlayType.SetPlay_Theirs) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
 
                 RobotInfo destinationCopy = new RobotInfo(message.Destination);
                 destinationCopy.Team = message.Destination.Team;

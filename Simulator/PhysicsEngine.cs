@@ -8,7 +8,6 @@ using RFC.SSLVisionLib;
 using RFC.RefBox;
 using RFC.Utilities;
 using RFC.InterProcessMessaging;
-using RFC.Commands;
 
 namespace RFC.Simulator
 {

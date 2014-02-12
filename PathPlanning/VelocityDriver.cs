@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using RFC.Core;
 using RFC.Geometry;
 using RFC.Messaging;
-using RFC.Commands;
 
 namespace RFC.PathPlanning
 {
