@@ -13,6 +13,13 @@ namespace RFC.RefBox
     {
         protected MultiCastRefBoxRouter router = new MultiCastRefBoxRouter();
 
+        Team team;
+
+        public MulticastRefBoxListener(Team team)
+        {
+            this.team = team;
+        }
+
         /// <summary>
         /// Connects to refobx through a router. First, tries to setup a router listening
         /// to muticast addr:port.If it can't, a router is already running, so we can just try and connect to it.
@@ -107,7 +114,7 @@ namespace RFC.RefBox
                     score.GoalsBlue = packet.goals_blue;
                     score.GoalsYellow = packet.goals_yellow;
 
-                    RefboxStateMessage message = new RefboxStateMessage(score, packet.cmd, lastCommand);
+                    RefboxStateMessage message = new RefboxStateMessage(score, GetPlayType(packet.cmd, lastCommand));
                     ServiceManager.getServiceManager().SendMessage(message);
                 }
                 else
@@ -116,6 +123,72 @@ namespace RFC.RefBox
                                       " (expecting " + packet.getSize() + ")");
                 }
             }
+        }
+
+        PlayType GetPlayType(char command, char lastCommand)
+        {
+            switch ((RefBoxMessageType)command)
+            {
+                case RefBoxMessageType.HALT:
+                    // stop bots completely
+                    return PlayType.Halt;
+                case RefBoxMessageType.START:
+                    return PlayType.NormalPlay;
+                case RefBoxMessageType.CANCEL:
+                case RefBoxMessageType.STOP:
+                case RefBoxMessageType.TIMEOUT_BLUE:
+                case RefBoxMessageType.TIMEOUT_YELLOW:
+                    //go to stopped/waiting state
+                    return PlayType.Stopped;
+                case RefBoxMessageType.TIMEOUT_END_BLUE:
+                case RefBoxMessageType.TIMEOUT_END_YELLOW:
+                case RefBoxMessageType.READY:
+                    if (((RefBoxMessageType)lastCommand == RefBoxMessageType.PENALTY_BLUE && team == Team.Blue) ||
+                        ((RefBoxMessageType)lastCommand == RefBoxMessageType.PENALTY_YELLOW && team == Team.Yellow))
+                        return PlayType.PenaltyKick_Ours;
+                    else if (((RefBoxMessageType)lastCommand == RefBoxMessageType.KICKOFF_BLUE && team == Team.Blue) ||
+                        ((RefBoxMessageType)lastCommand == RefBoxMessageType.KICKOFF_YELLOW && team == Team.Yellow))
+                        return PlayType.KickOff_Ours;
+                    else
+                        Console.WriteLine("ready state not expected, previous command: " + lastCommand);
+                    break;
+                case RefBoxMessageType.KICKOFF_BLUE:
+                    if (team == Team.Yellow)
+                        return PlayType.KickOff_Theirs;
+                    else
+                        return PlayType.KickOff_Ours_Setup;
+                case RefBoxMessageType.INDIRECT_BLUE:
+                case RefBoxMessageType.DIRECT_BLUE:
+                    if (team == Team.Yellow)
+                        return PlayType.SetPlay_Theirs;
+                    else
+                        return PlayType.SetPlay_Ours;
+                case RefBoxMessageType.KICKOFF_YELLOW:
+                    if (team == Team.Blue)
+                        return PlayType.KickOff_Theirs;
+                    else
+                        return PlayType.KickOff_Ours_Setup;
+                case RefBoxMessageType.INDIRECT_YELLOW:
+                case RefBoxMessageType.DIRECT_YELLOW:
+                    if (team == Team.Blue)
+                        return PlayType.SetPlay_Theirs;
+                    else
+                        return PlayType.SetPlay_Ours;
+                case RefBoxMessageType.PENALTY_BLUE:
+                    // handle penalty
+                    if (team == Team.Yellow)
+                        return PlayType.PenaltyKick_Theirs;
+                    else
+                        return PlayType.PenaltyKick_Ours_Setup;
+                case RefBoxMessageType.PENALTY_YELLOW:
+                    // penalty kick
+                    // handle penalty
+                    if (team == Team.Blue)
+                        return PlayType.PenaltyKick_Theirs;
+                    else
+                        return PlayType.PenaltyKick_Ours_Setup;
+            }
+            return PlayType.Halt;
         }
 
     }

@@ -5,7 +5,11 @@ namespace RFC.Messaging
 {
 	public class BallVisionMessage : Message
 	{
-		public BallInfo Ball {get; private set;}
+        public BallInfo Ball
+        {
+            get;
+            private set;
+        }
 
 		public BallVisionMessage (BallInfo ball)
 		{

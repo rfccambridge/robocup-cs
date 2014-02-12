@@ -94,11 +94,11 @@ namespace RFC.Messaging
 		/// </summary>
 		/// <returns>The last message of Type type.</returns>
 		/// <param name="type">Type.</param>
-		public Message GetLastMessage(Type type)
+		public T GetLastMessage<T>() where T : Message
 		{
 			Message m;
-			if (messageBuffer.TryGetValue (type, out m))
-				return m;
+			if (messageBuffer.TryGetValue (typeof(T), out m))
+				return (T)m;
 			else
 				return null;
 		}

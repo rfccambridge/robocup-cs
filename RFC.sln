@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commands", "RobotCommand\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategy", "Strategy\Strategy.csproj", "{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldDrawer", "FieldDrawer\FieldDrawer.csproj", "{27F07D1C-2D92-442A-B283-5CC23507E9C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DAE3B27-6EB0-4DD7-966B-EFB615B31DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27F07D1C-2D92-442A-B283-5CC23507E9C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27F07D1C-2D92-442A-B283-5CC23507E9C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27F07D1C-2D92-442A-B283-5CC23507E9C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27F07D1C-2D92-442A-B283-5CC23507E9C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

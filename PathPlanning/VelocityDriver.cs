@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RFC.Core;
 using RFC.Geometry;
 using RFC.Messaging;
+using RFC.Commands;
 
 namespace RFC.PathPlanning
 {
@@ -68,6 +69,14 @@ namespace RFC.PathPlanning
         public VelocityDriver()
         {
             ReloadConstants();
+
+            ServiceManager.getServiceManager().RegisterListener<RobotPathMessage>(handleRobotPathMessage, new object());
+        }
+
+        public void handleRobotPathMessage(RobotPathMessage rpm)
+        {
+            WheelSpeeds speeds = followPath(rpm.Path);
+            ServiceManager.getServiceManager().SendMessage(new CommandMessage(new RobotCommand(rpm.Path.ID, speeds)));
         }
 
         private Pair<double, double>[] readDoublePairArray(string numPrefix, string prefix)
@@ -110,7 +119,7 @@ namespace RFC.PathPlanning
 
         public WheelSpeeds followPath(RobotPath path)
         {
-            RobotVisionMessage robotMessage = (RobotVisionMessage)ServiceManager.getServiceManager().GetLastMessage(typeof(RobotVisionMessage));
+            RobotVisionMessage robotMessage = ServiceManager.getServiceManager().GetLastMessage<RobotVisionMessage>();
 
             Team team = path.Team;
             int id = path.ID;

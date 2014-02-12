@@ -106,10 +106,85 @@ namespace RFC.PathPlanning
 
         private bool includeCurStateInPath;
 
-        public SmoothRRTPlanner(bool includeCurStateInPath)
+        private RobotPath[] _last_successful_path;
+        private Object[] _path_locks;
+
+        public SmoothRRTPlanner(bool includeCurStateInPath, int numberRobots)
         {
             this.includeCurStateInPath = includeCurStateInPath;
             ReloadConstants();
+
+            _last_successful_path = new RobotPath[numberRobots];
+            _path_locks = new object[numberRobots];
+
+            for (int i = 0; i < numberRobots; i++)
+                _path_locks[i] = new object();
+
+            ServiceManager.getServiceManager().RegisterListener<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
+        }
+
+        public void handleRobotDestinationMessage(RobotDestinationMessage message)
+        {
+            if (message.Destination == null || double.IsNaN(message.Destination.Position.X) || double.IsNaN(message.Destination.Position.Y))
+            {
+                Console.WriteLine("invalid destination");
+                return;
+            }
+
+            int id = message.Destination.ID;
+
+            double avoidBallDist = (message.AvoidBall ? Constants.Motion.BALL_AVOID_DIST : 0f);
+            RobotPath oldPath;
+            lock (_path_locks[id])
+            {
+                oldPath = _last_successful_path[id];
+            }
+
+            //Plan a path
+            RobotPath newPath;
+            try
+            {
+                DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
+                DefenseAreaAvoid rightAvoid = (ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>().GetPlayType() == PlayType.SetPlay_Theirs) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
+
+                RobotInfo destinationCopy = new RobotInfo(message.Destination);
+                destinationCopy.Team = message.Destination.Team;
+                destinationCopy.ID = id;
+                newPath = GetPath(destinationCopy, avoidBallDist, oldPath,
+                    leftAvoid, rightAvoid);
+                // if path is empty, don't move, else make sure path contains desired state
+                if (!newPath.isEmpty())
+                {
+                    newPath.setFinalState(message.Destination);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
+                return;
+            }
+
+            lock (_path_locks[id])
+            {
+                if (newPath != null)
+                    _last_successful_path[id] = newPath;
+                newPath.Slow = message.Slow;
+            }
+
+            /*
+            #region Drawing
+            if (_fieldDrawer != null)
+            {
+                //Path commited for following
+                if (DRAW_PATH)
+                    _fieldDrawer.DrawPath(newPath);
+                //Arrow showing final destination
+                _fieldDrawer.DrawArrow(_team, id, ArrowType.Destination, destination.Position);
+            }
+            #endregion
+            */
+
+            ServiceManager.getServiceManager().SendMessage(new RobotPathMessage(newPath));
         }
 
         //Return a random point biased in a certain distribution between the current and the desired location,
@@ -561,8 +636,8 @@ namespace RFC.PathPlanning
             double avoidBallRadius, RobotPath oldPath, List<Geom> obstacles)
         {
             ServiceManager sm = ServiceManager.getServiceManager();
-            RobotVisionMessage robotVision = (RobotVisionMessage)sm.GetLastMessage(typeof(RobotVisionMessage));
-            BallVisionMessage ballVision = (BallVisionMessage)sm.GetLastMessage(typeof(RobotVisionMessage));
+            RobotVisionMessage robotVision = sm.GetLastMessage<RobotVisionMessage>();
+            BallVisionMessage ballVision = sm.GetLastMessage<BallVisionMessage>();
 
             RobotInfo currentState;
             try
@@ -690,7 +765,7 @@ namespace RFC.PathPlanning
             RobotInfo curinfo;
             try
             {
-                RobotVisionMessage msg = (RobotVisionMessage)ServiceManager.getServiceManager().GetLastMessage(typeof(RobotVisionMessage));
+                RobotVisionMessage msg = ServiceManager.getServiceManager().GetLastMessage<RobotVisionMessage>();
                 curinfo = msg.GetRobot(team, id);
             }
             catch (ApplicationException)

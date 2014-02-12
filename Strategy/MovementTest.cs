@@ -18,21 +18,29 @@ namespace RFC.Strategy
 
         int currentWaypointIndex = 0;
         Vector2[] waypoints = new Vector2[] { new Vector2(1, 1), new Vector2(1, 2) };
+        bool firstRun = true;
 
         public MovementTest(Team team, int robotId)
         {
             this.robotId = robotId;
             this.team = team;
+
+            ServiceManager.getServiceManager().RegisterListener<RobotVisionMessage>(Handle, new object());
         }
 
-        public void Loop()
+        public void Handle(RobotVisionMessage robotVision)
         {
-            RobotVisionMessage robotVision = (RobotVisionMessage)ServiceManager.getServiceManager().GetLastMessage(typeof(RobotVisionMessage));
             RobotInfo info = robotVision.GetRobot(team, robotId);
 
-            if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE)
+            if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE || firstRun)
             {
                 currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+
+                RobotInfo destination = new RobotInfo(waypoints[currentWaypointIndex], 0, robotId);
+                RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
+                ServiceManager.getServiceManager().SendMessage(destinationMessage);
+
+                firstRun = false;
             }
         }
     }

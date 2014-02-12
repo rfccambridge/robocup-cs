@@ -30,8 +30,12 @@ namespace RFC.Vision
         // For marking ball position
         private Vector2 markedPosition = null;
 
-        public AveragingPredictor()
+        private bool flipped;
+
+        public AveragingPredictor(bool flipped)
         {
+            this.flipped = flipped;
+
             for (int i = 0; i < NUM_CAMERAS; i++)
             {
                 fieldStates[i] = new FieldState();
@@ -43,6 +47,15 @@ namespace RFC.Vision
             messenger.RegisterListener<BallMarkMessage>(UpdateBallMark, listenerLock);
         }
 
+        /// <summary>
+        /// Creates a copy of the given RobotInfo, and flips the position, velocity, and orientation
+        /// </summary>
+        private RobotInfo flipRobotInfo(RobotInfo info)
+        {
+            return new RobotInfo(-info.Position, -info.Velocity, info.AngularVelocity,
+                    info.Orientation + Math.PI, info.Team, info.ID);
+        }
+
         public void Update(VisionMessage msg)
         {
             fieldStates[msg.CameraID].Update(msg);
@@ -52,8 +65,8 @@ namespace RFC.Vision
                 combineRobots(team);
 
             // preparing messages
-            BallVisionMessage ball_msg = new BallVisionMessage(getBall());
-            RobotVisionMessage robots_msg = new RobotVisionMessage(Team.Blue, getRobots(Team.Blue), Team.Yellow, getRobots(Team.Yellow));
+            BallVisionMessage ball_msg = new BallVisionMessage(flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
+            RobotVisionMessage robots_msg = new RobotVisionMessage(flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
             BallMovedMessage move_msg = new BallMovedMessage(hasBallMoved());
 
             // sending message that new data is ready

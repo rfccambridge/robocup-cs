@@ -6,19 +6,17 @@ namespace RFC.Messaging
 {
 	public class RobotVisionMessage : Message
 	{
+        private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
 
-		
-		private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
-		
-		public RobotVisionMessage (Team teamB, List<RobotInfo> robotsB, Team teamY, List<RobotInfo> robotsY)
+		public RobotVisionMessage (List<RobotInfo> blueRobots, List<RobotInfo> yellowRobots)
 		{
-			robots.Add(teamB, robotsB);
-			robots.Add(teamY, robotsY);
+			robots.Add(Team.Blue, blueRobots);
+			robots.Add(Team.Yellow, yellowRobots);
 		}
 
 		public List<RobotInfo> GetRobots(Team team)
 		{
-			return robots[team];
+            return robots[team];
 		}
 
 		public List<RobotInfo> GetRobots()
@@ -26,7 +24,8 @@ namespace RFC.Messaging
 			List<RobotInfo> combined = new List<RobotInfo>();
 			foreach (Team team in Enum.GetValues(typeof(Team)))
 				combined.AddRange(GetRobots(team));
-			return combined;
+
+            return combined;
 		}
 
 		public RobotInfo GetRobot(Team team, int id)
@@ -39,7 +38,8 @@ namespace RFC.Messaging
 				throw new ApplicationException("AveragingPredictor.GetRobot: no robot with id=" +
 				                               id.ToString() + " found on team " + team.ToString());
 			}
-			return robot;
+
+            return robot;
 		}
 	}
 }

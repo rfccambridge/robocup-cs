@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9AA1B3BA-FB45-4331-BDFE-3A886AEC876D}</ProjectGuid>
+    <ProjectGuid>{27F07D1C-2D92-442A-B283-5CC23507E9C1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PathPlanning</RootNamespace>
-    <AssemblyName>PathPlanning</AssemblyName>
+    <RootNamespace>FieldDrawer</RootNamespace>
+    <AssemblyName>FieldDrawer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,8 +30,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenTK">
+      <HintPath>.\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.Compatibility">
+      <HintPath>.\OpenTK.Compatibility.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl">
+      <HintPath>.\OpenTK.GLControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -39,37 +50,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Movement.cs" />
+    <Compile Include="FieldDrawer.cs" />
+    <Compile Include="FieldDrawerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FieldDrawerForm.Designer.cs">
+      <DependentUpon>FieldDrawerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SmoothRRTPlanner.cs" />
-    <Compile Include="TwoDTreeMap.cs" />
-    <Compile Include="VelocityDriver.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{2a163721-de91-4ad9-a7c7-29573095a2b3}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Geometry\Geometry.csproj">
-      <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
-      <Name>Geometry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\InterProcessMessaging\InterProcessMessaging.csproj">
-      <Project>{5ba71877-d1ce-4dc9-9a7e-5d82a74b627c}</Project>
-      <Name>InterProcessMessaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Messaging\Messaging.csproj">
-      <Project>{69ae7f48-fff1-46aa-9cf3-b4a9f5fb2d13}</Project>
-      <Name>Messaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RobotCommand\Commands.csproj">
-      <Project>{6e92ddbb-42a7-462c-9e34-6b88fe64025f}</Project>
-      <Name>Commands</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{644cf1d1-4066-4e97-a75c-da16e710443e}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
