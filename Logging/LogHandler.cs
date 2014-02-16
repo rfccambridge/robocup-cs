@@ -17,8 +17,10 @@ namespace RFC.Logging
         public void writeLog(LogMessage LM)
         {
             // append message to log file
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(@"C:\log.txt", true);
-            writer.WriteLine("\n" + LM.getMessage());
+            /*System.IO.StreamWriter writer = new System.IO.StreamWriter(@"C:\log.txt", true);
+            writer.WriteLine("\n" + LM.getMessage());*/
+
+            Console.WriteLine(LM.getMessage());
         }
     }
 }

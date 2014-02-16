@@ -83,6 +83,14 @@
       <Project>{27f07d1c-2d92-442a-b283-5cc23507e9c1}</Project>
       <Name>FieldDrawer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Logging\Logging.csproj">
+      <Project>{AFD94145-D3FB-4143-9925-6AC7B766E224}</Project>
+      <Name>Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Messaging\Messaging.csproj">
+      <Project>{69AE7F48-FFF1-46AA-9CF3-B4A9F5FB2D13}</Project>
+      <Name>Messaging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PathPlanning\PathPlanning.csproj">
       <Project>{9aa1b3ba-fb45-4331-bdfe-3a886aec876d}</Project>
       <Name>PathPlanning</Name>

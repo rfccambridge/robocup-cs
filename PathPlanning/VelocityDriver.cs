@@ -50,6 +50,8 @@ namespace RFC.PathPlanning
         //Scaling for distance from obstacle based on cosine of angle
         private Pair<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR;
 
+        Dictionary<int, RobotPath> lastPaths = new Dictionary<int, RobotPath>();
+
         private static double interp(Pair<double, double>[] pairs, double d)
         {
             for (int i = 0; i < pairs.Length; i++)
@@ -69,13 +71,32 @@ namespace RFC.PathPlanning
         {
             ReloadConstants();
 
-            ServiceManager.getServiceManager().RegisterListener<RobotPathMessage>(handleRobotPathMessage, new object());
+            object lockObject = new object();
+            ServiceManager.getServiceManager().RegisterListener<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
+            //ServiceManager.getServiceManager().RegisterListener<RobotPathMessage>(handleRobotPathMessage, lockObject);
+        }
+
+        public void handleRobotVisionMessage(RobotVisionMessage rvm)
+        {
+            Console.WriteLine("sending wheel speeds");
+            foreach (RobotInfo robot in rvm.GetRobots()) {
+                WheelSpeeds speeds;
+                if (lastPaths.ContainsKey(robot.ID))
+                {
+                    speeds = followPath(lastPaths[robot.ID]);
+                }
+                else
+                {
+                    speeds = new WheelSpeeds();
+                }
+                ServiceManager.getServiceManager().SendMessage(new CommandMessage(new RobotCommand(robot.ID, speeds)));
+
+            }
         }
 
         public void handleRobotPathMessage(RobotPathMessage rpm)
         {
-            WheelSpeeds speeds = followPath(rpm.Path);
-            ServiceManager.getServiceManager().SendMessage(new CommandMessage(new RobotCommand(rpm.Path.ID, speeds)));
+            lastPaths.Add(rpm.Path.ID, rpm.Path);
         }
 
         private Pair<double, double>[] readDoublePairArray(string numPrefix, string prefix)

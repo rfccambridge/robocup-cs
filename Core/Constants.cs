@@ -753,7 +753,7 @@ namespace RFC.Core
 		/// <summary>
 		/// The directory in which we'll look for the constants files.
 		/// </summary>
-		const string directory = "../../resources/constants/";
+		const string directory = "../../../constants/";
 
 		/// <summary>
 		/// Each entry in this dictionary is a map from a name (such as "default" or "vision")

@@ -58,12 +58,14 @@ namespace RFC.Vision
 
         public void Update(VisionMessage msg)
         {
+            Console.WriteLine("ap update");
+
             fieldStates[msg.CameraID].Update(msg);
 
             combineBall();
             foreach (Team team in Enum.GetValues(typeof(Team)))
                 combineRobots(team);
-
+            
             // preparing messages
             BallVisionMessage ball_msg = new BallVisionMessage(flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
             RobotVisionMessage robots_msg = new RobotVisionMessage(flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));

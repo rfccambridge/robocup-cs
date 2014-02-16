@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.Design;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace RFC.Messaging
 {
@@ -43,11 +44,23 @@ namespace RFC.Messaging
             public override void Invoke(object message)
             {
                 lock (this) {
+                    if (handlers.Count == 2)
+                    {
+                        Console.WriteLine((handlers[0].Item2 == handlers[1].Item2) + " " + handlers[1].Item2 + " " + handlers[0].Item2);
+                    }
                     foreach(Tuple<Handler<T>, object> handler in handlers) {
+                        
                         Task.Factory.StartNew(() => {
-                            lock (handler.Item2)
+                            if (Monitor.TryEnter(handler.Item2))
                             {
-                                handler.Item1.Invoke((T)message);
+                                try
+                                {
+                                    handler.Item1.Invoke((T)message);
+                                }
+                                finally
+                                {
+                                    Monitor.Exit(handler.Item2);
+                                }
                             }
                         });
                     }

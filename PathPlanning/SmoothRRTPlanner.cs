@@ -145,7 +145,8 @@ namespace RFC.PathPlanning
             try
             {
                 DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
-                DefenseAreaAvoid rightAvoid = (ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>().PlayType == PlayType.SetPlay_Theirs) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
+                RefboxStateMessage refMessage = ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>();
+                DefenseAreaAvoid rightAvoid = (refMessage == null || refMessage.PlayType == PlayType.SetPlay_Theirs) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
 
                 RobotInfo destinationCopy = new RobotInfo(message.Destination);
                 destinationCopy.Team = message.Destination.Team;
@@ -183,7 +184,7 @@ namespace RFC.PathPlanning
             }
             #endregion
             */
-
+            Console.WriteLine("sending path");
             ServiceManager.getServiceManager().SendMessage(new RobotPathMessage(newPath));
         }
 
