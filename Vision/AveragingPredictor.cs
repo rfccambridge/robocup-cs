@@ -43,7 +43,7 @@ namespace RFC.Vision
 
             LoadConstants();
             messenger = ServiceManager.getServiceManager();
-            messenger.RegisterListener<VisionMessage>(Update, listenerLock);
+            new QueuedMessageHandler<VisionMessage>(Update, listenerLock);
             messenger.RegisterListener<BallMarkMessage>(UpdateBallMark, listenerLock);
         }
 

@@ -44,23 +44,19 @@ namespace RFC.Messaging
             public override void Invoke(object message)
             {
                 lock (this) {
-                    if (handlers.Count == 2)
-                    {
-                        Console.WriteLine((handlers[0].Item2 == handlers[1].Item2) + " " + handlers[1].Item2 + " " + handlers[0].Item2);
-                    }
                     foreach(Tuple<Handler<T>, object> handler in handlers) {
                         
                         Task.Factory.StartNew(() => {
-                            if (Monitor.TryEnter(handler.Item2))
+                            if (handler.Item2 != null)
                             {
-                                try
+                                lock (handler.Item2)
                                 {
                                     handler.Item1.Invoke((T)message);
                                 }
-                                finally
-                                {
-                                    Monitor.Exit(handler.Item2);
-                                }
+                            }
+                            else
+                            {
+                                handler.Item1.Invoke((T)message);
                             }
                         });
                     }
@@ -78,7 +74,7 @@ namespace RFC.Messaging
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="handler">a function that takes an argument of a subtype of message that should be called when that type of message is sent</param>
-        /// <param name="lockObject">an object to lock when calling the handler</param>
+        /// <param name="lockObject">an object to lock when calling the handler, pass null if you will handle concurrency manually</param>
         public void RegisterListener<T>(Handler<T> handler, object lockObject) where T : Message
         {
             Type type = typeof(T);
