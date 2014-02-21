@@ -26,6 +26,14 @@ namespace RFC.Vision
         private Dictionary<Team, List<RobotInfo>> robots = new Dictionary<Team, List<RobotInfo>>();
 
         private object listenerLock = new object();
+        private object listenerLock1 = new object();
+        private object listenerLock2 = new object();
+        private object listenerLock3 = new object();
+        private object listenerLock4 = new object();
+        private object listenerLock5 = new object();
+        private object listenerLock6 = new object();
+        private object listenerLock7 = new object();
+        private object listenerLock8 = new object();
 
         // For marking ball position
         private Vector2 markedPosition = null;
@@ -43,7 +51,15 @@ namespace RFC.Vision
 
             LoadConstants();
             messenger = ServiceManager.getServiceManager();
-            new QueuedMessageHandler<VisionMessage>(Update, listenerLock);
+            messenger.RegisterListener<VisionMessage>(Update, listenerLock);
+            messenger.RegisterListener<BallVisionMessage>(mytest1, listenerLock1);
+            messenger.RegisterListener<BallVisionMessage>(mytest2, listenerLock2);
+            messenger.RegisterListener<BallVisionMessage>(mytest3, listenerLock3);
+            messenger.RegisterListener<BallVisionMessage>(mytest4, listenerLock4);
+            messenger.RegisterListener<BallVisionMessage>(mytest5, listenerLock5);
+            messenger.RegisterListener<BallVisionMessage>(mytest6, listenerLock6);
+            messenger.RegisterListener<BallVisionMessage>(mytest7, listenerLock7);
+            messenger.RegisterListener<BallVisionMessage>(mytest8, listenerLock8);
             messenger.RegisterListener<BallMarkMessage>(UpdateBallMark, listenerLock);
         }
 
@@ -54,6 +70,39 @@ namespace RFC.Vision
         {
             return new RobotInfo(-info.Position, -info.Velocity, info.AngularVelocity,
                     info.Orientation + Math.PI, info.Team, info.ID);
+        }
+
+        public void mytest1(BallVisionMessage msg)
+        {
+            Console.WriteLine("my test A");
+        }
+        public void mytest2(BallVisionMessage msg)
+        {
+            Console.WriteLine("my test B");
+        }
+        public void mytest3(BallVisionMessage msg)
+        {
+            Console.WriteLine("my test C");
+        }
+        public void mytest4(BallVisionMessage msg)
+        {
+            Console.WriteLine("my test D");
+        }
+        public void mytest5(BallVisionMessage msg)
+        {
+            Console.WriteLine("my test E");
+        }
+        public void mytest6(BallVisionMessage msg)
+        {
+            Console.WriteLine("my test F");
+        }
+        public void mytest7(BallVisionMessage msg)
+        {
+            Console.WriteLine("my test G");
+        }
+        public void mytest8(BallVisionMessage msg)
+        {
+            Console.WriteLine("my test H");
         }
 
         public void Update(VisionMessage msg)
@@ -72,8 +121,13 @@ namespace RFC.Vision
             BallMovedMessage move_msg = new BallMovedMessage(hasBallMoved());
 
             // sending message that new data is ready
-            messenger.SendMessage<BallVisionMessage>(ball_msg);
-            messenger.SendMessage<RobotVisionMessage>(robots_msg);
+            Random rand = new Random();
+            if (rand.Next(1, 1) == 1)
+            {
+                Console.WriteLine("sending robotVisionMessage");
+                messenger.SendMessage<BallVisionMessage>(ball_msg);
+                messenger.SendMessage<RobotVisionMessage>(robots_msg);
+            }
             if (move_msg.moved)
                 messenger.SendMessage<BallMovedMessage>(move_msg);
         }

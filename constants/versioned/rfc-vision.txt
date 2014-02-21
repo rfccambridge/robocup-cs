@@ -1,0 +1,197 @@
+string VERBOSE false
+
+# camera 1 for top, camera 2 for bottom
+# only CAMERA_ID_OMEGA is currently used by the code
+int CAMERA_ID_LAMBDA 1
+int CAMERA_ID_OMEGA 2
+int CAMERA_ID_MARDUK 2
+int CAMERA_ID_STRATEGIST 1
+int CAMERA_ID_THINKPAD 1
+int CAMERA_ID_RFC 1
+
+# areas and errors are in sq. mm
+
+# in pixels
+int MIN_BLOB_AREA 4
+int MIN_BLOB_HEIGHT 4
+int MIN_BLOB_WIDTH 4
+int MAX_BLOB_HEIGHT 100
+int MAX_BLOB_WIDTH 100
+
+float AREA_BALL 1400
+float ERROR_BALL 1100
+float MIN_BALL_DIST_FROM_ROBOT_SQ 8100
+float MIN_ROBOT_TO_ROBOT_DIST_SQ 27000
+
+float AREA_DOT 1600
+float ERROR_DOT 1000
+
+float AREA_BLUE_CENTER_DOT 2000
+float AREA_YELLOW_CENTER_DOT 2000
+
+float ERROR_BLUE_CENTER_DOT 1300
+float ERROR_YELLOW_CENTER_DOT 1500
+
+float AREA_CYAN_DOT 2000
+float AREA_PINK_DOT 2000
+float AREA_GREEN_DOT 2000
+
+float ERROR_CYAN_DOT 2000
+float ERROR_PINK_DOT 2000
+float ERROR_GREEN_DOT 2000
+
+float DIST_SQ_TO_CENTER 30000
+float DIST_SQ_TO_CENTER_PIX 1000
+float FRONT_ANGLE 135
+float ERROR_ANGLE 40
+float DIST_SHORT_SQ 17000
+
+float BALL_HEIGHT_TSAI 0
+float ROBOT_HEIGHT_TSAI -140
+
+int THEIR_ID_OFFSET_LAMBDA 0
+int THEIR_ID_OFFSET_OMEGA 10
+int THEIR_ID_OFFSET_MARDUK 0
+int THEIR_ID_OFFSET_RFC 10
+int THEIR_ID_OFFSET_STRATEGIST 10
+int THEIR_ID_OFFSET_THINKPAD 0
+int THEIR_ID_OFFSET_ONUFRII 0
+
+
+# ================
+# Tsai Calibration
+# ================
+
+#  Competition values 
+#
+# --------------------------------
+# |(4200, 6100)        (0, 6100) |
+# |                              |
+# |           TOP                |
+# |           CAM                |
+# |                              |
+# |                              |
+# |------------------------------|
+# |                              |
+# |            BOTTOM            |
+# |            CAM               |
+# |                              |
+# |(4200, 0)                (0,0)|
+# --------------------------------
+
+
+#  Practice field MD3rd values 
+#
+# --------------------------------
+# |(4050, 6050)        (0, 6050) |
+# |                              |
+# |           TOP                |
+# |           CAM                |
+# |                              |
+# |                              |
+# |(4050, 3025)         (0, 3025)|
+# |------------------------------|
+# |                              |
+# |            BOTTOM            |
+# |            CAM               |
+# |                              |
+# |(4050, 0)                (0,0)|
+# --------------------------------
+
+# Uncomment only the quater which you wish to calibrate
+
+
+#TOP
+double TSAI_ORIGIN_IMAGE_CENTER_X 936
+double TSAI_ORIGIN_IMAGE_CENTER_Y 687
+#This is an offset we apply every time we generate an image lookup table ( = half Y-size)
+double TSAI_TOP_OFFSET_Y 3025
+
+#BOTTOM
+#double TSAI_ORIGIN_IMAGE_CENTER_X 924
+#double TSAI_ORIGIN_IMAGE_CENTER_Y 668
+#double TSAI_TOP_OFFSET_Y 0
+
+# Laptops
+
+#    Lambda
+
+# Right Quater
+double TSAI_OFFSET_X_LAMBDA 0
+double TSAI_OFFSET_Y_LAMBDA 0
+# Left Quater
+#double TSAI_OFFSET_X_LAMBDA 2300
+#double TSAI_OFFSET_Y_LAMBDA 0
+
+#     Omega
+
+# Right Quater
+#double TSAI_OFFSET_X_OMEGA 0
+#double TSAI_OFFSET_Y_OMEGA 0
+# Left Quater
+double TSAI_OFFSET_X_OMEGA 2300
+double TSAI_OFFSET_Y_OMEGA 0
+
+# Desktops
+# bottom right corner
+# double TSAI_OFFSET_X_MARDUK -250
+# double TSAI_OFFSET_Y_MARDUK -250
+# top right corner
+#double TSAI_OFFSET_X_MARDUK -250
+#double TSAI_OFFSET_Y_MARDUK 1925
+# top left corner
+#double TSAI_OFFSET_X_MARDUK 3400
+#double TSAI_OFFSET_Y_MARDUK 1925
+# bottom left corner
+#double TSAI_OFFSET_X_MARDUK 3400
+#double TSAI_OFFSET_Y_MARDUK -250
+
+# Desktops
+# bottom right corner
+#double TSAI_OFFSET_X_RFC -250
+#double TSAI_OFFSET_Y_RFC 0
+# top right corner
+double TSAI_OFFSET_X_RFC -250
+double TSAI_OFFSET_Y_RFC 1175
+# top left corner
+#double TSAI_OFFSET_X_RFC 3400
+#double TSAI_OFFSET_Y_RFC 1175
+# bottom left corner
+#double TSAI_OFFSET_X_RFC 3400
+#double TSAI_OFFSET_Y_RFC 0
+
+
+double TSAI_OFFSET_X_STRATEGIST 0
+double TSAI_OFFSET_Y_STRATEGIST 3050
+
+# Alexei's laptop
+double TSAI_OFFSET_X_THINKPAD 0
+double TSAI_OFFSET_Y_THINKPAD 2300
+
+# Svilen's laptop
+double TSAI_OFFSET_X_ONUFRII 0
+double TSAI_OFFSET_Y_ONUFRII 2300
+
+# Tsai point finder
+# in mm
+double GRID_UNIT 100
+int TSAI_COLS 5
+int TSAI_SKIP 1
+# deviation in image Y-coordinate of the blob to be considered in same row of tsai points
+int ROW_Y_THRES 10
+# in pixels
+int TSAIPT_MIN_AREA 10
+int TSAIPT_MAX_AREA 1000
+
+double Y_X_VERTICALITY_THRES 1
+int CALIB_SQ_MARGIN 5
+int EDGE_NEIGHBOR_DIST 9 
+# 32-bit color of the calibration square; currently BLACK
+int CALIB_SQ_COLOR -16777216
+
+#RANSAC
+double RANSAC_T 1
+double RANSAC_D 0.7
+int RANSAC_K 100
+int RANSAC_N 5
+

@@ -1,0 +1,87 @@
+
+#Used in a few places
+double CHARGE_DIST 4
+
+# Used in ActionInterpreter (distances in m, angles in degrees)
+
+# Kick constants
+#double AIKICK_POSITION_DIST 0.12
+#double AIKICK_MAX_LATERAL_DIST 0.03
+#double AIKICK_MAX_ANGLE_TO_KICK_AXIS 4 #deg
+#double AIKICK_ORIENTATION_ERROR 6      #deg
+#double AIKICK_MAX_LATERAL_SPEED 0.2   #m/s
+#double AIKICK_MAX_ANGULAR_SPEED 0.3    #rad/s
+
+#More accurate kick constants
+double AIKICK_POSITION_DIST 0.12
+double AIKICK_MAX_LATERAL_DIST 0.015
+double AIKICK_MAX_ANGLE_TO_KICK_AXIS 3 #deg
+double AIKICK_ORIENTATION_ERROR 3      #deg
+double AIKICK_MAX_LATERAL_SPEED 0.15   #m/s
+double AIKICK_MAX_ANGULAR_SPEED 0.2    #rad/s
+
+# Bump constants
+double AIBUMP_ANGLE_TOLERANCE 27
+double AIBUMP_DIST_TOLERANCE 0.2
+
+# Dribble constants
+double AIDRIBBLE_DIST 0.085
+
+
+# This contains constants for the IKickPlanner implementations
+# These are specialized planners designed to kick the ball, used
+# in the ActionInterpreter class
+# This was created for the spring 2009 CS 199r class. See Josh Montana
+# or David Robinson with questions
+
+# FeedbackVeerKickPlanner constants
+double DIST_BEHIND_BALL .10
+double DIST_THROUGH_BALL .3
+
+double TIME_WAIT_POINT_1 .75
+
+double MAX_LATERAL_GO_THROUGH .04
+double MAX_PARALLEL_GO_THROUGH .35
+
+double MAX_DIST_BREAK_BEAM .3
+
+# distance from the ball to activate this kick planner
+double DIST_ACTIVATE_KICK_PLANNER .5
+
+# distance from the ball to activate break beam
+double BALL_DISTANCE_CHARGE .20
+
+# maximum distance and orientation difference from point 1 to go to point 2
+double MAX_DIST_POINT_1 0.08
+#.030
+double MAX_DIST_MOVE_TRANSLATE_POINT_1 .25
+double MAX_DIFF_ORIENTATION_POINT_1 0.18
+#0.07
+#.1
+
+int SPEED_LATERAL -5
+
+# PID loop for orientation at point 1
+double point1orientation_P -15
+double point1orientation_I 0
+double point1orientation_D 0
+
+int SPIN_SPEED_CAP 6
+
+int SATURATION_LIMIT 4
+
+double BALL_AVOID_RADIUS 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+

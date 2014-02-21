@@ -30,15 +30,14 @@ namespace RFC.Strategy
 
         public void Handle(RobotVisionMessage robotVision)
         {
-            ServiceManager.getServiceManager().SendMessage(new LogMessage("got to strategy : there are " + robotVision.GetRobots().Count));
-
+            Console.WriteLine("received here");
             if (robotVision.GetRobots().Count > 0)
             {
                 RobotInfo info = robotVision.GetRobot(team, robotId);
 
                 if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE || firstRun)
                 {
-                    Console.WriteLine("Sent location");
+                    Console.WriteLine("Sent new destination");
                     currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
 
                     RobotInfo destination = new RobotInfo(waypoints[currentWaypointIndex], 0, robotId);
@@ -46,10 +45,6 @@ namespace RFC.Strategy
                     ServiceManager.getServiceManager().SendMessage(destinationMessage);
 
                     firstRun = false;
-                }
-                else
-                {
-                    Console.WriteLine("Didn't send");
                 }
             }
         }

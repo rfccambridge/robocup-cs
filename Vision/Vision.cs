@@ -64,6 +64,7 @@ namespace RFC.Vision
 
 		private void loop()
 		{
+            int count = 0;
 			while (true)
 			{
 				SSL_WrapperPacket packet = _client.Receive();
@@ -116,7 +117,11 @@ namespace RFC.Vision
 					}
 
 					// sending vision message
-					ServiceManager.getServiceManager().SendMessage(msg);    
+                    if (count < 100)
+                    {
+                        ServiceManager.getServiceManager().SendMessage(msg);
+                    }
+                    count++;
 				}
 
 			}

@@ -1,0 +1,63 @@
+# comments come in this form
+# NOTE: the values for string constants are not extracted out of quotes
+#       e.g. string MYCONST "text" is returned as "text" NOT text
+# each text file represents a different constants category
+
+
+# RFCSystem constants
+int UPDATE_SLEEP_TIME 100
+int REBOOT_TIME 15000
+#string REFBOX_ADDR 224.5.92.5 # default
+string REFBOX_ADDR 224.5.92.10
+int REFBOX_PORT 10001
+
+string LOCAL_REFBOX_ADDR 224.5.92.11
+int LOCAL_REFBOX_PORT 10100
+
+string DEFAULT_HOST_SSL_VISION 224.5.23.2
+int DEFAULT_PORT_SSL_VISION 10002
+string DEFAULT_HOST_VISION_TOP localhost
+string DEFAULT_HOST_VISION_BOTTOM marduk
+string DEFAULT_HOST_SERIAL localhost
+#label clearing in ms
+int REFBOX_COMMAND_CLEAR_INTERVAL 1000
+
+# testing directory
+#string PLAY_DIR ../../plays/Test2009
+# competition directory
+#string PLAY_DIR ../../plays/defense
+
+#string PLAY_DIR ../../plays/
+#string PLAY_DIR ../../plays/defense
+string PLAY_DIR ../../plays/refboxplays
+#string PLAY_DIR ../../plays/refboxplays/test
+#string PLAY_DIR ../../plays/refboxplays/penalty
+#string PLAY_DIR ../../plays/refboxplays/koff
+
+## Basic Predictor constants
+double DELTA_DIST_SQ_MERGE .05
+double MAX_SECONDS_TO_KEEP_INFO 1
+# in seconds
+double VELOCITY_DT 0.2
+double VELOCITY_WEIGHT_OLD 0.5
+double VELOCITY_WEIGHT_NEW 0.5
+double POSITION_WEIGHT_OLD 0.5
+double POSITION_WEIGHT_NEW 0.5
+double BALL_POSITION_WEIGHT_OLD 0.7
+double BALL_POSITION_WEIGHT_NEW 0.3
+
+double WEIGHT_OLD 0.5
+double WEIGHT_NEW 0.5
+double MIN_BALL_CONFIDENCE 0
+
+
+bool ROBOT_HAS_KICKER_0 true
+bool ROBOT_HAS_KICKER_1 true
+bool ROBOT_HAS_KICKER_2 true
+bool ROBOT_HAS_KICKER_3 true
+bool ROBOT_HAS_KICKER_4 true
+
+bool ROBOT_IS_GOALIE_3 true
+
+int PATH_RECALCULATE_INTERVAL 500
+

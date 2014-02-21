@@ -1,0 +1,213 @@
+# Motion planning constants
+
+#SHARED CONSTANTS----------------------------------------------------
+
+#Basic robot properties
+int MAX_SINGLE_WHEEL_SPEED 127
+double ANGLE_AXIS_TO_WHEEL 41 #in degrees
+double WHEEL_RADIUS 0.0782828 #distance from robot center to wheels
+double STEADY_STATE_SPEED 2.30 #basic speed used by some planners and drivers in m/s
+
+#How far away should the controller ask the planners to stay away from
+#the ball?
+double BALL_AVOID_DIST 0.20 
+
+#What are the linear and the angular differences that we should consider "good enough"?
+#for determining whether we've reached our destination or not?
+double MIN_DIST_TO_WP 0.07
+double MIN_ANGLE_DIFF_TO_WP 0.0
+
+#wheel ORIENTATIONS
+#double RF_ORIENTATION 0.5236
+#double LF_ORIENTATION 2.618
+#double LB_ORIENTATION 3.6652
+#double RB_ORIENTATION 5.7596
+
+# Logging
+string LOG_FILE ../../resources/motionplanning_log.txt
+int LOG_EVERY_MSEC 100
+
+#ROBOT SPEED SCALING -------------------------------------------------
+
+#Applies to all robots
+double SPEED_SCALING_FACTOR_ALL 0.9
+
+#Applies to individual robots (in addition to the factor above)
+double SPEED_SCALING_FACTOR_0 1
+double SPEED_SCALING_FACTOR_1 1
+double SPEED_SCALING_FACTOR_2 1
+double SPEED_SCALING_FACTOR_3 1
+double SPEED_SCALING_FACTOR_4 1
+double SPEED_SCALING_FACTOR_5 1
+double SPEED_SCALING_FACTOR_6 1
+double SPEED_SCALING_FACTOR_7 1
+double SPEED_SCALING_FACTOR_8 1
+double SPEED_SCALING_FACTOR_9 1
+double SPEED_SCALING_FACTOR_10 1
+double SPEED_SCALING_FACTOR_11 1
+
+
+#TangentBugPlanner---------------------------------
+double TBUG_AVOID_DIST .20
+double TBUG_LOOK_AHEAD_DIST 0.3
+double TBUG_WAYPOINT_DIST .3
+double TBUG_MIN_ABS_VAL_STICK .5
+double TBUG_EXTRA_GOAL_DIST .12
+double TBUG_BOUNDARY_AVOID .5
+
+#RRTPlanner---------------------------------
+double RRT_OBSTACLE_AVOID_DIST .20
+
+#PathFollowerPlayer-------------------------------
+double PFP_MIN_GOAL_DIST 0.03
+#ignore orientation: 100, usually 0.1
+double PFP_MIN_GOAL_DIFF_ORIENTATION 0.1
+
+
+#SmoothRRTPlanner-----------------------------------
+
+#Simplistic motion model for robot
+double SRRT_TIME_STEP 0.12 #Time step in secs, with velocity determines RRT extension length
+double SRRT_ROBOT_VELOCITY 1.0 #Assume our robot can move this fast in m/s
+double SRRT_MAX_ACCEL_PER_STEP 0.48 #And that it can accelerate this much per extension
+
+#Pretend that the current robot is moving at most this fast
+#This makes it so that we generate paths more directly to goal, 
+#rather than following current velocity
+double SRRT_MAX_OBSERVABLE_VELOCITY 0.4 
+
+#RRT parameters
+int SRRT_MAX_TREE_SIZE 200 #Max nodes in tree before we give up
+int SRRT_MAX_PATH_TRIES 70 #Max number of attempts to extend paths before we give up
+double SRRT_CLOSE_ENOUGH_TO_GOAL 0.001 #We're completely done when we get this close to the goal.
+double SRRT_DIST_FOR_SUCCESS 1.2 #We're done for now when we get this much closer to the goal than we are
+
+#For obstacles closer than this, use a tangentbug-like algorithm to extend the path.
+double SRRT_DODGE_OBS_DIST 1.6
+
+#Rotate this much extra per extension when turning in degrees 
+double SRRT_EXTRA_EXTENSION_ROTATE_ANGLE 2.0
+
+#Extrapolate other robots' movements up to this amount of seconds.
+double SRRT_ROBOT_MAX_TIME_EXTRAPOLATED 0.7
+
+#Collisions
+double SRRT_ROBOT_AVOID_DIST 0.185  #Avoid robot distance
+double SRRT_ROBOT_FAR_AVOID_DIST 0.21 #Avoid robot distance when "far" from destination
+double SRRT_ROBOT_FAR_DIST 0.35 #What is considered "far", for the purposes of robot avoidance? 
+
+#Path Scoring
+double SRRT_DIST_FROM_GOAL_SCORE 0 #Penalty per m of distance from goal.
+double SRRT_EXCESS_LEN_SCORE 60 #Penalty for each m of path length >= the straightline distance
+double SRRT_PER_BEND_SCORE 1 #Bonus/Penalty per bend in the path based on bend sharpness
+double SRRT_VELOCITY_AGREEMENT_SCORE 30 #Bonus for agreeing with current velocity, per m/s velocity
+double SRRT_OLDPATH_AGREEMENT_SCORE 200 #Bonus for agreeing with the old path, per m/s velocity
+double SRRT_OLDPATH_AGREEMENT_DIST 0.5 #Score nothing for points that differ by this many meters from the old path
+
+int SRRT_NUM_PATHS_TO_SCORE 9 #How many paths do we generate and score?
+
+
+
+#############################################################################
+#OLD-------------------------------------------------------------------------
+#Everything below is really old constants that we're probably never going to
+#seriously use again
+
+#TurnPlanner constants ------------------------------
+
+double MIN_ANGLE_DIFFERENCE .55
+
+#DumbVeerFeedbackPlanner constants ------------------------
+
+#DECIDE WHETHER TO USE ANGULAR VEER PLANNER
+int ANGULAR_VEER 1
+
+#FEEDBACKVEERMOTIONPLANNER SPEED!
+
+int WHEEL_SPEED_STRAIGHT 40
+
+# can optionally use individual wheel speeds
+bool USE_INDIVIDUAL_WHEEL_SPEEDS true
+
+int WHEEL_SPEED_STRAIGHT_0 18
+int WHEEL_SPEED_STRAIGHT_1 18
+int WHEEL_SPEED_STRAIGHT_2 18
+int WHEEL_SPEED_STRAIGHT_3 10
+int WHEEL_SPEED_STRAIGHT_4 18
+
+int WHEEL_SPEED_TURN 6
+
+double MPS_STRAIGHT_SPEED 50
+
+double STOP_DISTANCE .01
+
+#FEEDBACKVEERMOTIONPLANNER PID CONSTANTS!---------------------------------
+double VEER_P 12
+double VEER_I 0
+double VEER_D 12
+
+double ANGULAR_VEER_P 10
+double ANGULAR_VEER_I 0
+double ANGULAR_VEER_D -4
+double ANGULAR_VEER_CAP 0
+
+double MIN_ANGLE_SPIN 1
+double MIN_ANGLE_KEEP_SPINNING 1
+
+double MAX_FINAL_ANGLE_DIFFERENCE .2
+
+double DIST_SLOW_DOWN .2
+
+#DumbVelocityPlanner--------------------------------------------
+double DumbVelocity 20
+
+double VELOCITY_VEER_P 15
+double VELOCITY_VEER_I .5
+double VELOCITY_VEER_D 7
+
+double VEER_CAP 0
+
+#Navigation---------------------------------------------
+int USE_NAVIGATOR 0
+
+#Switch orientation method
+double MIN_ANGLE_SWITCH .8
+
+double LOOK_AHEAD_DISTANCE .4
+double AVOID_ROBOT_DISTANCE .4
+
+#PointCharge ---------------------------------
+double REPULSION_FACTOR .3
+double PERPINDICULAR_LENGTH .1
+
+
+
+#DEFAULT
+double DEFAULT_DIST_SLOW_DOWN 0
+int DEFAULT_WHEEL_SPEED_STRAIGHT 35
+int DEFAULT_WHEEL_SPEED_TURN 5
+
+double DEFAULT_P 0
+double DEFAULT_I 0
+double DEFAULT_D 0
+#3
+double DEFAULT_STOP_DISTANCE 0
+
+
+# IRobotSpinner
+int DIRECT_SPIN_SPEED 3
+
+# PIDRobotSpinner
+int PID_SPINNER_FEED_FORWARD 4
+double PID_SPINNER_P 12
+double PID_SPINNER_I 0
+double PID_SPINNER_D 10
+double PID_SPINNER_CAP 6
+
+
+#0.10
+
+# this is actually the point at which we switch to control-short.txt
+double PLANNER_WAYPOINT_DISTANCE 0.4
+
+

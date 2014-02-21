@@ -1,0 +1,13 @@
+# what functionality each button on the joystick (as labeled!) maps to
+# see RemoteControl.cs
+
+int KICK 1
+int STOP_CHARGING 2
+int ENABLE_BREAKBEAM 3
+int START_CHARGING 4
+int SPEED_UP 5
+int START_DRIBBLER 6
+int SPEED_DOWN 7
+int STOP_DRIBBLER 8
+int DRIVING_ON_OFF 9
+int ID_UP 10

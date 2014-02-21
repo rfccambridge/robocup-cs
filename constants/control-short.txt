@@ -1,0 +1,162 @@
+# New Feedback class
+# these should all be initialized to their tuned value, or auto tuned
+# they should also all be positive values except maybe D            
+
+##alpha should be between 0 and 1.
+
+
+double P_X_0 100
+double P_X_1 80
+double P_X_2 100
+double P_X_3 100
+double P_X_4 100
+
+double I_X_0 10
+double I_X_1 0
+double I_X_2 0
+double I_X_3 0
+double I_X_4 0
+
+double D_X_0 0
+double D_X_1 0
+double D_X_2 0
+double D_X_3 0
+double D_X_4 0
+
+double ALPHA_X_0 1
+double ALPHA_X_1 1
+double ALPHA_X_2 1
+double ALPHA_X_3 1
+double ALPHA_X_4 1
+
+double P_Y_0 100
+double P_Y_1 80
+double P_Y_2 100
+double P_Y_3 100
+double P_Y_4 100
+
+double I_Y_0 10
+double I_Y_1 0
+double I_Y_2 0
+double I_Y_3 0
+double I_Y_4 0
+
+
+double D_Y_0 0
+double D_Y_1 0
+double D_Y_2 0
+double D_Y_3 0
+double D_Y_4 0
+
+double ALPHA_Y_0 1
+double ALPHA_Y_1 1
+double ALPHA_Y_2 1
+double ALPHA_Y_3 1
+double ALPHA_Y_4 1
+
+double P_THETA_0 75
+double P_THETA_1 100
+double P_THETA_2 100
+double P_THETA_3 70
+double P_THETA_4 50
+
+double I_THETA_0 0
+#double I_THETA_0 0
+double I_THETA_1 0
+double I_THETA_2 0
+double I_THETA_3 0
+double I_THETA_4 0
+
+double D_THETA_0 1500
+#double D_THETA_0 800
+double D_THETA_1 800
+double D_THETA_2 190
+double D_THETA_3 150
+double D_THETA_4 1000
+
+double ALPHA_THETA_0 1
+double ALPHA_THETA_1 1
+double ALPHA_THETA_2 1
+double ALPHA_THETA_3 1
+double ALPHA_THETA_4 1
+
+
+int CHARGE_TIME 1000
+int LOG_EVERY_MSEC 10
+
+double DEFAULT_VELOCITY 60
+
+#OLD, but maybe used SOMEWHERE
+float ANGLE_PID_KP 35
+float ANGLE_PID_KI 5
+float ANGLE_PID_KD 10
+float ANGLE_PID_MAX 35
+float ANGLE_PID_RESET .3
+
+double MOVE_PID_KP 300
+double MOVE_PID_KI 30
+double MOVE_PID_KD 70
+double MOVE_PID_MAX 40
+double MOVE_PID_RESET .1
+
+double MOVE_PID_MAX_SPEED 15.0
+
+int MAX_STEP 3
+int MAX_ACCELERATION 20
+
+double DESIRED_SPEED 85
+
+double MOVE_VTERM_MAX 15
+double MOVE_VTERM_GAIN 30
+double MOVE_PTERM_MAX 80
+double MOVE_PTERM_GAIN 800
+double MOVE_DTERM_PROP 5
+
+double P_FWDV_0 0
+double P_FWDV_1 0
+double P_FWDV_2 0
+double P_FWDV_3 0
+double P_FWDV_4 0
+
+double I_FWDV_0 0
+double I_FWDV_1 0
+double I_FWDV_2 0
+double I_FWDV_3 0
+double I_FWDV_4 0
+
+double D_FWDV_0 0
+double D_FWDV_1 0
+double D_FWDV_2 0
+double D_FWDV_3 0
+double D_FWDV_4 0
+
+double ALPHA_FWDV_0 1
+double ALPHA_FWDV_1 1
+double ALPHA_FWDV_2 1
+double ALPHA_FWDV_3 1
+double ALPHA_FWDV_4 1
+
+double P_LATV_0 0
+double P_LATV_1 0
+double P_LATV_2 0
+double P_LATV_3 0
+double P_LATV_4 0
+
+double I_LATV_0 0
+#double I_LATV_0 0
+double I_LATV_1 0
+double I_LATV_2 0
+double I_LATV_3 0
+double I_LATV_4 0
+
+double D_LATV_0 0
+double D_LATV_1 0
+double D_LATV_2 0
+double D_LATV_3 0
+double D_LATV_4 0
+
+double ALPHA_LATV_0 1
+double ALPHA_LATV_1 1
+double ALPHA_LATV_2 1
+double ALPHA_LATV_3 1
+double ALPHA_LATV_4 1

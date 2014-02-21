@@ -25,6 +25,8 @@ namespace RFC.Messaging
 
         public void handleMessage(T message)
         {
+            // everything makes it to here!
+            Console.WriteLine("in QHM");
             if (Interlocked.Exchange(ref handling, 1) == 0)
             {
                 lock (lastMessageLock)

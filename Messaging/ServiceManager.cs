@@ -43,26 +43,31 @@ namespace RFC.Messaging
 
             public override void Invoke(object message)
             {
+
                 lock (this) {
-                    foreach(Tuple<Handler<T>, object> handler in handlers) {
-                        
-                        Task.Factory.StartNew(() => {
-                            if (handler.Item2 != null)
-                            {
-                                lock (handler.Item2)
-                                {
-                                    handler.Item1.Invoke((T)message);
-                                }
-                            }
-                            else
-                            {
-                                handler.Item1.Invoke((T)message);
-                            }
-                        });
+                    Parallel.ForEach<Tuple<Handler<T>, object>>(handlers, handler => launchThread(handler,message));
+                }
+            }
+
+            private void launchThread(Tuple<Handler<T>, object> handler, object message)
+            {
+                Console.WriteLine("in thread: " + handler.Item1.Method);
+                if (handler.Item2 != null)
+                {
+                    lock (handler.Item2)
+                    {
+                        Console.WriteLine("in lock" + handler.Item1.Method);
+                        handler.Item1.Invoke((T)message);
                     }
+                }
+                else
+                {
+                    Console.WriteLine("no lock");
+                    handler.Item1.Invoke((T)message);
                 }
             }
         }
+
 
         ConcurrentDictionary<Type, HandlerHolder> handlers = new ConcurrentDictionary<Type, HandlerHolder>();
 
@@ -87,11 +92,16 @@ namespace RFC.Messaging
             foreach (Type type in AllTypes(typeof(T)))
             {
                 HandlerHolder holder;
+
                 if (handlers.TryGetValue(type, out holder))
+                {
                     holder.Invoke(message);
+                }
 
 				// adding message to buffer system
 				messageBuffer.AddOrUpdate(type, message, (t, m) => message);
+
+
             }
         }
 		
