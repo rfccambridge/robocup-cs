@@ -120,11 +120,12 @@ namespace RFC.PathPlanning
             for (int i = 0; i < numberRobots; i++)
                 _path_locks[i] = new object();
 
-            ServiceManager.getServiceManager().RegisterListener<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
+            new QueuedMessageHandler<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
         }
 
         public void handleRobotDestinationMessage(RobotDestinationMessage message)
         {
+            Console.WriteLine("received destination message");
             if (message.Destination == null || double.IsNaN(message.Destination.Position.X) || double.IsNaN(message.Destination.Position.Y))
             {
                 Console.WriteLine("invalid destination");

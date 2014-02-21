@@ -51,18 +51,15 @@ namespace RFC.Messaging
 
             private void launchThread(Tuple<Handler<T>, object> handler, object message)
             {
-                Console.WriteLine("in thread: " + handler.Item1.Method);
                 if (handler.Item2 != null)
                 {
                     lock (handler.Item2)
                     {
-                        Console.WriteLine("in lock" + handler.Item1.Method);
                         handler.Item1.Invoke((T)message);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("no lock");
                     handler.Item1.Invoke((T)message);
                 }
             }

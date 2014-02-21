@@ -117,11 +117,8 @@ namespace RFC.Vision
 					}
 
 					// sending vision message
-                    if (count < 100)
-                    {
-                        ServiceManager.getServiceManager().SendMessage(msg);
-                    }
-                    count++;
+                    ServiceManager.getServiceManager().SendMessage(msg);
+
 				}
 
 			}

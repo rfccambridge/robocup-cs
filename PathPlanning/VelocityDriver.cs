@@ -72,15 +72,8 @@ namespace RFC.PathPlanning
             ReloadConstants();
 
             object lockObject = new object();
-            //ServiceManager.getServiceManager().RegisterListener<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
-            //new QueuedMessageHandler<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
-            //new QueuedMessageHandler<BallVisionMessage>(mytest, lockObject);
-            //ServiceManager.getServiceManager().RegisterListener<RobotPathMessage>(handleRobotPathMessage, lockObject);
-        }
-
-        public void mytest(BallVisionMessage msg)
-        {
-            Console.WriteLine("my test");
+            new QueuedMessageHandler<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
+            new QueuedMessageHandler<RobotPathMessage>(handleRobotPathMessage, lockObject);
         }
 
         public void handleRobotVisionMessage(RobotVisionMessage rvm)

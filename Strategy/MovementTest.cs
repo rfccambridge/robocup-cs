@@ -24,8 +24,7 @@ namespace RFC.Strategy
         {
             this.robotId = robotId;
             this.team = team;
-
-            ServiceManager.getServiceManager().RegisterListener<RobotVisionMessage>(Handle, new object());
+            new QueuedMessageHandler<RobotVisionMessage>(Handle, new object());
         }
 
         public void Handle(RobotVisionMessage robotVision)
