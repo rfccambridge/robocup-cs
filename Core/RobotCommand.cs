@@ -46,6 +46,7 @@ namespace RFC.Core
         public byte BoardID;
         public byte Flags;
 
+
         static RobotCommand()
         {
             _crcTool = new CRCTool();

@@ -18,8 +18,7 @@ namespace RFC.Commands
         {
             string port = "COM" + comNumber;
             _comPort = SerialPortManager.OpenSerialPort(port);
-
-            ServiceManager.getServiceManager().RegisterListener<CommandMessage>(handleRobotCommandMessage, new object());
+            new QueuedMessageHandler<CommandMessage>(handleRobotCommandMessage, new object());
         }
 
         public void handleRobotCommandMessage(CommandMessage message)

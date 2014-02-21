@@ -33,14 +33,14 @@ namespace RFC.Logging
         public void writeLog(LogMessage LM)
         {
             // append message to log file
-            logger.WriteLine("\n" + LM.getMessage());
+            logger.WriteLine(LM.getMessage());
             if (use_console)   
                 Console.WriteLine(LM.getMessage());
         }
 
         public void recordMessage(Message m)
         {
-            secretary.WriteLine("\n" + m.bio());
+            secretary.WriteLine(m.bio());
         }
     }
 }

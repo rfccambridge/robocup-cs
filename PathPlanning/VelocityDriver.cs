@@ -11,6 +11,7 @@ namespace RFC.PathPlanning
 {
     public class VelocityDriver
     {
+        private ServiceManager msngr;
         static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
 
         //State - track the previous wheel speed sent so we don't send something too different
@@ -72,6 +73,7 @@ namespace RFC.PathPlanning
             ReloadConstants();
 
             object lockObject = new object();
+            msngr = ServiceManager.getServiceManager();
             new QueuedMessageHandler<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
             new QueuedMessageHandler<RobotPathMessage>(handleRobotPathMessage, lockObject);
         }
@@ -82,13 +84,16 @@ namespace RFC.PathPlanning
                 WheelSpeeds speeds;
                 if (lastPaths.ContainsKey(robot.ID))
                 {
+                    msngr.db("old path");
                     speeds = followPath(lastPaths[robot.ID]);
                 }
                 else
                 {
+                    msngr.db("new path");
                     speeds = new WheelSpeeds();
                 }
-                ServiceManager.getServiceManager().SendMessage(new CommandMessage(new RobotCommand(robot.ID, speeds)));
+                msngr.db(speeds.toString());
+                msngr.SendMessage(new CommandMessage(new RobotCommand(robot.ID, speeds)));
 
             }
         }
