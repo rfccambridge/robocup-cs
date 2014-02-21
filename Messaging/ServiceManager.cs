@@ -84,6 +84,16 @@ namespace RFC.Messaging
             ((HandlerHolder<T>)holder).AddHandler(handler, lockObject);
         }
 
+        // so that people will actually use the log messages
+        public void debug(string msg)
+        {
+            SendMessage<LogMessage>(new LogMessage(msg));
+        }
+        public void db(string msg)
+        {
+            debug(msg);
+        }
+
         public void SendMessage<T>(T message) where T : Message
         {
             foreach (Type type in AllTypes(typeof(T)))

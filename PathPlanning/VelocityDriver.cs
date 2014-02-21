@@ -78,7 +78,6 @@ namespace RFC.PathPlanning
 
         public void handleRobotVisionMessage(RobotVisionMessage rvm)
         {
-            Console.WriteLine("sending wheel speeds");
             foreach (RobotInfo robot in rvm.GetRobots()) {
                 WheelSpeeds speeds;
                 if (lastPaths.ContainsKey(robot.ID))

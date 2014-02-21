@@ -58,7 +58,6 @@ namespace RFC.Vision
 
         public void Update(VisionMessage msg)
         {
-            Console.WriteLine("ap update");
 
             fieldStates[msg.CameraID].Update(msg);
 
@@ -72,10 +71,8 @@ namespace RFC.Vision
             BallMovedMessage move_msg = new BallMovedMessage(hasBallMoved());
 
             // sending message that new data is ready
-
-                Console.WriteLine("sending robotVisionMessage");
-                messenger.SendMessage<BallVisionMessage>(ball_msg);
-                messenger.SendMessage<RobotVisionMessage>(robots_msg);
+            messenger.SendMessage<BallVisionMessage>(ball_msg);
+            messenger.SendMessage<RobotVisionMessage>(robots_msg);
 
             if (move_msg.moved)
                 messenger.SendMessage<BallMovedMessage>(move_msg);

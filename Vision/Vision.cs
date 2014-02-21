@@ -64,7 +64,6 @@ namespace RFC.Vision
 
 		private void loop()
 		{
-            int count = 0;
 			while (true)
 			{
 				SSL_WrapperPacket packet = _client.Receive();
