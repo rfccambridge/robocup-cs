@@ -33,6 +33,7 @@
             this.ComNumberChooser = new System.Windows.Forms.NumericUpDown();
             this.TeamBox = new System.Windows.Forms.ComboBox();
             this.TeamLabel = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ComNumberChooser)).BeginInit();
             this.SuspendLayout();
             // 
@@ -79,11 +80,22 @@
             this.TeamLabel.TabIndex = 4;
             this.TeamLabel.Text = "Team:";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(15, 218);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(117, 32);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Stop";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.StopButton_Click);
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.TeamLabel);
             this.Controls.Add(this.TeamBox);
             this.Controls.Add(this.ComNumberChooser);
@@ -104,6 +116,7 @@
         private System.Windows.Forms.NumericUpDown ComNumberChooser;
         private System.Windows.Forms.ComboBox TeamBox;
         private System.Windows.Forms.Label TeamLabel;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -9,7 +9,7 @@ namespace RFC.Logging
 {
     public class LogHandler
     {
-        private bool use_console = true;
+        private bool use_console = false;
 
         private static System.IO.StreamWriter logger = new System.IO.StreamWriter(@"log.txt", false);
         private static System.IO.StreamWriter secretary = new System.IO.StreamWriter(@"message_logs.txt", false);

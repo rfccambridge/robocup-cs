@@ -75,7 +75,7 @@ namespace RFC.PathPlanning
             object lockObject = new object();
             msngr = ServiceManager.getServiceManager();
             new QueuedMessageHandler<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
-            new QueuedMessageHandler<RobotPathMessage>(handleRobotPathMessage, lockObject);
+            new QueuedMessageHandler<RobotPathMessage>(handleRobotPathMessage, new object());
         }
 
         public void handleRobotVisionMessage(RobotVisionMessage rvm)
@@ -100,6 +100,9 @@ namespace RFC.PathPlanning
 
         public void handleRobotPathMessage(RobotPathMessage rpm)
         {
+            msngr.db("got robot path message");
+            msngr.db(rpm.Path.getWaypoint(0).Position.ToString());
+            msngr.db(rpm.Path.Waypoints.ToString());
             lastPaths.Add(rpm.Path.ID, rpm.Path);
         }
 

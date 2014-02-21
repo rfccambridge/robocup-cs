@@ -100,14 +100,13 @@ namespace RFC.Messaging
             {
                 HandlerHolder holder;
 
+                // adding message to buffer system
+                messageBuffer.AddOrUpdate(type, message, (t, m) => message);
+
                 if (handlers.TryGetValue(type, out holder))
                 {
                     holder.Invoke(message);
                 }
-
-				// adding message to buffer system
-				messageBuffer.AddOrUpdate(type, message, (t, m) => message);
-
 
             }
         }
@@ -123,10 +122,15 @@ namespace RFC.Messaging
 		public T GetLastMessage<T>() where T : Message
 		{
 			Message m;
-			if (messageBuffer.TryGetValue (typeof(T), out m))
-				return (T)m;
-			else
-				return null;
+            if (messageBuffer.TryGetValue(typeof(T), out m))
+            {
+                return (T)m;
+            }
+            else
+            {
+                db("Message type not in buffer!");
+                return null;
+            }
 		}
 
         // gives all the parent types of a type, used to send to listeners of a parent type

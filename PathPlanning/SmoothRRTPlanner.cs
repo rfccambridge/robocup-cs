@@ -109,6 +109,8 @@ namespace RFC.PathPlanning
         private RobotPath[] _last_successful_path;
         private Object[] _path_locks;
 
+        private ServiceManager msngr;
+
         public SmoothRRTPlanner(bool includeCurStateInPath, int numberRobots)
         {
             this.includeCurStateInPath = includeCurStateInPath;
@@ -118,17 +120,21 @@ namespace RFC.PathPlanning
             _path_locks = new object[numberRobots];
 
             for (int i = 0; i < numberRobots; i++)
+            {
                 _path_locks[i] = new object();
+                _last_successful_path[i] = new RobotPath();
+            }
 
+            msngr = ServiceManager.getServiceManager();
             new QueuedMessageHandler<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
         }
 
         public void handleRobotDestinationMessage(RobotDestinationMessage message)
         {
-            Console.WriteLine("received destination message");
+            msngr.db("received destination message");
             if (message.Destination == null || double.IsNaN(message.Destination.Position.X) || double.IsNaN(message.Destination.Position.Y))
             {
-                Console.WriteLine("invalid destination");
+                msngr.db("invalid destination");
                 return;
             }
 
@@ -152,6 +158,14 @@ namespace RFC.PathPlanning
                 RobotInfo destinationCopy = new RobotInfo(message.Destination);
                 destinationCopy.Team = message.Destination.Team;
                 destinationCopy.ID = id;
+
+                // debug info
+                msngr.db("params for first call of get path");
+                msngr.db(destinationCopy.Position.ToString());
+                msngr.db(avoidBallDist.ToString());
+                msngr.db("path: "+oldPath.ToString());
+                msngr.db("left: "+leftAvoid.ToString());
+                msngr.db("right: "+rightAvoid.ToString());
                 newPath = GetPath(destinationCopy, avoidBallDist, oldPath,
                     leftAvoid, rightAvoid);
                 // if path is empty, don't move, else make sure path contains desired state
@@ -162,7 +176,7 @@ namespace RFC.PathPlanning
             }
             catch (Exception e)
             {
-                Console.WriteLine("PlanMotion failed. Dumping exception:\n" + e.ToString());
+                msngr.db("PlanMotion failed. Dumping exception:\n" + e.ToString());
                 return;
             }
 
@@ -185,8 +199,8 @@ namespace RFC.PathPlanning
             }
             #endregion
             */
-            Console.WriteLine("sending path");
-            ServiceManager.getServiceManager().SendMessage(new RobotPathMessage(newPath));
+            msngr.db("sending path");
+            msngr.SendMessage(new RobotPathMessage(newPath));
         }
 
         //Return a random point biased in a certain distribution between the current and the desired location,
@@ -767,7 +781,8 @@ namespace RFC.PathPlanning
             RobotInfo curinfo;
             try
             {
-                RobotVisionMessage msg = ServiceManager.getServiceManager().GetLastMessage<RobotVisionMessage>();
+                RobotVisionMessage msg = msngr.GetLastMessage<RobotVisionMessage>();
+                msngr.db("vm: " + msg);
                 curinfo = msg.GetRobot(team, id);
             }
             catch (ApplicationException)

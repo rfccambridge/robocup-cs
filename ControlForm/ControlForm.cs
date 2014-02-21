@@ -62,6 +62,16 @@ namespace ControlForm
             ServiceManager.getServiceManager().SendMessage(new LogMessage("started"));
         }
 
+        private void StopButton_Click(object sender, EventArgs e)
+        {
+            Run();
+
+            DisableControls();
+
+            ServiceManager.getServiceManager().SendMessage(new LogMessage("started"));
+        }
+
+
         private void DisableControls()
         {
             TeamBox.Enabled = false;
