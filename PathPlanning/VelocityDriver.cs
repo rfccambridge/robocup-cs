@@ -53,6 +53,8 @@ namespace RFC.PathPlanning
 
         Dictionary<int, RobotPath> lastPaths = new Dictionary<int, RobotPath>();
 
+        bool stopped = false;
+
         private static double interp(Pair<double, double>[] pairs, double d)
         {
             for (int i = 0; i < pairs.Length; i++)
@@ -75,17 +77,21 @@ namespace RFC.PathPlanning
             object lockObject = new object();
             msngr = ServiceManager.getServiceManager();
             new QueuedMessageHandler<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
-            new QueuedMessageHandler<RobotPathMessage>(handleRobotPathMessage, new object());
+            new QueuedMessageHandler<RobotPathMessage>(handleRobotPathMessage, lockObject);
+            ServiceManager.getServiceManager().RegisterListener<StopMessage>(handleStopMessage, lockObject);
         }
 
         public void handleRobotVisionMessage(RobotVisionMessage rvm)
         {
             foreach (RobotInfo robot in rvm.GetRobots()) {
                 WheelSpeeds speeds;
-                if (lastPaths.ContainsKey(robot.ID))
+                if (stopped)
                 {
-                    msngr.db("old path");
-                    speeds = followPath(lastPaths[robot.ID]);
+                    speeds = new WheelSpeeds();
+                }
+                else if (lastPaths.ContainsKey(robot.ID))
+                {
+                    speeds = followPath(lastPaths[robot.ID], rvm);
                 }
                 else
                 {
@@ -103,7 +109,13 @@ namespace RFC.PathPlanning
             msngr.db("got robot path message");
             msngr.db(rpm.Path.getWaypoint(0).Position.ToString());
             msngr.db(rpm.Path.Waypoints.ToString());
+            lastPaths.Remove(rpm.Path.ID);
             lastPaths.Add(rpm.Path.ID, rpm.Path);
+        }
+
+        public void handleStopMessage(StopMessage message)
+        {
+            stopped = true;
         }
 
         private Pair<double, double>[] readDoublePairArray(string numPrefix, string prefix)
@@ -144,9 +156,8 @@ namespace RFC.PathPlanning
             AGREEMENT_EFFECTIVE_DISTANCE_FACTOR = readDoublePairArray("VD_NUM_AGREEMENT_EFFECTIVE_DISTANCE_FACTOR", "VD_AGREEMENT_EFFECTIVE_DISTANCE_FACTOR_");
         }
 
-        public WheelSpeeds followPath(RobotPath path)
+        public WheelSpeeds followPath(RobotPath path, RobotVisionMessage robotMessage)
         {
-            RobotVisionMessage robotMessage = ServiceManager.getServiceManager().GetLastMessage<RobotVisionMessage>();
 
             Team team = path.Team;
             int id = path.ID;
@@ -202,6 +213,8 @@ namespace RFC.PathPlanning
                 break;
             }
 
+            
+
             //Find the next significantly different point after that
             RobotInfo nextNextWaypoint = null;
             for (idx++; idx < path.Waypoints.Count; idx++)
@@ -213,7 +226,10 @@ namespace RFC.PathPlanning
                 }
             }
             if (nextWaypoint == null)
+            {
+                Console.WriteLine("no next waypoint");
                 return new WheelSpeeds();
+            }
 
             Vector2 curToNext = (nextWaypoint.Position - curInfo.Position).normalize();
             Vector2 nextToNextNext = nextNextWaypoint != null ?
@@ -339,7 +355,8 @@ namespace RFC.PathPlanning
             }
 
             lastSpeeds[id] = speeds;
-            
+            msngr.db("next," + nextWaypoint + ",pos," + robotMessage.GetRobot(team,5).Position.ToString() + ",speeds," +speeds);
+
             return speeds;
         }
     }

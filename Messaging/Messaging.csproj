@@ -49,6 +49,7 @@
     <Compile Include="RobotDestinationMessage.cs" />
     <Compile Include="RobotPathMessage.cs" />
     <Compile Include="ServiceManager.cs" />
+    <Compile Include="StopMessage.cs" />
     <Compile Include="VisionMessage.cs" />
     <Compile Include="RobotVisionMessage.cs" />
     <Compile Include="BallVisionMessage.cs" />

@@ -293,5 +293,16 @@ namespace RFC.Core
         {
             return empty;
         }
+
+        public override string ToString()
+        {
+            StringBuilder str = new StringBuilder();
+            foreach(RobotInfo info in _path)
+            {
+                str.Append(info.ToString());
+                str.Append(' ');
+            }
+            return str.ToString();
+        }
     }
 }

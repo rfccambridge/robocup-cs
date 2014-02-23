@@ -20,6 +20,8 @@ namespace ControlForm
 {
     public partial class ControlForm : Form
     {
+        bool running = false;
+
         public ControlForm()
         {
             InitializeComponent();
@@ -29,28 +31,32 @@ namespace ControlForm
 
         public void Run()
         {
-            int com = (int)ComNumberChooser.Value;
-            Team team = Team.Yellow;
-            Enum.TryParse<Team>(TeamBox.SelectedValue.ToString(), out team);
-            bool flip = false;
-            int robotId = 5;
-            int maxRobotId = 6;
+            if (!running)
+            {
+                running = true;
+                int com = (int)ComNumberChooser.Value;
+                Team team = Team.Yellow;
+                Enum.TryParse<Team>(TeamBox.SelectedValue.ToString(), out team);
+                bool flip = false;
+                int robotId = 5;
+                int maxRobotId = 6;
 
-            new LogHandler();
-            new MulticastRefBoxListener(team);
-            Vision vision = new Vision();
-            new AveragingPredictor(flip);
-            new SerialSender(com);
-            new SmoothRRTPlanner(true, maxRobotId);
-            new VelocityDriver();
-            new MovementTest(team, robotId);
-            MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
+                new LogHandler();
+                new MulticastRefBoxListener(team);
+                Vision vision = new Vision();
+                new AveragingPredictor(flip);
+                new SerialSender(com);
+                new SmoothRRTPlanner(true, maxRobotId);
+                new VelocityDriver();
+                new MovementTest(team, robotId);
+                MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 
-            vision.Connect("224.5.23.2", 10002);
-            vision.Start();
-            
-            refbox.Connect("224.5.92.12", 10100);
-            refbox.Start();
+                vision.Connect("224.5.23.2", 10002);
+                vision.Start();
+
+                refbox.Connect("224.5.92.12", 10100);
+                refbox.Start();
+            }
         }
 
         private void RunButton_Click(object sender, EventArgs e)
@@ -64,11 +70,7 @@ namespace ControlForm
 
         private void StopButton_Click(object sender, EventArgs e)
         {
-            Run();
-
-            DisableControls();
-
-            ServiceManager.getServiceManager().SendMessage(new LogMessage("started"));
+            ServiceManager.getServiceManager().SendMessage(new StopMessage());
         }
 
 

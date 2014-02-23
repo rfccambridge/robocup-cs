@@ -17,19 +17,24 @@ namespace RFC.Strategy
         Team team;
 
         int currentWaypointIndex = 0;
-        Vector2[] waypoints = new Vector2[] { new Vector2(1, 1), new Vector2(1, 2) };
+        Vector2[] waypoints = new Vector2[] { new Vector2(0,0) };
         bool firstRun = true;
+
+        bool stopped = false;
 
         public MovementTest(Team team, int robotId)
         {
             this.robotId = robotId;
             this.team = team;
-            new QueuedMessageHandler<RobotVisionMessage>(Handle, new object());
+
+            object lockObject = new object();
+            new QueuedMessageHandler<RobotVisionMessage>(Handle, lockObject);
+            ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
         }
 
         public void Handle(RobotVisionMessage robotVision)
         {
-            if (robotVision.GetRobots().Count > 0)
+            if (!stopped && robotVision.GetRobots().Count > 0)
             {
                 RobotInfo info = robotVision.GetRobot(team, robotId);
 
@@ -45,5 +50,11 @@ namespace RFC.Strategy
                 }
             }
         }
+
+        public void stopMessageHandler(StopMessage message)
+        {
+            stopped = true;
+        }
+
     }
 }
