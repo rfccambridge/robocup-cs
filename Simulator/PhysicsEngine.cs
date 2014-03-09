@@ -8,7 +8,6 @@ using RFC.SSLVisionLib;
 using RFC.RefBox;
 using RFC.Utilities;
 using RFC.InterProcessMessaging;
-using RFC.Messaging;
 
 namespace RFC.Simulator
 {
@@ -132,9 +131,26 @@ namespace RFC.Simulator
                         kick_strengths[team].Add(info.ID, 0);
                     }
                 }
-
-                ServiceManager.getServiceManager().RegisterListener<CommandMessage>(cmdReceiver_MessageReceived, new object());
             }
+        }
+
+        public void StartCommander(int port)
+        {
+            if (cmdReceiver != null)
+                throw new ApplicationException("Already listening.");
+            cmdReceiver = Messages.CreateServerReceiver<RobotCommand>(port);
+            if (cmdReceiver == null)
+                throw new ApplicationException("Could not listen on port " + port.ToString());
+            cmdReceiver.MessageReceived += cmdReceiver_MessageReceived;
+        }
+
+        public void StopCommander()
+        {
+            if (cmdReceiver == null)
+                throw new ApplicationException("Not listening.");
+            cmdReceiver.Close();
+            cmdReceiver.MessageReceived -= cmdReceiver_MessageReceived;
+            cmdReceiver = null;
         }
 
         public void StartVision(string host, int port)
@@ -596,9 +612,8 @@ namespace RFC.Simulator
 
         //COMMAND HANDLER--------------------------------------------------------------------
 
-        private void cmdReceiver_MessageReceived(CommandMessage message)
+        private void cmdReceiver_MessageReceived(RobotCommand command)
         {
-            RobotCommand command = message.Command;
             lock (updateLock)
             {
                 // This is not the cleanest, but it's ok, because these IDs are also issued by this
