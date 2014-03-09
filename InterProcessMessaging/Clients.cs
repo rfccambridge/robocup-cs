@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace RFC.InterProcessMessaging
 {
-    class ClientMessageSender<T> : IMessageSender<T> where T : IByteSerializable<T>
+    public class ClientMessageSender<T> : IMessageSender<T> where T : IByteSerializable<T>
     {
         readonly BasicMessageSender<T> sender;
         public ClientMessageSender(string hostname, int portNum)

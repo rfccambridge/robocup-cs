@@ -52,11 +52,11 @@ namespace ControlForm
                 new VelocityDriver();
                 new MovementTest(team, robotId);
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
-                new FieldDrawer();
+                new FieldDrawer().Show();
 
                 if (simulator)
                 {
-                    new Simulator();
+                    new SimulatorSender();
                 }
                 else
                 {

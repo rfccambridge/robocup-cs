@@ -34,6 +34,7 @@ namespace RFC.Strategy
 
         public void Handle(RobotVisionMessage robotVision)
         {
+            /*
             if (!stopped && robotVision.GetRobots().Count > 0)
             {
                 RobotInfo info = robotVision.GetRobot(team, robotId);
@@ -49,6 +50,7 @@ namespace RFC.Strategy
                     firstRun = false;
                 }
             }
+             */
         }
 
         public void stopMessageHandler(StopMessage message)
