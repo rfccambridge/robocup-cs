@@ -5,11 +5,12 @@ using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 using RFC.Core;
 using RFC.Geometry;
+using RFC.Messaging;
 
 //Disable warnings about deprecated objects (the GLU classes)
 #pragma warning disable 0612, 0618
 
-namespace Robocup.Utilities
+namespace RFC.FieldDrawer
 {
     public enum ArrowType
     {
@@ -195,6 +196,9 @@ namespace Robocup.Utilities
 
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
+
+            ServiceManager.getServiceManager().RegisterListener<RobotVisionMessage>(HandleRobotMessage, new object());
+            ServiceManager.getServiceManager().RegisterListener<BallVisionMessage>(HandleBallMessage, new object());
         }
 
         public void Init(int w, int h)
@@ -225,6 +229,31 @@ namespace Robocup.Utilities
 
             // For debugging
             //BuildTestScene();
+        }
+
+        public void HandleRobotMessage(RobotVisionMessage message)
+        {
+            lock (_stateLock)
+            {
+                List<RobotInfo> robots = message.GetRobots();
+                foreach (Team team in Enum.GetValues(typeof(Team)))
+                    _bufferedState.Robots[team].Clear();
+                foreach (RobotInfo robot in robots)
+                    // Note: robots with duplicate ID's are ignored
+                    if (!_bufferedState.Robots[robot.Team].ContainsKey(robot.ID))
+                        _bufferedState.Robots[robot.Team].Add(robot.ID, new RobotDrawingInfo(robot));
+
+            }
+
+            UpdateState();
+        }
+
+        public void HandleBallMessage(BallVisionMessage message)
+        {
+            lock (_stateLock)
+            {
+                _bufferedState.Ball = message.Ball;
+            }
         }
 
         public void Resize(int w, int h)
@@ -308,7 +337,7 @@ namespace Robocup.Utilities
             }
         }
 
-        public void BeginCollectState()
+        /*public void BeginCollectState()
         {
             lock (_collectingStateLock)
             {
@@ -329,7 +358,9 @@ namespace Robocup.Utilities
                 else
                     throw new ApplicationException("Never began collecting state!");
             }
+        }*/
 
+        public void UpdateState() {
             lock (_stateLock)
             {
                 // Apply the modifications stored in the buffer
@@ -808,7 +839,7 @@ namespace Robocup.Utilities
             Vector2 marker1loc = new Vector2(-0.5, 0.5);
             Vector2 marker2loc = new Vector2(-1.5, 1);
 
-            BeginCollectState();
+            //BeginCollectState();
 
             UpdateRobotsAndBall(robots, ball);
             AddMarker(marker1loc, Color.Red);
@@ -817,7 +848,7 @@ namespace Robocup.Utilities
             DrawArrow(Team.Yellow, 2, ArrowType.Destination, marker1loc);
             DrawArrow(Team.Blue, 2, ArrowType.Waypoint, marker2loc);
 
-            EndCollectState();
+            //EndCollectState();
         }
 
     }

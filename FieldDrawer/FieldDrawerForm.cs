@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using RFC.Core;
 using System.Drawing;
 
-namespace Robocup.Utilities
+namespace RFC.FieldDrawer
 {
     partial class FieldDrawerForm : Form
     {

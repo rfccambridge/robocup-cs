@@ -15,6 +15,8 @@ using RFC.Core;
 using RFC.Commands;
 using RFC.Logging;
 using RFC.Messaging;
+using RFC.Simulator;
+using RFC.FieldDrawer;
 
 namespace ControlForm
 {
@@ -36,15 +38,26 @@ namespace ControlForm
             int robotId = 5;
             int maxRobotId = 6;
 
+            bool simulator = true;
+
             new LogHandler();
             new MulticastRefBoxListener(team);
             Vision vision = new Vision();
             new AveragingPredictor(flip);
-            new SerialSender(com);
             new SmoothRRTPlanner(true, maxRobotId);
             new VelocityDriver();
             new MovementTest(team, robotId);
             MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
+            new FieldDrawer();
+
+            if (simulator)
+            {
+                new Simulator();
+            }
+            else
+            {
+                new SerialSender(com);
+            }
 
             vision.Connect("224.5.23.2", 10002);
             vision.Start();

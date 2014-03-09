@@ -103,6 +103,10 @@
       <Project>{6e92ddbb-42a7-462c-9e34-6b88fe64025f}</Project>
       <Name>Commands</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Simulator\Simulator.csproj">
+      <Project>{0aedcdcc-bbcd-4cac-9a45-f13e9dcdb0ec}</Project>
+      <Name>Simulator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Strategy\Strategy.csproj">
       <Project>{1dae3b27-6eb0-4dd7-966b-efb615b31da5}</Project>
       <Name>Strategy</Name>

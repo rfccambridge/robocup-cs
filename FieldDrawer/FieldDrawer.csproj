@@ -68,6 +68,10 @@
       <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
       <Name>Geometry</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Messaging\Messaging.csproj">
+      <Project>{69ae7f48-fff1-46aa-9cf3-b4a9f5fb2d13}</Project>
+      <Name>Messaging</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
