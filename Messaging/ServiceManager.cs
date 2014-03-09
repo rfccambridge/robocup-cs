@@ -43,26 +43,28 @@ namespace RFC.Messaging
 
             public override void Invoke(object message)
             {
+
                 lock (this) {
-                    foreach(Tuple<Handler<T>, object> handler in handlers) {
-                        
-                        Task.Factory.StartNew(() => {
-                            if (handler.Item2 != null)
-                            {
-                                lock (handler.Item2)
-                                {
-                                    handler.Item1.Invoke((T)message);
-                                }
-                            }
-                            else
-                            {
-                                handler.Item1.Invoke((T)message);
-                            }
-                        });
+                    Parallel.ForEach<Tuple<Handler<T>, object>>(handlers, handler => launchThread(handler,message));
+                }
+            }
+
+            private void launchThread(Tuple<Handler<T>, object> handler, object message)
+            {
+                if (handler.Item2 != null)
+                {
+                    lock (handler.Item2)
+                    {
+                        handler.Item1.Invoke((T)message);
                     }
+                }
+                else
+                {
+                    handler.Item1.Invoke((T)message);
                 }
             }
         }
+
 
         ConcurrentDictionary<Type, HandlerHolder> handlers = new ConcurrentDictionary<Type, HandlerHolder>();
 
@@ -82,16 +84,30 @@ namespace RFC.Messaging
             ((HandlerHolder<T>)holder).AddHandler(handler, lockObject);
         }
 
+        // so that people will actually use the log messages
+        public void debug(string msg)
+        {
+            SendMessage<LogMessage>(new LogMessage(msg));
+        }
+        public void db(string msg)
+        {
+            debug(msg);
+        }
+
         public void SendMessage<T>(T message) where T : Message
         {
             foreach (Type type in AllTypes(typeof(T)))
             {
                 HandlerHolder holder;
-                if (handlers.TryGetValue(type, out holder))
-                    holder.Invoke(message);
 
-				// adding message to buffer system
-				messageBuffer.AddOrUpdate(type, message, (t, m) => message);
+                // adding message to buffer system
+                messageBuffer.AddOrUpdate(type, message, (t, m) => message);
+
+                if (handlers.TryGetValue(type, out holder))
+                {
+                    holder.Invoke(message);
+                }
+
             }
         }
 		
@@ -106,10 +122,15 @@ namespace RFC.Messaging
 		public T GetLastMessage<T>() where T : Message
 		{
 			Message m;
-			if (messageBuffer.TryGetValue (typeof(T), out m))
-				return (T)m;
-			else
-				return null;
+            if (messageBuffer.TryGetValue(typeof(T), out m))
+            {
+                return (T)m;
+            }
+            else
+            {
+                db("Message type not in buffer!");
+                return null;
+            }
 		}
 
         // gives all the parent types of a type, used to send to listeners of a parent type

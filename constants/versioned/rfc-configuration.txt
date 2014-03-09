@@ -1,0 +1,20 @@
+string OUR_TEAM BLUE
+int OUR_TEAM_INT 1
+
+bool YELLOW_HAS_PATTERN false
+bool BLUE_HAS_PATTERN true
+
+int BLUE_ID_OFFSET 0
+int YELLOW_ID_OFFSET 0
+
+# robot dot patterns: FrontLeft, FrontRight, RearLeft, RearRight (P = Pink, C = Cyan, G = Green)
+
+#string DOTS_R_0 GGPP
+#string DOTS_R_1 PPGG
+#string DOTS_R_0 GGPP
+
+string DOTS_R_0 GPPG
+string DOTS_R_4 GGPP
+string DOTS_R_1 PPGG
+string DOTS_R_3 PGPG
+string DOTS_R_2 PGGP

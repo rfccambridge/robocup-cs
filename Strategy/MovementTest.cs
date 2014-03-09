@@ -17,28 +17,29 @@ namespace RFC.Strategy
         Team team;
 
         int currentWaypointIndex = 0;
-        Vector2[] waypoints = new Vector2[] { new Vector2(1, 1), new Vector2(1, 2) };
+        Vector2[] waypoints = new Vector2[] { new Vector2(0,0) };
         bool firstRun = true;
+
+        bool stopped = false;
 
         public MovementTest(Team team, int robotId)
         {
             this.robotId = robotId;
             this.team = team;
 
-            ServiceManager.getServiceManager().RegisterListener<RobotVisionMessage>(Handle, new object());
+            object lockObject = new object();
+            new QueuedMessageHandler<RobotVisionMessage>(Handle, lockObject);
+            ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
         }
 
         public void Handle(RobotVisionMessage robotVision)
         {
-            ServiceManager.getServiceManager().SendMessage(new LogMessage("got to strategy : there are " + robotVision.GetRobots().Count));
-
-            if (robotVision.GetRobots().Count > 0)
+            if (!stopped && robotVision.GetRobots().Count > 0)
             {
                 RobotInfo info = robotVision.GetRobot(team, robotId);
 
                 if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE || firstRun)
                 {
-                    Console.WriteLine("Sent location");
                     currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
 
                     RobotInfo destination = new RobotInfo(waypoints[currentWaypointIndex], 0, robotId);
@@ -47,11 +48,13 @@ namespace RFC.Strategy
 
                     firstRun = false;
                 }
-                else
-                {
-                    Console.WriteLine("Didn't send");
-                }
             }
         }
+
+        public void stopMessageHandler(StopMessage message)
+        {
+            stopped = true;
+        }
+
     }
 }

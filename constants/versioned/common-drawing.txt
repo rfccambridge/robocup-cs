@@ -1,0 +1,26 @@
+### Field drawer
+
+# drawing constants
+int ROBOT_SIZE 20
+int BALL_SIZE 8
+int GOAL_DOT_SIZE 10
+double ORIENT_ARROW_LEN 0.25
+string VELOCITY_ARROW_COLOR "blue"
+double VELOCITY_ARROW_SIZE 0.03
+double VELOCITY_ARROW_MIN_MAG_SQ 0.01
+
+# length of arrow = magnitude * this scaling factor
+double VELOCITY_ARROW_LEN_SCALE 20
+double BALL_VELOCITY_ARROW_LEN_SCALE 0.1
+
+# kicker drawing
+double OUTER_ANGLE 0.6
+double INNER_ANGLE 1.0
+double INNER_RADIUS 7
+double OUTER_RADIUS 11
+
+# Defined in plays.txt
+# double GOAL_WIDTH
+# double GOAL_HEIGHT
+# double FIELD_WIDTH
+# double FIELD_HEIGHT

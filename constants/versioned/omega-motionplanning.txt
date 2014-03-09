@@ -1,0 +1,98 @@
+# Motion planning constants
+# Constants for NewPlanners.cs- planners developed for
+# spring 2009 CS199r class
+
+#general constants used in MotionPlanning
+int NUM_ROBOTS 5
+int MIN_SINGLE_WHEEL_SPEED 0
+int MAX_SINGLE_WHEEL_SPEED 127
+
+#wheel ORIENTATIONs
+#double RF_ORIENTATION 0.5236
+#double LF_ORIENTATION 2.618
+#double LB_ORIENTATION 3.6652
+#double RB_ORIENTATION 5.7596
+
+double ANGLE_AXIS_TO_WHEEL 0.715584993
+double WHEEL_RADIUS 0.0782828
+
+#DumbTurnPlanner constants
+
+double MIN_ANGLE_DIFFERENCE .55
+
+#DumbVeerFeedbackPlanner constants
+
+#DECIDE WHETHER TO USE ANGULAR VEER PLANNER
+int ANGULAR_VEER 0
+
+#FEEDBACKVEERMOTIONPLANNER SPEED!
+
+int WHEEL_SPEED_STRAIGHT 37
+int WHEEL_SPEED_TURN 6
+
+double MPS_STRAIGHT_SPEED 50
+
+double STOP_DISTANCE .1
+
+#FEEDBACKVEERMOTIONPLANNER PID CONSTANTS!
+double VEER_P 12
+double VEER_I 0
+double VEER_D 12
+
+double ANGULAR_VEER_P 10
+double ANGULAR_VEER_I 0
+double ANGULAR_VEER_D -5
+
+double MIN_ANGLE_SPIN 1
+double MIN_ANGLE_KEEP_SPINNING 1
+
+double MAX_FINAL_ANGLE_DIFFERENCE .2
+
+double DIST_SLOW_DOWN .6
+
+#DumbVelocityPlanner
+double DumbVelocity 20
+
+double VELOCITY_VEER_P 15
+double VELOCITY_VEER_I .5
+double VELOCITY_VEER_D 7
+
+double VEER_CAP 0
+
+#Navigation
+int USE_NAVIGATOR 0
+
+#Switch orientation method
+double MIN_ANGLE_SWITCH .8
+
+double LOOK_AHEAD_DISTANCE .4
+double AVOID_ROBOT_DISTANCE .4
+
+#OBSTACLE AVOIDANCE
+double REPULSION_FACTOR .3
+double PERPINDICULAR_LENGTH .1
+
+#TangentBugPlanner
+double AVOID_DIST .3
+double LOOK_AHEAD_DIST 1
+double WAYPOINT_DIST .4
+double MIN_ABS_VAL_STICK .5
+double EXTRA_GOAL_DIST .12
+double BOUNDARY_AVOID .25
+
+#FIELD CONSTANTS!!!
+double MIN_X_ROBOT_BOUNDARY -3.025
+double MAX_X_ROBOT_BOUNDARY 3.025
+double MIN_Y_ROBOT_BOUNDARY -2.025
+double MAX_Y_ROBOT_BOUNDARY 2.025
+
+#DEFAULT
+double DEFAULT_DIST_SLOW_DOWN .25
+int DEFAULT_WHEEL_SPEED_STRAIGHT 15
+int DEFAULT_WHEEL_SPEED_TURN 5
+
+double DEFAULT_P 11
+double DEFAULT_I 0
+double DEFAULT_D 12
+
+double DEFAULT_STOP_DISTANCE .05

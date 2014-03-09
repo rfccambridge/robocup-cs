@@ -46,6 +46,7 @@ namespace RFC.Core
         public byte BoardID;
         public byte Flags;
 
+
         static RobotCommand()
         {
             _crcTool = new CRCTool();
@@ -159,7 +160,7 @@ namespace RFC.Core
                     if (rf == '\\') rf++;
                     if (rb == '\\') rb++;
 
-                    Console.WriteLine("id " + ID + ": setting speeds to: " + Speeds.ToString());
+                    //Console.WriteLine("id " + ID + ": setting speeds to: " + Speeds.ToString());
 
                     //robots expect wheel powers in this order:
                     //rf lf lb rb                                       

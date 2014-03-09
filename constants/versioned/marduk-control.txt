@@ -1,0 +1,129 @@
+# New Feedback class
+# these should all be initialized to their tuned value, or auto tuned
+# they should also all be positive values except maybe D            
+
+##alpha should be between 0 and 1.
+
+
+##For X and Y
+##Lower voltage
+#p = 130
+#i = 1
+#d= 250
+
+
+##Higher voltage
+#p=100
+#i=1
+#d=150
+
+
+double P_X_0 140
+#double P_X_0 0
+double P_X_1 140
+double P_X_2 140
+double P_X_3 140
+double P_X_4 140
+
+double I_X_0 0.4
+#double I_X_0 0
+double I_X_1 0.4
+double I_X_2 0.4
+double I_X_3 0.4
+double I_X_4 0.4
+
+double D_X_0 150
+#double D_X_0 0
+double D_X_1 150
+double D_X_2 150
+double D_X_3 150
+double D_X_4 150
+
+double ALPHA_X_0 1
+double ALPHA_X_1 1
+double ALPHA_X_2 1
+double ALPHA_X_3 1
+double ALPHA_X_4 1
+
+
+#double P_Y_0 0
+double P_Y_0 140
+double P_Y_1 140
+double P_Y_2 140
+double P_Y_3 140
+double P_Y_4 140
+
+#double I_Y_0 0
+double I_Y_0 0.4
+double I_Y_1 0.4
+double I_Y_2 0.4
+double I_Y_3 0.4
+double I_Y_4 0.4
+
+double D_Y_0 150
+#double D_Y_0 0
+double D_Y_1 150
+double D_Y_2 150
+double D_Y_3 150
+double D_Y_4 150
+
+double ALPHA_Y_0 1
+double ALPHA_Y_1 1
+double ALPHA_Y_2 1
+double ALPHA_Y_3 1
+double ALPHA_Y_4 1
+
+double P_THETA_0 60
+double P_THETA_1 60
+double P_THETA_2 60
+double P_THETA_3 60
+double P_THETA_4 60
+
+double I_THETA_0 0.5
+#double I_THETA_0 0
+double I_THETA_1 0.5
+double I_THETA_2 0.5
+double I_THETA_3 0.5
+double I_THETA_4 0.5
+
+double D_THETA_0 50
+#double D_THETA_0 0
+double D_THETA_1 50
+double D_THETA_2 50
+double D_THETA_3 50
+double D_THETA_4 50
+
+double ALPHA_THETA_0 1
+double ALPHA_THETA_1 1
+double ALPHA_THETA_2 1
+double ALPHA_THETA_3 1
+double ALPHA_THETA_4 1
+
+int CHARGE_TIME 1000
+int LOG_EVERY_MSEC 10
+
+double DEFAULT_VELOCITY 50
+
+#OLD, but maybe used SOMEWHERE
+float ANGLE_PID_KP 35
+float ANGLE_PID_KI 5
+float ANGLE_PID_KD 10
+float ANGLE_PID_MAX 35
+float ANGLE_PID_RESET .3
+
+double MOVE_PID_KP 300
+double MOVE_PID_KI 30
+double MOVE_PID_KD 70
+double MOVE_PID_MAX 40
+double MOVE_PID_RESET .1
+
+double MOVE_PID_MAX_SPEED 15.0
+
+int MAX_STEP 3
+int MAX_ACCELERATION 20
+
+double MOVE_VTERM_MAX 15
+double MOVE_VTERM_GAIN 30
+double MOVE_PTERM_MAX 80
+double MOVE_PTERM_GAIN 800
+double MOVE_DTERM_PROP 5

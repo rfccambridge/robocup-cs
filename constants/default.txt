@@ -1,0 +1,92 @@
+
+#BASIC-------------------------------------------------------------
+
+# Number of robots, which includes opponents and also IDs that are sometimes
+# bigger than 10 from the SSLVision system
+int NUM_ROBOTS 12
+
+double ROBOT_RADIUS 0.09         #Radius of a robot
+double ROBOT_FRONT_RADIUS 0.075  #Distance from the center to the front of a robot
+double BALL_RADIUS .0215         #Radius of the ball
+
+#TODO(davidwu): Do we want to refactor the codebase to use this?
+#double OUR_ROBOT_RADIUS .08      
+#double THEIR_ROBOT_RADIUS .08    
+
+
+#TIME-------------------------------------------------------------
+
+# RFCSystem constants
+double STRATEGY_FREQUENCY 15
+double SIM_ENGINE_FREQUENCY 20
+double CONTROL_LOOP_FREQUENCY 30
+double COMBINE_FREQUENCY 30
+
+#PLAY SYSTEM-------------------------------------------------------------
+
+# NOTE: the values for string constants are not extracted out of quotes
+#       e.g. string MYCONST "text" is returned as "text" NOT text
+# each text file represents a different constants category
+
+# is the new play system (C# one) used?
+bool USE_C_SHARP_PLAY_SYSTEM false
+
+string TACTIC_DIR ../../plays/tactics
+
+# testing directory
+#string PLAY_DIR ../../plays/Test2009
+
+# competition directory
+#string PLAY_DIR ../../plays/defense
+
+#string PLAY_DIR ../../plays/ATTACK
+#string PLAY_DIR ../../plays/defense
+string PLAY_DIR_YELLOW ../../plays/refboxplays
+string PLAY_DIR_BLUE ../../plays/refboxplaysBlue
+#string PLAY_DIR ../../plays/TECHNICAL_CHALLENGES
+#string PLAY_DIR ../../plays/NormalPlay
+#string PLAY_DIR_YELLOW ../../plays/temp
+
+#PREDICTOR-------------------------------------------------------------
+
+## Basic Predictor constants
+double DELTA_DIST_SQ_MERGE .01
+double MAX_SECONDS_TO_KEEP_INFO 0.10
+
+# This is not per camera, but global for the predictor
+double MAX_SECONDS_TO_KEEP_BALL 10
+
+#flip coordinates in case we are on the wrong side of the field
+bool FLIP_COORDINATES false
+
+# in seconds
+double VELOCITY_DT 0.033
+double VELOCITY_WEIGHT_OLD 0.5
+double VELOCITY_WEIGHT_NEW 0.5
+double POSITION_WEIGHT_OLD 0.5
+double POSITION_WEIGHT_NEW 0.5
+double BALL_POSITION_WEIGHT_OLD 0.7
+double BALL_POSITION_WEIGHT_NEW 0.3
+double WEIGHT_OLD 0
+double WEIGHT_NEW 1
+
+#ROBOTS-------------------------------------------------------------
+
+bool ROBOT_HAS_KICKER_0 true
+bool ROBOT_HAS_KICKER_1 true
+bool ROBOT_HAS_KICKER_2 true
+bool ROBOT_HAS_KICKER_3 true
+bool ROBOT_HAS_KICKER_4 true
+bool ROBOT_HAS_KICKER_5 true
+bool ROBOT_HAS_KICKER_6 true
+bool ROBOT_HAS_KICKER_7 true
+bool ROBOT_HAS_KICKER_8 true
+bool ROBOT_HAS_KICKER_9 true
+bool ROBOT_HAS_KICKER_10 true
+bool ROBOT_HAS_KICKER_11 true
+
+bool ROBOT_IS_GOALIE_3 true
+
+#PROTOCOL-----------------------------------------------------------
+bool SEND_AUXBOARD_CHECKSUM false
+bool SEND_BRUSHLESSBOARD_CHECKSUM true

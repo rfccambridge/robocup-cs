@@ -44,7 +44,7 @@ namespace RFC.Vision
             LoadConstants();
             messenger = ServiceManager.getServiceManager();
             new QueuedMessageHandler<VisionMessage>(Update, listenerLock);
-            messenger.RegisterListener<BallMarkMessage>(UpdateBallMark, listenerLock);
+            new QueuedMessageHandler<BallMarkMessage>(UpdateBallMark, listenerLock);
         }
 
         /// <summary>
@@ -58,7 +58,6 @@ namespace RFC.Vision
 
         public void Update(VisionMessage msg)
         {
-            Console.WriteLine("ap update");
 
             fieldStates[msg.CameraID].Update(msg);
 
@@ -74,6 +73,7 @@ namespace RFC.Vision
             // sending message that new data is ready
             messenger.SendMessage<BallVisionMessage>(ball_msg);
             messenger.SendMessage<RobotVisionMessage>(robots_msg);
+
             if (move_msg.moved)
                 messenger.SendMessage<BallMovedMessage>(move_msg);
         }

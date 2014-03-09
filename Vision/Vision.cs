@@ -116,7 +116,8 @@ namespace RFC.Vision
 					}
 
 					// sending vision message
-					ServiceManager.getServiceManager().SendMessage(msg);    
+                    ServiceManager.getServiceManager().SendMessage(msg);
+
 				}
 
 			}

@@ -11,5 +11,11 @@ namespace RFC.Messaging
     /// </summary>
     public class Message
     {
+        // print information about what this message is
+        // messages can override to provide more useful / readable information
+        public string bio()
+        {
+            return this.ToString();
+        }
     }
 }

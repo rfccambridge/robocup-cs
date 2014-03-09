@@ -17,6 +17,7 @@ namespace ControlForm
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new ControlForm());
+            Application.Exit();
         }
     }
 }

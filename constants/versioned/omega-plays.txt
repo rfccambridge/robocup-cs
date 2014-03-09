@@ -1,0 +1,60 @@
+# this is a comment
+
+double ROBOT_RADIUS .1
+
+double BALL_RADIUS .02
+
+# Game field
+#double FIELD_WIDTH 6.1
+#double FIELD_HEIGHT 4.2
+
+# Practice field MD 3rd (2009-02-27)
+double FIELD_WIDTH 6.05
+double FIELD_HEIGHT 4.05
+
+
+double FIELD_BUFFER 0.3
+
+double GOAL_WIDTH .18
+double GOAL_HEIGHT .7
+
+# Is the goal we are defending at (-FIELD_WIDTH/2 - GOAL_WIDTH)?: 0 - false, 1 - true
+bool IS_OUR_GOAL_LEFT true
+
+# delta distance for deciding that ball has moved
+double BALL_MOVED_DIST 0.02
+
+# Predefined ball positions when in refbox game state
+bool ASSUME_BALL false
+
+# for penalty: not absolute, but positive dist from center, sign set by BasicPredictor
+double BALL_POS_PENALTY_X 2.575
+double BALL_POS_PENALTY_Y 0
+
+double BALL_POS_KICKOFF_X 0
+double BALL_POS_KICKOFF_Y 0
+
+# OFFENSE PLAYS CONSTANTS
+# distance that the kicker is expected to kick the ball:
+double BALL_KICK_DIST 1.0
+
+# distance that the standby robot stays from the goal
+double STANDBY_DISTANCE 1.9
+
+# minimum distance a robot must be from our goal to become involved in an offensive play
+double GOAL_MINIMUM 0.7
+
+# maximum distance for the ball to be from the goal to kick without a supporting robot in front
+double BALL_IN_RANGE 2.0
+
+# distance for support robot to avoid being in the way of a shot
+double SUPPORT_AVOID .45
+
+# distance robots can be within clear path
+double CLEAR_DIST .25
+
+# distance robot goes from path to set up a pass when path is blocked
+double SUPPORT_SETUP_PASS 2
+
+# goalie constants
+double GOALIE_X_POS -2.87

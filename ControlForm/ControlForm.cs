@@ -22,6 +22,8 @@ namespace ControlForm
 {
     public partial class ControlForm : Form
     {
+        bool running = false;
+
         public ControlForm()
         {
             InitializeComponent();
@@ -31,39 +33,42 @@ namespace ControlForm
 
         public void Run()
         {
-            int com = (int)ComNumberChooser.Value;
-            Team team = Team.Yellow;
-            Enum.TryParse<Team>(TeamBox.SelectedValue.ToString(), out team);
-            bool flip = false;
-            int robotId = 5;
-            int maxRobotId = 6;
-
-            bool simulator = true;
-
-            new LogHandler();
-            new MulticastRefBoxListener(team);
-            Vision vision = new Vision();
-            new AveragingPredictor(flip);
-            new SmoothRRTPlanner(true, maxRobotId);
-            new VelocityDriver();
-            new MovementTest(team, robotId);
-            MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
-            new FieldDrawer();
-
-            if (simulator)
+            if (!running)
             {
-                new Simulator();
-            }
-            else
-            {
-                new SerialSender(com);
-            }
+                running = true;
+                int com = (int)ComNumberChooser.Value;
+                Team team = Team.Yellow;
+                Enum.TryParse<Team>(TeamBox.SelectedValue.ToString(), out team);
+                bool flip = false;
+                int robotId = 5;
+                int maxRobotId = 6;
+                bool simulator = true;
 
-            vision.Connect("224.5.23.2", 10002);
-            vision.Start();
-            
-            refbox.Connect("224.5.92.12", 10100);
-            refbox.Start();
+                new LogHandler();
+                new MulticastRefBoxListener(team);
+                Vision vision = new Vision();
+                new AveragingPredictor(flip);
+                new SmoothRRTPlanner(true, maxRobotId);
+                new VelocityDriver();
+                new MovementTest(team, robotId);
+                MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
+                new FieldDrawer();
+
+                if (simulator)
+                {
+                    new Simulator();
+                }
+                else
+                {
+                    new SerialSender(com);
+                }
+
+                vision.Connect("224.5.23.2", 10002);
+                vision.Start();
+
+                refbox.Connect("224.5.92.12", 10100);
+                refbox.Start();
+            }
         }
 
         private void RunButton_Click(object sender, EventArgs e)
@@ -74,6 +79,12 @@ namespace ControlForm
 
             ServiceManager.getServiceManager().SendMessage(new LogMessage("started"));
         }
+
+        private void StopButton_Click(object sender, EventArgs e)
+        {
+            ServiceManager.getServiceManager().SendMessage(new StopMessage());
+        }
+
 
         private void DisableControls()
         {
