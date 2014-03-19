@@ -12,18 +12,18 @@ namespace RFC.PathPlanning
     {
         // angle and distance to go from setting up to kick
         // to actually kicking
-        const double heading_threshold = .01;
-        const double dist_threshold = .05;
+        const double heading_threshold = .1;
+        const double dist_threshold = .03;
         ServiceManager msngr;
 
         // how far back to stand. slightly more than radius
-        const double kick_dist = .1; 
+        double kick_dist = Constants.Basic.ROBOT_RADIUS * 1.5;
 
         public KickPlanner()
         {
             object lockObject = new object();
             new QueuedMessageHandler<KickMessage>(Handle, lockObject);
-            msngr = ServiceManager.getServiceManager()
+            msngr = ServiceManager.getServiceManager();
         }
 
         public void Handle(KickMessage kick)
@@ -35,8 +35,8 @@ namespace RFC.PathPlanning
             // calculating ideal place for the robot to be
             Vector2 diff = kick.Target - ball.Position;
             double angle = diff.cartesianAngle();
-            Vector2 offset = diff.normalizeToLength(-kick_dist);
-            Vector2 position = ball.Position + offset;
+            Vector2 offset = diff.normalizeToLength(kick_dist);
+            Vector2 position = ball.Position - offset;
 
             RobotInfo ideal = new RobotInfo(position, angle, robot.ID);
 
@@ -44,21 +44,21 @@ namespace RFC.PathPlanning
             if (Math.Abs(angle - robot.Orientation) < heading_threshold && robot.Position.distance(position) < dist_threshold)
             {
                 // we are close enough
-                RobotInfo ball_loc = new RobotInfo(ball.Position, angle, robot.ID);
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ball_loc, false, false, false);
-                msngr.SendMessage<RobotDestinationMessage>(dest_msg);
-
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
                 msngr.SendMessage(new CommandMessage(cmd));
+
+                RobotInfo ball_loc = new RobotInfo(ball.Position, angle, robot.ID);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ball_loc, false, false, true);
+                msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
             else
             {
                 // not close enough
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true,false,true);
-                msngr.SendMessage<RobotDestinationMessage>(dest_msg);
-
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage(new CommandMessage(cmd));
+
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true,false,true);
+                msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
         }
     }
