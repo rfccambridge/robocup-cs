@@ -49,6 +49,7 @@ namespace ControlForm
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
                 new MovementTest(team, robotId);
+                new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 
                 vision.Connect("224.5.23.2", 10002);
