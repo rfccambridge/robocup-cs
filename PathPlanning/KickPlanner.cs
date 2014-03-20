@@ -45,7 +45,7 @@ namespace RFC.PathPlanning
             {
                 // we are close enough
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
-                msngr.SendMessage(new CommandMessage(cmd));
+                msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
                 RobotInfo ball_loc = new RobotInfo(ball.Position, angle, robot.ID);
                 RobotDestinationMessage dest_msg = new RobotDestinationMessage(ball_loc, false, false, true);
@@ -55,7 +55,7 @@ namespace RFC.PathPlanning
             {
                 // not close enough
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
-                msngr.SendMessage(new CommandMessage(cmd));
+                msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
                 RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true,false,true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
