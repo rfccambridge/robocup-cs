@@ -158,22 +158,30 @@ namespace RFC.RefBox
                     else
                         return PlayType.KickOff_Ours_Setup;
                 case RefBoxMessageType.INDIRECT_BLUE:
+                    if (team == Team.Yellow)
+                        return PlayType.Indirect_Theirs;
+                    else
+                        return PlayType.Indirect_Ours;
                 case RefBoxMessageType.DIRECT_BLUE:
                     if (team == Team.Yellow)
-                        return PlayType.SetPlay_Theirs;
+                        return PlayType.Direct_Theirs;
                     else
-                        return PlayType.SetPlay_Ours;
+                        return PlayType.Direct_Ours;
                 case RefBoxMessageType.KICKOFF_YELLOW:
                     if (team == Team.Blue)
                         return PlayType.KickOff_Theirs;
                     else
                         return PlayType.KickOff_Ours_Setup;
                 case RefBoxMessageType.INDIRECT_YELLOW:
+                    if (team == Team.Blue)
+                        return PlayType.Indirect_Theirs;
+                    else
+                        return PlayType.Indirect_Ours;
                 case RefBoxMessageType.DIRECT_YELLOW:
                     if (team == Team.Blue)
-                        return PlayType.SetPlay_Theirs;
+                        return PlayType.Direct_Theirs;
                     else
-                        return PlayType.SetPlay_Ours;
+                        return PlayType.Direct_Ours;
                 case RefBoxMessageType.PENALTY_BLUE:
                     // handle penalty
                     if (team == Team.Yellow)
