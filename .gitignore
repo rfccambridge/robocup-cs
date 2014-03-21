@@ -2,4 +2,4 @@
 *.exe
 */obj/*
 */bin/*
-*.cahce
+*.cache
