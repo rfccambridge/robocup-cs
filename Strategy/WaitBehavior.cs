@@ -5,17 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using RFC.Messaging;
 using RFC.Core;
+using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
     public static class WaitBehavior
     {
         static ServiceManager msngr = ServiceManager.getServiceManager();
+        private static int max_robot_id = 6;
 
         // completely stop. set wheel speeds to zero
-        public static void Halt(FieldVisionMessage msg)
+        public static void Halt(FieldVisionMessage msg, Team team)
         {
-            int max_robot_id = 5;
             WheelSpeeds speeds = new WheelSpeeds();
             for (int id = 0; id < max_robot_id; id++)
             {
@@ -25,9 +26,13 @@ namespace RFC.Strategy
 
         // this could be waiting for a kickin or something
         // need to stay 500mm away from ball
-        public static void Stop(FieldVisionMessage msg)
+        public static void Stop(FieldVisionMessage msg, Team team)
         {
-            //TODO
+            foreach (RobotInfo rob in msg.GetRobots())
+            {
+                RobotInfo dest = Avoider.avoid(rob, msg.Ball.Position, .50);
+                msngr.SendMessage(new RobotDestinationMessage(dest, true, false, true));
+            }
         }
     }
 }

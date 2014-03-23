@@ -33,46 +33,46 @@ namespace RFC.Strategy
             switch(play)
             {
                 case PlayType.NormalPlay:
-                    NormalBehavior.Play(msg);
+                    NormalBehavior.Play(msg, team);
                     break;
                 case PlayType.Halt:
-                    WaitBehavior.Halt(msg);
+                    WaitBehavior.Halt(msg, team);
                     break;
                 case PlayType.Stopped:
-                    WaitBehavior.Stop(msg);
+                    WaitBehavior.Stop(msg, team);
                     break;
                 case PlayType.Direct_Ours:
-                    KickInBehavior.DirectOurs(msg);
+                    KickInBehavior.DirectOurs(msg, team);
                     break;
                 case PlayType.Direct_Theirs:
-                    KickInBehavior.DirectTheirs(msg);
+                    KickInBehavior.DirectTheirs(msg, team);
                     break;
                 case PlayType.Indirect_Ours:
-                    KickInBehavior.IndirectOurs(msg);
+                    KickInBehavior.IndirectOurs(msg, team);
                     break;
                 case PlayType.Indirect_Theirs:
-                    KickInBehavior.IndirectTheirs(msg);
+                    KickInBehavior.IndirectTheirs(msg, team);
                     break;
                 case PlayType.PenaltyKick_Ours:
-                    PenaltyKickBehavior.Ours(msg);
+                    PenaltyKickBehavior.Ours(msg, team);
                     break;
                 case PlayType.PenaltyKick_Ours_Setup:
-                    PenaltyKickBehavior.OursSetup(msg);
+                    PenaltyKickBehavior.OursSetup(msg, team);
                     break;
                 case PlayType.PenaltyKick_Theirs:
-                    PenaltyKickBehavior.Theirs(msg);
+                    PenaltyKickBehavior.Theirs(msg, team);
                     break;
                 case PlayType.KickOff_Ours:
-                    KickOffBehavior.Ours(msg);
+                    KickOffBehavior.Ours(msg, team);
                     break;
                 case PlayType.KickOff_Ours_Setup:
-                    KickOffBehavior.OursSetup(msg);
+                    KickOffBehavior.OursSetup(msg, team);
                     break;
                 case PlayType.Kickoff_Theirs_Setup:
-                    KickOffBehavior.TheirsSetup(msg);
+                    KickOffBehavior.TheirsSetup(msg, team);
                     break;
                 case PlayType.KickOff_Theirs:
-                    KickOffBehavior.Theirs(msg);
+                    KickOffBehavior.Theirs(msg, team);
                     break;
             }
         }
