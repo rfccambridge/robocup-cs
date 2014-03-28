@@ -69,10 +69,12 @@ namespace RFC.Vision
             BallVisionMessage ball_msg = new BallVisionMessage(flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
             RobotVisionMessage robots_msg = new RobotVisionMessage(flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
             BallMovedMessage move_msg = new BallMovedMessage(hasBallMoved());
+            FieldVisionMessage all_msg = new FieldVisionMessage(flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow), flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
 
             // sending message that new data is ready
             messenger.SendMessage<BallVisionMessage>(ball_msg);
             messenger.SendMessage<RobotVisionMessage>(robots_msg);
+            messenger.SendMessage<FieldVisionMessage>(all_msg);
 
             if (move_msg.moved)
                 messenger.SendMessage<BallMovedMessage>(move_msg);

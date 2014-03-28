@@ -39,8 +39,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="KickInBehavior.cs" />
+    <Compile Include="KickOffBehavior.cs" />
     <Compile Include="MovementTest.cs" />
+    <Compile Include="NormalBehavior.cs" />
+    <Compile Include="PenaltyKickBehavior.cs" />
+    <Compile Include="PlaySwitcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threat.cs" />
+    <Compile Include="WaitBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

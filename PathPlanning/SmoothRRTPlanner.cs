@@ -153,7 +153,12 @@ namespace RFC.PathPlanning
             {
                 DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
                 RefboxStateMessage refMessage = ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>();
-                DefenseAreaAvoid rightAvoid = (refMessage == null || refMessage.PlayType == PlayType.SetPlay_Theirs) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
+                PlayType[] types = new PlayType[4];
+                types[0] = PlayType.Direct_Ours;
+                types[1] = PlayType.Direct_Theirs;
+                types[2] = PlayType.Indirect_Ours;
+                types[3] = PlayType.Indirect_Theirs;
+                DefenseAreaAvoid rightAvoid = (refMessage == null || types.Contains(refMessage.PlayType)) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
 
                 RobotInfo destinationCopy = new RobotInfo(message.Destination);
                 destinationCopy.Team = message.Destination.Team;

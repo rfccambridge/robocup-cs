@@ -48,7 +48,9 @@ namespace ControlForm
                 new AveragingPredictor(flip);
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
+
                 new MovementTest(team);
+                new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
                 new FieldDrawer().Show();
 
