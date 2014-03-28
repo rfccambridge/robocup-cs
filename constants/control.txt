@@ -10,8 +10,8 @@ double VD_MAX_ANGLULAR_LINEAR_SPEED 0.4  #In rev/s/radian
 double VD_ROTATION_ASSUMED_SPEED 1.5 #In m/s
 
 #Conversion to wheel speed commands
-double VD_XY_BASIS_SCALE 30.0 #Wheel speeds required for 1 m/s movement
-double VD_R_BASIS_SCALE 16.6  #Wheel speeds required for 1 rev/s movement 
+double VD_XY_BASIS_SCALE 50.0 #Wheel speeds required for 1 m/s movement
+double VD_R_BASIS_SCALE 40.0  #Wheel speeds required for 1 rev/s movement 
         
 #Max wheel speed change per frame of control
 double VD_MAX_WHEEL_SPEED_CHANGE_PER_FRAME 2
