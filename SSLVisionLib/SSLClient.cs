@@ -10,33 +10,38 @@ namespace RFC.SSLVisionLib
 {
 	public class SSLVisionClient
 	{
-		private Socket socket;
+		private UdpClient client;
 		private bool connected;
+        IPEndPoint endPoint;
 
 		private const int MAX_BUF_SIZE = 65536;
 
 		public void Connect(string address, int port)
 		{
-			socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-			IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, port);
+            client = new UdpClient();
+            client.ExclusiveAddressUse = false;
+            endPoint = new IPEndPoint(IPAddress.Any, port);
+
+            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            client.ExclusiveAddressUse = false;
 
 			try
 			{
-				socket.Bind(endPoint);
+				client.Client.Bind(endPoint);
 			}
 			catch (SocketException)
 			{
 				Console.WriteLine("Another receiver already bound to SSL Vision, not connecting.");
 			}
-			socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(address)));
+
+            client.JoinMulticastGroup(IPAddress.Parse(address));
 
 			connected = true;
 		}
 
 		public void Disconnect()
 		{
-			socket.Close();
-			socket.Dispose();
+            client.Close();
 
 			connected = false;
 		}
@@ -46,10 +51,7 @@ namespace RFC.SSLVisionLib
 			if (!connected)
 				throw new ApplicationException("Trying to receive from vision SSLClient socket that wasn't open");
 
-			byte[] buf = new byte[MAX_BUF_SIZE];
-			int received = socket.Receive(buf);
-			if (received == 0)
-				return null;
+			byte[] buf = client.Receive(ref endPoint);
 
 			MemoryStream stream = new MemoryStream(buf);
 			SSL_WrapperPacket packet = ProtoBuf.Serializer.Deserialize<SSL_WrapperPacket>(stream);

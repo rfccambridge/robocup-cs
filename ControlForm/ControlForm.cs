@@ -40,17 +40,15 @@ namespace ControlForm
                 Team team = Team.Yellow;
                 Enum.TryParse<Team>(TeamBox.SelectedValue.ToString(), out team);
                 bool flip = false;
-                int robotId = 5;
-                int maxRobotId = 6;
+                int maxRobotId = 12;
                 bool simulator = true;
 
-                new LogHandler();
-                new MulticastRefBoxListener(team);
+                //new LogHandler();
                 Vision vision = new Vision();
                 new AveragingPredictor(flip);
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
-                new MovementTest(team, robotId);
+                new MovementTest(team);
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
                 new FieldDrawer().Show();
 

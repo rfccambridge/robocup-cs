@@ -243,6 +243,7 @@ namespace RFC.FieldDrawer
                     if (!_bufferedState.Robots[robot.Team].ContainsKey(robot.ID))
                         _bufferedState.Robots[robot.Team].Add(robot.ID, new RobotDrawingInfo(robot));
 
+                _robotsAndBallUpdated = true;
             }
 
             UpdateState();

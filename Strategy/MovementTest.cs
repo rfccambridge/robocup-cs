@@ -22,9 +22,8 @@ namespace RFC.Strategy
 
         bool stopped = false;
 
-        public MovementTest(Team team, int robotId)
+        public MovementTest(Team team)
         {
-            this.robotId = robotId;
             this.team = team;
 
             object lockObject = new object();
@@ -34,9 +33,11 @@ namespace RFC.Strategy
 
         public void Handle(RobotVisionMessage robotVision)
         {
-            /*
             if (!stopped && robotVision.GetRobots().Count > 0)
             {
+                if (firstRun)
+                    robotId = robotVision.GetRobots(team)[0].ID; // take first robot
+
                 RobotInfo info = robotVision.GetRobot(team, robotId);
 
                 if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE || firstRun)
@@ -50,7 +51,6 @@ namespace RFC.Strategy
                     firstRun = false;
                 }
             }
-             */
         }
 
         public void stopMessageHandler(StopMessage message)

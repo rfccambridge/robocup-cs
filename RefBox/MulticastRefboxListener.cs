@@ -11,8 +11,6 @@ namespace RFC.RefBox
 {
     public class MulticastRefBoxListener : RefBoxHandler
     {
-        protected MultiCastRefBoxRouter router = new MultiCastRefBoxRouter();
-
         Team team;
 
         public MulticastRefBoxListener(Team team)
@@ -21,8 +19,7 @@ namespace RFC.RefBox
         }
 
         /// <summary>
-        /// Connects to refobx through a router. First, tries to setup a router listening
-        /// to muticast addr:port.If it can't, a router is already running, so we can just try and connect to it.
+        /// Connects to refbox.
         /// </summary>
         /// <param name="addr">Multicast address of refbox</param>
         /// <param name="port">Refbox port</param>
@@ -31,47 +28,26 @@ namespace RFC.RefBox
             if (_socket != null)
                 throw new ApplicationException("Already connected.");
 
-            router.Connect(addr, port);
-
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            bool bound = false;
 
-            for (int i = 0; i < Parameters.routerPorts.Count; i++)
+            _socket.ExclusiveAddressUse = false;
+            _endPoint = new IPEndPoint(IPAddress.Any, port);
+
+            _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _socket.ExclusiveAddressUse = false;
+
+            try
             {
-                _endPoint = new IPEndPoint(Parameters.routerIP, Parameters.routerPorts[i]);
-                try
-                {
-                    _socket.Bind(_endPoint);
-                    bound = true;
-                }
-                catch (SocketException)
-                {
-                    Console.WriteLine("RefBoxListener failed to connect to port {0}!", Parameters.routerPorts[i]);
-                }
-
-                if (bound)
-                    break;
+                _socket.Bind(_endPoint);
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("RefBoxListener failed to connect!");
             }
             if (!_socket.IsBound)
                 throw new ApplicationException("RefBoxListener failed to connect to all router ports!");
-        }
 
-        public override void Disconnect()
-        {
-            router.Disconnect();
-            base.Disconnect();
-        }
-
-        public override void Start()
-        {
-            router.Start();
-            base.Start();
-        }
-
-        public override void Stop()
-        {
-            router.Stop();
-            base.Stop();
+            _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(IPAddress.Parse(addr)));
         }
 
         public bool IsReceiving()

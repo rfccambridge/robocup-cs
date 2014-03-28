@@ -106,9 +106,6 @@ namespace RFC.PathPlanning
 
         public void handleRobotPathMessage(RobotPathMessage rpm)
         {
-            msngr.db("got robot path message");
-            msngr.db(rpm.Path.getWaypoint(0).Position.ToString());
-            msngr.db(rpm.Path.Waypoints.ToString());
             lastPaths.Remove(rpm.Path.ID);
             lastPaths.Add(rpm.Path.ID, rpm.Path);
         }
@@ -355,7 +352,6 @@ namespace RFC.PathPlanning
             }
 
             lastSpeeds[id] = speeds;
-            msngr.db("next," + nextWaypoint + ",pos," + robotMessage.GetRobot(team,5).Position.ToString() + ",speeds," +speeds);
 
             return speeds;
         }
