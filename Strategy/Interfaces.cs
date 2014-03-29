@@ -15,7 +15,9 @@ namespace RFC.Strategy
 
     interface OffenseMapper
     {
-        double[,] getMap(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball);
+        void update(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball);
+        double[,] getDrib(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball);
+        double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball);
     }
 
     interface GoaliePlayer
