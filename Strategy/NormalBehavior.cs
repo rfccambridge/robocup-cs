@@ -11,10 +11,12 @@ namespace RFC.Strategy
     public class NormalBehavior
     {
         Team team;
+        ServiceManager msngr;
 
         public NormalBehavior(Team team)
         {
             this.team = team;
+            this.msngr = ServiceManager.getServiceManager();
         }
 
         public void Play(FieldVisionMessage msg)

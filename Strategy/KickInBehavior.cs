@@ -11,10 +11,12 @@ namespace RFC.Strategy
     public class KickInBehavior
     {
         Team team;
+        ServiceManager msngr;
 
         public KickInBehavior(Team team)
         {
             this.team = team;
+            this.msngr = ServiceManager.getServiceManager();
         }
 
         public void DirectOurs(FieldVisionMessage msg)

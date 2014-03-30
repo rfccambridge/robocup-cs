@@ -11,10 +11,12 @@ namespace RFC.Strategy
     public class PenaltyKickBehavior
     {
         Team team;
+        ServiceManager msngr;
 
         public PenaltyKickBehavior(Team team)
         {
             this.team = team;
+            this.msngr = ServiceManager.getServiceManager();
         }
 
         public void Ours(FieldVisionMessage msg)
