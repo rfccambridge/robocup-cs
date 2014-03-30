@@ -9,13 +9,22 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public static class WaitBehavior
+    public class WaitBehavior
     {
-        static ServiceManager msngr = ServiceManager.getServiceManager();
-        private static int max_robot_id = 6;
+        Team team;
+        ServiceManager msngr;
+        int max_robot_id;
 
-        // completely stop. set wheel speeds to zero
-        public static void Halt(FieldVisionMessage msg, Team team)
+        public WaitBehavior(Team team, int max_robots)
+        {
+            this.team = team;
+            this.msngr = ServiceManager.getServiceManager();
+            this.max_robot_id = max_robots;
+
+        }
+
+        // completely stop. set wheel speeds to zero whether we can see it or not
+        public void Halt(FieldVisionMessage msg)
         {
             WheelSpeeds speeds = new WheelSpeeds();
             for (int id = 0; id < max_robot_id; id++)
@@ -26,8 +35,10 @@ namespace RFC.Strategy
 
         // this could be waiting for a kickin or something
         // need to stay 500mm away from ball
-        public static void Stop(FieldVisionMessage msg, Team team)
+        public void Stop(FieldVisionMessage msg)
         {
+            //TODO: go to intelligent places during this time
+
             foreach (RobotInfo rob in msg.GetRobots())
             {
                 RobotInfo dest = Avoider.avoid(rob, msg.Ball.Position, .50);

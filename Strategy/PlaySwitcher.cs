@@ -12,15 +12,32 @@ namespace RFC.Strategy
     {
         Team team;
         PlayType play;
-        
         object lockObject;
+        int max_robots;
 
-        public PlaySwitcher(Team our_team)
+        // play behaviors
+        NormalBehavior normalBehavior;
+        WaitBehavior waitBehavior;
+        KickInBehavior kickInBehavior;
+        PenaltyKickBehavior penaltyKickBehavior;
+        KickOffBehavior kickOffBehavior;
+
+
+        public PlaySwitcher(Team our_team, int max_robots)
         {
             team = our_team;
             lockObject = new object();
+            this.max_robots = max_robots;
             new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
             new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
+
+            // initializing behavior components
+            normalBehavior = new NormalBehavior(team);
+            waitBehavior = new WaitBehavior(team,max_robots);
+            kickInBehavior = new KickInBehavior(team);
+            penaltyKickBehavior = new PenaltyKickBehavior(team);
+            kickOffBehavior = new KickOffBehavior(team);
+
         }
 
         public void handle_refbox(RefboxStateMessage msg)
@@ -33,46 +50,46 @@ namespace RFC.Strategy
             switch(play)
             {
                 case PlayType.NormalPlay:
-                    NormalBehavior.Play(msg, team);
+                    normalBehavior.Play(msg);
                     break;
                 case PlayType.Halt:
-                    WaitBehavior.Halt(msg, team);
+                    waitBehavior.Halt(msg);
                     break;
                 case PlayType.Stopped:
-                    WaitBehavior.Stop(msg, team);
+                    waitBehavior.Stop(msg);
                     break;
                 case PlayType.Direct_Ours:
-                    KickInBehavior.DirectOurs(msg, team);
+                    kickInBehavior.DirectOurs(msg);
                     break;
                 case PlayType.Direct_Theirs:
-                    KickInBehavior.DirectTheirs(msg, team);
+                    kickInBehavior.DirectTheirs(msg);
                     break;
                 case PlayType.Indirect_Ours:
-                    KickInBehavior.IndirectOurs(msg, team);
+                    kickInBehavior.IndirectOurs(msg);
                     break;
                 case PlayType.Indirect_Theirs:
-                    KickInBehavior.IndirectTheirs(msg, team);
+                    kickInBehavior.IndirectTheirs(msg);
                     break;
                 case PlayType.PenaltyKick_Ours:
-                    PenaltyKickBehavior.Ours(msg, team);
+                    penaltyKickBehavior.Ours(msg);
                     break;
                 case PlayType.PenaltyKick_Ours_Setup:
-                    PenaltyKickBehavior.OursSetup(msg, team);
+                    penaltyKickBehavior.OursSetup(msg);
                     break;
                 case PlayType.PenaltyKick_Theirs:
-                    PenaltyKickBehavior.Theirs(msg, team);
+                    penaltyKickBehavior.Theirs(msg);
                     break;
                 case PlayType.KickOff_Ours:
-                    KickOffBehavior.Ours(msg, team);
+                    kickOffBehavior.Ours(msg);
                     break;
                 case PlayType.KickOff_Ours_Setup:
-                    KickOffBehavior.OursSetup(msg, team);
+                    kickOffBehavior.OursSetup(msg);
                     break;
                 case PlayType.Kickoff_Theirs_Setup:
-                    KickOffBehavior.TheirsSetup(msg, team);
+                    kickOffBehavior.TheirsSetup(msg);
                     break;
                 case PlayType.KickOff_Theirs:
-                    KickOffBehavior.Theirs(msg, team);
+                    kickOffBehavior.Theirs(msg);
                     break;
             }
         }

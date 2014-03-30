@@ -8,20 +8,26 @@ using RFC.Core;
 
 namespace RFC.Strategy
 {
-    public static class PenaltyKickBehavior
+    public class PenaltyKickBehavior
     {
+        Team team;
 
-        public static void Ours(FieldVisionMessage msg, Team team)
+        public PenaltyKickBehavior(Team team)
+        {
+            this.team = team;
+        }
+
+        public void Ours(FieldVisionMessage msg)
         {
             //TODO
         }
 
-        public static void OursSetup(FieldVisionMessage msg, Team team)
+        public void OursSetup(FieldVisionMessage msg)
         {
             //TODO
         }
 
-        public static void Theirs(FieldVisionMessage msg, Team team)
+        public void Theirs(FieldVisionMessage msg)
         {
             //TODO
         }

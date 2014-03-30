@@ -8,28 +8,37 @@ using RFC.Core;
 
 namespace RFC.Strategy
 {
-    public static class KickOffBehavior
+    public class KickOffBehavior
     {
+        Team team;
 
-        public static void Ours(FieldVisionMessage msg, Team team)
+        public KickOffBehavior(Team team)
+        {
+            this.team = team;
+        }
+
+        public void Ours(FieldVisionMessage msg)
         {
             //TODO
             // initial kick, then transition to normal play
         }
 
-        public static void OursSetup(FieldVisionMessage msg, Team team)
+        public void OursSetup(FieldVisionMessage msg)
         {
             //TODO
             // probably just hardcode in positions
+            // assume that we start on the left side of the field
+            List<RobotInfo> ours = msg.GetRobots(team);
+
         }
 
-        public static void Theirs(FieldVisionMessage msg, Team team)
+        public void Theirs(FieldVisionMessage msg)
         {
             //TODO
             // detect when play has started, then switch to normal play
         }
 
-        public static void TheirsSetup(FieldVisionMessage msg, Team team)
+        public void TheirsSetup(FieldVisionMessage msg)
         {
             //TODO
             // probably just hardcoded positions

@@ -8,10 +8,16 @@ using RFC.Core;
 
 namespace RFC.Strategy
 {
-    public static class NormalBehavior
+    public class NormalBehavior
     {
+        Team team;
 
-        public static void Play(FieldVisionMessage msg, Team team)
+        public NormalBehavior(Team team)
+        {
+            this.team = team;
+        }
+
+        public void Play(FieldVisionMessage msg)
         {
             // our main strategy
         }
