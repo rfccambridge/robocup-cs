@@ -31,20 +31,23 @@ namespace RFC.Strategy
             //TODO
             // probably just hardcode in positions
             // assume that we start on the left side of the field
+
+            // getting our robots
             List<RobotInfo> ours = msg.GetRobots(team);
+            int n = ours.Count();
 
-            foreach (RobotInfo rob in ours)
+            // getting destinations we want to go to
+            // for now just put them in a line
+            List<RobotInfo> destinations = new List<RobotInfo>;
+            for (int i = 0; i < n; i++)
             {
-                // make a copy of the robot's current information
-                RobotInfo destination = new RobotInfo(rob);
-
-                // changing the position of that RobotInfo
-                destination.Position = new Vector2(0, 0);
-
-                // sending that RobotInfo as a destination for that robot
-                msngr.SendMessage(new RobotDestinationMessage(destination, true, false, true));
-
+                Vector2 position = new Vector2(Constants.Basic.ROBOT_RADIUS*4 * i, 0);
+                destinations[i] = new RobotInfo(position,0,0);
             }
+
+            // this function matches the closest robot to closest destination and handles
+            // sending messages to get there
+            DestinationMatcher.SendByDistance(ours, destinations);
 
         }
 
