@@ -95,10 +95,8 @@ namespace RFC.PathPlanning
                 }
                 else
                 {
-                    msngr.db("new path");
                     speeds = new WheelSpeeds();
                 }
-                msngr.db(speeds.toString());
                 msngr.SendMessage(new CommandMessage(new RobotCommand(robot.ID, speeds)));
 
             }

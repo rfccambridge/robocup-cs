@@ -38,11 +38,11 @@ namespace RFC.Strategy
 
             // getting destinations we want to go to
             // for now just put them in a line
-            List<RobotInfo> destinations = new List<RobotInfo>;
+            List<RobotInfo> destinations = new List<RobotInfo>();
             for (int i = 0; i < n; i++)
             {
-                Vector2 position = new Vector2(Constants.Basic.ROBOT_RADIUS*4 * i, 0);
-                destinations[i] = new RobotInfo(position,0,0);
+                Vector2 position = new Vector2(2-Constants.Basic.ROBOT_RADIUS*4 * i, 0);
+                destinations.Add(new RobotInfo(position,0,0));
             }
 
             // this function matches the closest robot to closest destination and handles
