@@ -25,36 +25,6 @@ namespace RFC.Strategy
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
 
-            // static debug
-            
-            List<RobotInfo> robs = new List<RobotInfo>();
-            List<RobotInfo> dests = new List<RobotInfo>();
-            robs.Add(new RobotInfo(new Vector2(0, 0), 0, 0));
-            robs.Add(new RobotInfo(new Vector2(0, 1), 0, 2));
-            robs.Add(new RobotInfo(new Vector2(0, 2), 0, 1));
-
-            dests.Add(new RobotInfo(new Vector2(0, 1), 0, 0));
-            dests.Add(new RobotInfo(new Vector2(0, 2), 0, 0));
-            dests.Add(new RobotInfo(new Vector2(0, 3), 0, 0));
-
-            int[,] mat = DestinationMatcher.constructDistanceMatrix(robs, dests);
-
-            var rowCount = mat.GetLength(0);
-            var colCount = mat.GetLength(1);
-            for (int row = 0; row < rowCount; row++)
-            {
-                for (int col = 0; col < colCount; col++)
-                    Console.Write(String.Format("{0}\t", mat[row, col]));
-                Console.WriteLine();
-            }
-
-            int[] assignments = DestinationMatcher.GetAssignments(robs, dests);
-
-            foreach (int i in assignments)
-            {
-                Console.Write(i + " ");
-            }
-            Console.WriteLine("");
             
         }
 
@@ -62,7 +32,6 @@ namespace RFC.Strategy
         {
             if (!stopped && fieldVision.GetRobots().Count > 0)
             {
-                msngr.db("handling field vision in SetupTest");
                 testing.OursSetup(fieldVision);
             }
         }
