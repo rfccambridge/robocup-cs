@@ -222,7 +222,7 @@ namespace RFC.PathPlanning
             }
             if (nextWaypoint == null)
             {
-                Console.WriteLine("no next waypoint");
+                msngr.db("no next waypoint");
                 return new WheelSpeeds();
             }
 

@@ -15,6 +15,7 @@ namespace RFC.Strategy
         bool stopped = false;
         KickOffBehavior testing;
         ServiceManager msngr;
+        HowOffensive judge;
 
         public SetupTest(Team team)
         {
@@ -24,14 +25,15 @@ namespace RFC.Strategy
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+            judge = new HowOffensive(team);
 
-            
         }
 
         public void Handle(FieldVisionMessage fieldVision)
         {
             if (!stopped && fieldVision.GetRobots().Count > 0)
             {
+                msngr.db("score: " + judge.Evaluate(fieldVision));
                 testing.OursSetup(fieldVision);
             }
         }
