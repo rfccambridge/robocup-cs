@@ -28,6 +28,7 @@ namespace RFC.Logging
             //new QueuedMessageHandler<BallMarkMessage>(recordMessage, new object());
             //new QueuedMessageHandler<BallMovedMessage>(recordMessage, new object());
             //new QueuedMessageHandler<BallVisionMessage>(recordMessage, new object());
+            new QueuedMessageHandler<KickMessage>(recordMessage, new object());
             new QueuedMessageHandler<FieldVisionMessage>(recordMessage, new object());
         }
 

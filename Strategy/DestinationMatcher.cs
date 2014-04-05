@@ -23,7 +23,6 @@ namespace RFC.Strategy
             ServiceManager msngr = ServiceManager.getServiceManager();
 
             // sending dest messages for each one
-            msngr.db("pairing: " + assignments[0] + " " + assignments[1]);
             for (int i = 0; i < n; i++)
             {
                 RobotInfo dest = new RobotInfo(destinations[assignments[i]]);

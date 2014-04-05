@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RFC.Messaging;
 using RFC.Core;
 using RFC.Geometry;
+using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
@@ -42,7 +43,7 @@ namespace RFC.Strategy
             for (int i = 0; i < n; i++)
             {
                 Vector2 position = new Vector2(2-Constants.Basic.ROBOT_RADIUS*4 * i, 0);
-                destinations.Add(new RobotInfo(position,0,0));
+                destinations.Add(new RobotInfo(position,1.5,0));
             }
 
             // this function matches the closest robot to closest destination and handles

@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 using RFC.Messaging;
 using RFC.Core;
 using RFC.Geometry;
+using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
     public class SetupTest
     {
+        
         Team team;
         bool stopped = false;
         KickOffBehavior testing;
         ServiceManager msngr;
         HowOffensive judge;
+        bool first = true;
 
         public SetupTest(Team team)
         {
@@ -25,17 +28,23 @@ namespace RFC.Strategy
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
-            judge = new HowOffensive(team);
+
+            // static debug
+
+            
+
 
         }
 
         public void Handle(FieldVisionMessage fieldVision)
         {
-            if (!stopped && fieldVision.GetRobots().Count > 0)
+            if (!first)
             {
-                msngr.db("score: " + judge.Evaluate(fieldVision));
-                testing.OursSetup(fieldVision);
+                RobotInfo rob = fieldVision.GetRobots(team)[0];
+                msngr.SendMessage(new KickMessage(rob, Constants.FieldPts.THEIR_GOAL));
             }
+            first = false;
+            
         }
 
         public void stopMessageHandler(StopMessage message)
