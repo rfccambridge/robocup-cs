@@ -41,7 +41,11 @@ namespace RFC.Strategy
             // attack right
             if (fieldSide)
             {
+<<<<<<< HEAD
+                LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0;
+=======
                 LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
+>>>>>>> 54a16755b84623371e30771ac4938281471cb1fc
                 LAT_VSTART = Constants.Field.YMIN;
 
                 LAT_HEND = Constants.Field.XMAX;
@@ -50,6 +54,21 @@ namespace RFC.Strategy
                 LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
                 LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
             }
+<<<<<<< HEAD
+            // attack left
+            else
+            {
+                LAT_HSTART = Constants.Field.XMIN;
+                LAT_VSTART = Constants.Field.YMIN;
+
+                LAT_HEND = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0;
+                LAT_VEND = Constants.Field.YMAX;
+
+                LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
+                LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
+            }
+            update(ourTeam, theirTeam, ball);
+=======
             update(ourTeam, theirTeam, ball);
         }
 
@@ -68,13 +87,18 @@ namespace RFC.Strategy
                 }
                 Console.Write(Environment.NewLine + Environment.NewLine);
             }
+>>>>>>> 54a16755b84623371e30771ac4938281471cb1fc
         }
 
         private static double normalize(double score)
         {
             // values might be too small as Double.MaxValue is super big...
+<<<<<<< HEAD
+            return (NORM_TO / Double.MaxValue) * score;
+=======
             // return (NORM_TO / Double.MaxValue) * score;
             return score;
+>>>>>>> 54a16755b84623371e30771ac4938281471cb1fc
         }
 
         public void update(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
@@ -86,8 +110,13 @@ namespace RFC.Strategy
                     Vector2 pos = new Vector2(x, y);
 
                     // find angle of opening for position
+<<<<<<< HEAD
+                    Vector2 vecBotGoal = pos - Constants.FieldPts.THEIR_GOAL_BOTTOM;
+                    Vector2 vecTopGoal = pos - Constants.FieldPts.THEIR_GOAL_TOP;
+=======
                     Vector2 vecBotGoal = Constants.FieldPts.THEIR_GOAL_BOTTOM - pos;
                     Vector2 vecTopGoal = Constants.FieldPts.THEIR_GOAL_TOP - pos;
+>>>>>>> 54a16755b84623371e30771ac4938281471cb1fc
                     double goalAngle = Math.Acos(vecBotGoal.cosineAngleWith(vecTopGoal));
 
                     // iterate through other robots, adding distance between (line of sight between position and goal) and other robot
@@ -127,7 +156,10 @@ namespace RFC.Strategy
         public double[,] getDrib(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
         {
             return shotMap;
+<<<<<<< HEAD
+=======
             // distance from ball to pos?
+>>>>>>> 54a16755b84623371e30771ac4938281471cb1fc
         }
 
         // within bounce angle -> good
@@ -141,8 +173,13 @@ namespace RFC.Strategy
                 for (double y = LAT_VSTART; y < LAT_VEND; y += LAT_VSIZE)
                 {
                     Vector2 pos = new Vector2(x, y);
+<<<<<<< HEAD
+                    Vector2 vecToBall = pos - ball.Position;
+                    Vector2 vecToGoal = pos - Constants.FieldPts.THEIR_GOAL;
+=======
                     Vector2 vecToBall = ball.Position - pos;
                     Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
+>>>>>>> 54a16755b84623371e30771ac4938281471cb1fc
 
                     // see if position has good line of sight with ball
                     double distSum = 200.0;
@@ -158,8 +195,12 @@ namespace RFC.Strategy
                     }
 
                     // calculate bounce score
+<<<<<<< HEAD
+                    double currentBounceAngle = Math.Acos(vecToBall.cosineAngleWith(vecToGoal));
+=======
                     // make .5(1+cos)
                     double currentBounceAngle = 180 * Math.Acos(vecToBall.cosineAngleWith(vecToGoal)) / Math.PI;
+>>>>>>> 54a16755b84623371e30771ac4938281471cb1fc
                     double bounceScore = 90 - Math.Abs(currentBounceAngle - 90);
                     double worstBounceScore = 90 - Math.Abs(BOUNCE_ANGLE - 90);
                     // if bounce score is worse than what robot can handle then position is pretty crappy
@@ -167,7 +208,11 @@ namespace RFC.Strategy
                     {
                         bounceScore = 0;
                     }
+<<<<<<< HEAD
+
+=======
                     
+>>>>>>> 54a16755b84623371e30771ac4938281471cb1fc
                     int i = (int)((x - LAT_HSTART) / LAT_HSIZE);
                     int j = (int)((y - LAT_VSTART) / LAT_VSIZE);
                     // shouldn't happen but just to be safe

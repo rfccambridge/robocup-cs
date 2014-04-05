@@ -17,7 +17,7 @@ using RFC.Logging;
 using RFC.Messaging;
 using RFC.Simulator;
 using RFC.FieldDrawer;
-using Strategy;
+using RFC.Strategy;
 
 namespace ControlForm
 {
@@ -51,7 +51,7 @@ namespace ControlForm
                 new VelocityDriver();
 
                 // new MovementTest(team);
-                new OffTester(team);
+                //new OffTester(team);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
                 new FieldDrawer().Show();

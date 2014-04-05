@@ -39,19 +39,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DestinationMatcher.cs" />
-    <Compile Include="HowOffensive.cs" />
-    <Compile Include="OccOffenseMapper.cs" />
+    <Compile Include="AlexTest.cs" />
+    <Compile Include="AssessThreats.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="KickInBehavior.cs" />
     <Compile Include="KickOffBehavior.cs" />
     <Compile Include="MovementTest.cs" />
     <Compile Include="NormalBehavior.cs" />
-    <Compile Include="OffTester.cs" />
     <Compile Include="PenaltyKickBehavior.cs" />
     <Compile Include="PlaySwitcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SetupTest.cs" />
+    <Compile Include="Shot1.cs" />
     <Compile Include="Threat.cs" />
     <Compile Include="WaitBehavior.cs" />
   </ItemGroup>
@@ -79,10 +77,6 @@
     <ProjectReference Include="..\RobotCommand\Commands.csproj">
       <Project>{6e92ddbb-42a7-462c-9e34-6b88fe64025f}</Project>
       <Name>Commands</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{644cf1d1-4066-4e97-a75c-da16e710443e}</Project>
-      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

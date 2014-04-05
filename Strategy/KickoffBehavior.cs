@@ -48,7 +48,10 @@ namespace RFC.Strategy
 
             // this function matches the closest robot to closest destination and handles
             // sending messages to get there
+
+
             // DestinationMatcher.SendByDistance(ours, destinations);
+
 
         }
 

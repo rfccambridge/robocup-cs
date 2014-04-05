@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RFC.Core;
 using RFC.Geometry;
+using RFC.Messaging;
 
 namespace RFC.Strategy
 {
@@ -27,7 +28,7 @@ namespace RFC.Strategy
 
     interface DefenseMapper
     {
-        Threat[] getThreats(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball);
+        List<Threat> getThreats(FieldVisionMessage msg);
     }
 
     interface ShotPlanner
