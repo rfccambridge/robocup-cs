@@ -12,11 +12,14 @@ namespace Strategy
 {
     public class OffTester
     {
-        Team team;
-        Team oTeam;
+        private const double TOLERANCE = .1;
 
-        bool stopped = false;
-        OccOffenseMapper offenseMap;
+        private Team team;
+        private Team oTeam;
+
+        private bool stopped = false;
+        private bool firstRun = true;
+        private OccOffenseMapper offenseMap;
 
         public OffTester(Team team)
         {
@@ -33,13 +36,16 @@ namespace Strategy
 
         public void Handle(FieldVisionMessage fieldVision)
         {
+            List<RobotInfo> ourTeam = fieldVision.GetRobots(team);
+            List<RobotInfo> theirTeam = fieldVision.GetRobots(oTeam);
+            BallInfo ball = fieldVision.Ball;
+            int robotID = fieldVision.GetRobots(team)[0].ID;
+            RobotInfo ri = fieldVision.GetRobot(team, robotID);
             if (!stopped)
             {
-                List<RobotInfo> ourTeam = fieldVision.GetRobots(team);
-                List<RobotInfo> theirTeam = fieldVision.GetRobots(oTeam);
-                BallInfo ball = fieldVision.Ball;
-                offenseMap = new OccOffenseMapper(true, ourTeam, theirTeam, ball);
+                firstRun = false;
 
+                offenseMap = new OccOffenseMapper(true, ourTeam, theirTeam, ball);
                 offenseMap.update(ourTeam, theirTeam, ball);
                 double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
                 double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball);
@@ -47,6 +53,7 @@ namespace Strategy
                 double max = Double.MinValue;
                 int maxI = 0;
                 int maxJ = 0;
+
                 /*
                 for (int i = 0; i < dribMap.GetUpperBound(0); i++)
                 {
@@ -61,6 +68,7 @@ namespace Strategy
                     }
                 }
                 */
+
                 for (int i = 0; i < passMap.GetUpperBound(0); i++)
                 {
                     for (int j = 0; j < passMap.GetUpperBound(1); j++)
@@ -74,9 +82,12 @@ namespace Strategy
                     }
                 }
 
-                RobotInfo destination = new RobotInfo(offenseMap.indToVec(maxI, maxJ), 0, fieldVision.GetRobots(team)[0].ID);
-                RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
-                ServiceManager.getServiceManager().SendMessage(destinationMessage);
+                if (ri.Position.distanceSq(offenseMap.indToVec(maxI, maxJ)) < TOLERANCE || firstRun)
+                {
+                    RobotInfo destination = new RobotInfo(offenseMap.indToVec(maxI, maxJ), 0, robotID);
+                    RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
+                    ServiceManager.getServiceManager().SendMessage(destinationMessage);
+                }
 
                 /*
                 Console.Write("dribMap: ");
