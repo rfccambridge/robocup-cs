@@ -39,7 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OccOffenseMapper.cs" />
+    <Compile Include="AlexTest.cs" />
+    <Compile Include="AssessThreats.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="KickInBehavior.cs" />
     <Compile Include="KickOffBehavior.cs" />

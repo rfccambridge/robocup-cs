@@ -19,15 +19,17 @@ namespace RFC.Logging
             ServiceManager.getServiceManager().RegisterListener<LogMessage>(writeLog, new object());
 
             // messages to be recorded
-            new QueuedMessageHandler<VisionMessage>(recordMessage, new object());
-            new QueuedMessageHandler<RobotVisionMessage>(recordMessage, new object());
+            //new QueuedMessageHandler<VisionMessage>(recordMessage, new object());
+            //new QueuedMessageHandler<RobotVisionMessage>(recordMessage, new object());
             new QueuedMessageHandler<CommandMessage>(recordMessage, new object());
             new QueuedMessageHandler<RobotDestinationMessage>(recordMessage, new object());
             new QueuedMessageHandler<RobotPathMessage>(recordMessage, new object());
             new QueuedMessageHandler<RefboxStateMessage>(recordMessage, new object());
-            new QueuedMessageHandler<BallMarkMessage>(recordMessage, new object());
-            new QueuedMessageHandler<BallMovedMessage>(recordMessage, new object());
-            new QueuedMessageHandler<BallVisionMessage>(recordMessage, new object());
+            //new QueuedMessageHandler<BallMarkMessage>(recordMessage, new object());
+            //new QueuedMessageHandler<BallMovedMessage>(recordMessage, new object());
+            //new QueuedMessageHandler<BallVisionMessage>(recordMessage, new object());
+            new QueuedMessageHandler<KickMessage>(recordMessage, new object());
+            new QueuedMessageHandler<FieldVisionMessage>(recordMessage, new object());
         }
 
         public void writeLog(LogMessage LM)

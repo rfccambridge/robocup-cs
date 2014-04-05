@@ -131,7 +131,6 @@ namespace RFC.PathPlanning
 
         public void handleRobotDestinationMessage(RobotDestinationMessage message)
         {
-            msngr.db("received destination message");
             if (message.Destination == null || double.IsNaN(message.Destination.Position.X) || double.IsNaN(message.Destination.Position.Y))
             {
                 msngr.db("invalid destination");
@@ -165,12 +164,6 @@ namespace RFC.PathPlanning
                 destinationCopy.ID = id;
 
                 // debug info
-                msngr.db("params for first call of get path");
-                msngr.db(destinationCopy.Position.ToString());
-                msngr.db(avoidBallDist.ToString());
-                msngr.db("path: "+oldPath.ToString());
-                msngr.db("left: "+leftAvoid.ToString());
-                msngr.db("right: "+rightAvoid.ToString());
                 newPath = GetPath(destinationCopy, avoidBallDist, oldPath,
                     leftAvoid, rightAvoid);
                 // if path is empty, don't move, else make sure path contains desired state
@@ -204,7 +197,6 @@ namespace RFC.PathPlanning
             }
             #endregion
             */
-            msngr.db("sending path");
             msngr.SendMessage(new RobotPathMessage(newPath));
         }
 
@@ -787,7 +779,6 @@ namespace RFC.PathPlanning
             try
             {
                 RobotVisionMessage msg = msngr.GetLastMessage<RobotVisionMessage>();
-                msngr.db("vm: " + msg);
                 curinfo = msg.GetRobot(team, id);
             }
             catch (ApplicationException)
