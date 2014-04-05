@@ -95,10 +95,8 @@ namespace RFC.PathPlanning
                 }
                 else
                 {
-                    msngr.db("new path");
                     speeds = new WheelSpeeds();
                 }
-                msngr.db(speeds.toString());
                 msngr.SendMessage(new CommandMessage(new RobotCommand(robot.ID, speeds)));
 
             }
@@ -224,7 +222,7 @@ namespace RFC.PathPlanning
             }
             if (nextWaypoint == null)
             {
-                Console.WriteLine("no next waypoint");
+                msngr.db("no next waypoint");
                 return new WheelSpeeds();
             }
 

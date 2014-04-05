@@ -16,22 +16,10 @@ namespace RFC.Strategy
         // assigns each robot to one of the destinations and sends messages.
         // Position and orientation come from Destinations, IDs come from Robots
         //</summary>
-        public static void SendByDistance(List<RobotInfo> robots, List<RobotInfo> destinations) 
+        public static void SendByDistance(List<RobotInfo> robots, List<RobotInfo> destinations)
         {
+            int[] assignments = GetAssignments(robots, destinations);
             int n = robots.Count();
-            if (n != destinations.Count())
-            {
-                ServiceManager.getServiceManager().SendMessage(new LogMessage("ERROR: # of robots and destinations don't match"));
-                return;
-            }
-
-            // getting cost matrix
-            int[,] costs = constructDistanceMatrix(robots, destinations);
-
-            // using hungarian algorithm to find assignments
-            // value at [i] is index of which destination it should be assigned to
-            int[] assignments = HungarianAlgorithm.FindAssignments(costs);
-
             ServiceManager msngr = ServiceManager.getServiceManager();
 
             // sending dest messages for each one
@@ -42,15 +30,35 @@ namespace RFC.Strategy
 
                 msngr.SendMessage(new RobotDestinationMessage(dest, true, false, true));
             }
-
         }
+
+        public static int[] GetAssignments(List<RobotInfo> robots, List<RobotInfo> destinations) 
+        {
+            int n = robots.Count();
+            if (n != destinations.Count())
+            {
+                ServiceManager.getServiceManager().SendMessage(new LogMessage("ERROR: # of robots and destinations don't match"));
+                return null;
+            }
+
+            // getting cost matrix
+            int[,] costs = constructDistanceMatrix(robots, destinations);
+
+            // using hungarian algorithm to find assignments
+            // value at [i] is index of which destination it should be assigned to
+            int[] assignments = HungarianAlgorithm.FindAssignments(costs);
+
+            return assignments;
+        }
+
 
         // builds cost matrix from robots and destinations
         // each row is one robot
         // each column is one destination
         // ordering is by their position in the list
-        private static int[,] constructDistanceMatrix(List<RobotInfo> robots, List<RobotInfo> destinations)
+        public static int[,] constructDistanceMatrix(List<RobotInfo> robots, List<RobotInfo> destinations)
         {
+            double exponent = 3;
             int n = robots.Count();
             int[,] costs = new int[n, n];
 
@@ -58,7 +66,7 @@ namespace RFC.Strategy
             {
                 for (int d = 0; d < n; d++)
                 {
-                    costs[r, d] = (int)Math.Round(robots[r].Position.distance(destinations[d].Position));
+                    costs[r, d] = (int)Math.Round(Math.Pow(robots[r].Position.distance(destinations[d].Position),exponent));
                 }
             }
 

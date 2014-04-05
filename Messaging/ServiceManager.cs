@@ -128,7 +128,7 @@ namespace RFC.Messaging
             }
             else
             {
-                db("Message type not in buffer!");
+                db("Message type not in buffer: " + typeof(T).ToString());
                 return null;
             }
 		}
