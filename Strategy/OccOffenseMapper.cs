@@ -64,7 +64,7 @@ namespace RFC.Strategy
             {
                 for (int j = 0; j < a.GetLength(1); j++)
                 {
-                    Console.Write(string.Format("{0} ", a[i,j]));
+                    Console.Write(string.Format("{0} ", a[i, j]));
                 }
                 Console.Write(Environment.NewLine + Environment.NewLine);
             }
