@@ -38,7 +38,7 @@ namespace RFC.Strategy
 
             // getting destinations we want to go to
             // for now just put them in a line
-            List<RobotInfo> destinations = new List<RobotInfo>;
+            List<RobotInfo> destinations = new List<RobotInfo>();
             for (int i = 0; i < n; i++)
             {
                 Vector2 position = new Vector2(Constants.Basic.ROBOT_RADIUS*4 * i, 0);
@@ -47,7 +47,7 @@ namespace RFC.Strategy
 
             // this function matches the closest robot to closest destination and handles
             // sending messages to get there
-            DestinationMatcher.SendByDistance(ours, destinations);
+            // DestinationMatcher.SendByDistance(ours, destinations);
 
         }
 

@@ -17,6 +17,7 @@ using RFC.Logging;
 using RFC.Messaging;
 using RFC.Simulator;
 using RFC.FieldDrawer;
+using Strategy;
 
 namespace ControlForm
 {
@@ -49,7 +50,8 @@ namespace ControlForm
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
 
-                new MovementTest(team);
+                // new MovementTest(team);
+                new OffTester(team);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
                 new FieldDrawer().Show();
