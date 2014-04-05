@@ -8,25 +8,33 @@ using RFC.Core;
 
 namespace RFC.Strategy
 {
-    public static class KickInBehavior
+    public class KickInBehavior
     {
+        Team team;
+        ServiceManager msngr;
 
-        public static void DirectOurs(FieldVisionMessage msg, Team team)
+        public KickInBehavior(Team team)
+        {
+            this.team = team;
+            this.msngr = ServiceManager.getServiceManager();
+        }
+
+        public void DirectOurs(FieldVisionMessage msg)
         {
             //TODO
         }
 
-        public static void DirectTheirs(FieldVisionMessage msg, Team team)
+        public void DirectTheirs(FieldVisionMessage msg)
         {
             //TODO
         }
 
-        public static void IndirectOurs(FieldVisionMessage msg, Team team)
+        public void IndirectOurs(FieldVisionMessage msg)
         {
             //TODO
         }
 
-        public static void IndirectTheirs(FieldVisionMessage msg, Team team)
+        public void IndirectTheirs(FieldVisionMessage msg)
         {
             //TODO
         }

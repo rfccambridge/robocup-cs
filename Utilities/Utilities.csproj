@@ -33,6 +33,7 @@
     <Compile Include="CRCTool.cs" />
     <Compile Include="FunctionLoop.cs" />
     <Compile Include="HighResTimer.cs" />
+    <Compile Include="HungarianAlgorithm.cs" />
     <Compile Include="RandGen.cs" />
     <Compile Include="SerialUtils.cs" />
   </ItemGroup>

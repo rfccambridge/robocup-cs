@@ -21,7 +21,8 @@ namespace RFC.PathPlanning
             }
 
             // too close to obstacle
-            diff.normalizeToLength(radius);
+            diff = diff.normalizeToLength(radius);
+
             RobotInfo dest = new RobotInfo(target);
             dest.Position = obstacle + diff;
 
@@ -55,7 +56,7 @@ namespace RFC.PathPlanning
 
         private static bool in_bounds(Vector2 Position)
         {
-            return (Position.X < Constants.Field.XMAX && Position.X > Constants.Field.XMIN && Position.Y < Constants.Field.YMAX && Position.Y > Constants.Field.YMIN);
+            return (Position.X <= Constants.Field.XMAX && Position.X >= Constants.Field.XMIN && Position.Y <= Constants.Field.YMAX && Position.Y >= Constants.Field.YMIN);
         }
 
         private static List<Vector2> get_intersections(Vector2 obst, double radius)

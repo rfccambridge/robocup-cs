@@ -43,13 +43,13 @@ namespace ControlForm
                 int maxRobotId = 12;
                 bool simulator = true;
 
-                //new LogHandler();
+                new LogHandler();
                 Vision vision = new Vision();
                 new AveragingPredictor(flip);
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
 
-                new MovementTest(team);
+                new SetupTest(team);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
                 new FieldDrawer().Show();
