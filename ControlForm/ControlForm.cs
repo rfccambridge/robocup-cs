@@ -44,7 +44,7 @@ namespace ControlForm
                 int maxRobotId = 12;
                 bool simulator = true;
 
-                //new LogHandler();
+                new LogHandler();
                 Vision vision = new Vision();
                 new AveragingPredictor(flip);
                 new SmoothRRTPlanner(true, maxRobotId);

@@ -50,15 +50,12 @@ namespace RFC.Strategy
                 LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
                 LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
             }
-            Console.WriteLine("LAT_HSTART: " + LAT_HSTART);
-            Console.WriteLine("LAT_HEND: " + LAT_HEND);
-            Console.WriteLine("LAT_VSTART: " + LAT_VSTART);
-            Console.WriteLine("LAT_VEND: " + LAT_VEND);
-            Console.WriteLine("XMIN: " + Constants.Field.XMIN);
-            Console.WriteLine("XMAX: " + Constants.Field.XMAX);
-            Console.WriteLine("YMIN: " + Constants.Field.YMIN);
-            Console.WriteLine("YMAX: " + Constants.Field.YMAX);
             update(ourTeam, theirTeam, ball);
+        }
+
+        public Vector2 indToVec(int i, int j)
+        {
+            return new Vector2(i * this.LAT_HSIZE + this.LAT_HSTART, j * this.LAT_VSIZE + this.LAT_VSTART);
         }
 
         public static void printDoubleMatrix(double[,] a)
