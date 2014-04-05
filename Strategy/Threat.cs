@@ -8,7 +8,7 @@ using RFC.Core;
 
 namespace RFC.Strategy
 {
-    class Threat
+    public class Threat
     {
         public enum ThreatType
         {

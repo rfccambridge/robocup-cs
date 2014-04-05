@@ -70,23 +70,25 @@ namespace RFC.Strategy
 			bool ballPossessing= false;
 			List<Threat> compareThreats = indexedThreats;
 			List<Threat> prioritizedThreats = new List<Threat>();
-			for(int i=0; i<compareThreats.Count;i++){
-				int maxRiskIndex=0;
-				for(int j=i; j<compareThreats.Count; j++){
-					if(compareThreats[j].severity>maxRiskIndex)
-					{
-						maxRiskIndex =j;
-					}
-					Threat holder = compareThreats[i];
-					compareThreats[i]= compareThreats[j];
-					compareThreats[j]= holder;
-				}
-				if(compareThreats[j].ThreatType.Equals(Threat.ThreatType.ball))
-				{
-					ballIndex = maxRiskIndex;
-				}
-			}
-			prioritizedThreats = compareThreats;
+            for (int i = 0; i < compareThreats.Count; i++)
+            {
+                int maxRiskIndex = 0;
+                for (int j = i; j < compareThreats.Count; j++)
+                {
+                    if (compareThreats[j].severity > maxRiskIndex)
+                    {
+                        maxRiskIndex = j;
+                    }
+                    Threat holder = compareThreats[i];
+                    compareThreats[i] = compareThreats[j];
+                    compareThreats[j] = holder;
+                    if (compareThreats[j].GetType().Equals(Threat.ThreatType.ball))
+                    {
+                        ballIndex = maxRiskIndex;
+                    }
+                }
+                prioritizedThreats = compareThreats;
+            }
             for (int k = 0; k <msg.GetRobots(otherTeam).Count; k++)
             {
                 if (ballPossess(msg.GetRobots(otherTeam)[k], msg.Ball))
