@@ -41,7 +41,7 @@ namespace RFC.Strategy
             // attack right
             if (fieldSide)
             {
-                LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0;
+                LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
                 LAT_VSTART = Constants.Field.YMIN;
 
                 LAT_HEND = Constants.Field.XMAX;
@@ -65,10 +65,28 @@ namespace RFC.Strategy
             update(ourTeam, theirTeam, ball);
         }
 
+        public Vector2 indToVec(int i, int j)
+        {
+            return new Vector2(i * this.LAT_HSIZE + this.LAT_HSTART, j * this.LAT_VSIZE + this.LAT_VSTART);
+        }
+
+        public static void printDoubleMatrix(double[,] a)
+        {
+            for (int i = 0; i < a.GetLength(0); i++)
+            {
+                for (int j = 0; j < a.GetLength(1); j++)
+                {
+                    Console.Write(string.Format("{0} ", a[i, j]));
+                }
+                Console.Write(Environment.NewLine + Environment.NewLine);
+            }
+        }
+
         private static double normalize(double score)
         {
             // values might be too small as Double.MaxValue is super big...
-            return (NORM_TO / Double.MaxValue) * score;
+            // return (NORM_TO / Double.MaxValue) * score;
+            return score;
         }
 
         public void update(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
@@ -80,8 +98,8 @@ namespace RFC.Strategy
                     Vector2 pos = new Vector2(x, y);
 
                     // find angle of opening for position
-                    Vector2 vecBotGoal = pos - Constants.FieldPts.THEIR_GOAL_BOTTOM;
-                    Vector2 vecTopGoal = pos - Constants.FieldPts.THEIR_GOAL_TOP;
+                    Vector2 vecBotGoal = Constants.FieldPts.THEIR_GOAL_BOTTOM - pos;
+                    Vector2 vecTopGoal = Constants.FieldPts.THEIR_GOAL_TOP - pos;
                     double goalAngle = Math.Acos(vecBotGoal.cosineAngleWith(vecTopGoal));
 
                     // iterate through other robots, adding distance between (line of sight between position and goal) and other robot
@@ -121,6 +139,7 @@ namespace RFC.Strategy
         public double[,] getDrib(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
         {
             return shotMap;
+            // distance from ball to pos?
         }
 
         // within bounce angle -> good
@@ -134,8 +153,8 @@ namespace RFC.Strategy
                 for (double y = LAT_VSTART; y < LAT_VEND; y += LAT_VSIZE)
                 {
                     Vector2 pos = new Vector2(x, y);
-                    Vector2 vecToBall = pos - ball.Position;
-                    Vector2 vecToGoal = pos - Constants.FieldPts.THEIR_GOAL;
+                    Vector2 vecToBall = ball.Position - pos;
+                    Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
 
                     // see if position has good line of sight with ball
                     double distSum = 200.0;
@@ -151,7 +170,8 @@ namespace RFC.Strategy
                     }
 
                     // calculate bounce score
-                    double currentBounceAngle = Math.Acos(vecToBall.cosineAngleWith(vecToGoal));
+                    // make .5(1+cos)
+                    double currentBounceAngle = 180 * Math.Acos(vecToBall.cosineAngleWith(vecToGoal)) / Math.PI;
                     double bounceScore = 90 - Math.Abs(currentBounceAngle - 90);
                     double worstBounceScore = 90 - Math.Abs(BOUNCE_ANGLE - 90);
                     // if bounce score is worse than what robot can handle then position is pretty crappy

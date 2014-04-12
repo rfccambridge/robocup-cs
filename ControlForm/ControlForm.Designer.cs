@@ -34,6 +34,8 @@
             this.TeamBox = new System.Windows.Forms.ComboBox();
             this.TeamLabel = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.flippedCheckBox = new System.Windows.Forms.CheckBox();
+            this.simulatorCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.ComNumberChooser)).BeginInit();
             this.SuspendLayout();
             // 
@@ -66,7 +68,7 @@
             // TeamBox
             // 
             this.TeamBox.FormattingEnabled = true;
-            this.TeamBox.Location = new System.Drawing.Point(74, 38);
+            this.TeamBox.Location = new System.Drawing.Point(53, 93);
             this.TeamBox.Name = "TeamBox";
             this.TeamBox.Size = new System.Drawing.Size(121, 21);
             this.TeamBox.TabIndex = 3;
@@ -74,7 +76,7 @@
             // TeamLabel
             // 
             this.TeamLabel.AutoSize = true;
-            this.TeamLabel.Location = new System.Drawing.Point(33, 41);
+            this.TeamLabel.Location = new System.Drawing.Point(12, 96);
             this.TeamLabel.Name = "TeamLabel";
             this.TeamLabel.Size = new System.Drawing.Size(37, 13);
             this.TeamLabel.TabIndex = 4;
@@ -90,11 +92,35 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.StopButton_Click);
             // 
+            // flippedCheckBox
+            // 
+            this.flippedCheckBox.AutoSize = true;
+            this.flippedCheckBox.Location = new System.Drawing.Point(12, 120);
+            this.flippedCheckBox.Name = "flippedCheckBox";
+            this.flippedCheckBox.Size = new System.Drawing.Size(60, 17);
+            this.flippedCheckBox.TabIndex = 6;
+            this.flippedCheckBox.Text = "Flipped";
+            this.flippedCheckBox.UseVisualStyleBackColor = true;
+            this.flippedCheckBox.CheckedChanged += new System.EventHandler(this.flippedCheckBox_CheckedChanged);
+            // 
+            // simulatorCheckBox
+            // 
+            this.simulatorCheckBox.AutoSize = true;
+            this.simulatorCheckBox.Location = new System.Drawing.Point(15, 38);
+            this.simulatorCheckBox.Name = "simulatorCheckBox";
+            this.simulatorCheckBox.Size = new System.Drawing.Size(122, 17);
+            this.simulatorCheckBox.TabIndex = 7;
+            this.simulatorCheckBox.Text = "Connect to simulator";
+            this.simulatorCheckBox.UseVisualStyleBackColor = true;
+            this.simulatorCheckBox.CheckedChanged += new System.EventHandler(this.simulatorCheckBox_CheckedChanged);
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.simulatorCheckBox);
+            this.Controls.Add(this.flippedCheckBox);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.TeamLabel);
             this.Controls.Add(this.TeamBox);
@@ -103,6 +129,7 @@
             this.Controls.Add(this.RunButton);
             this.Name = "ControlForm";
             this.Text = "Form1";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ControlForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.ComNumberChooser)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -117,6 +144,8 @@
         private System.Windows.Forms.ComboBox TeamBox;
         private System.Windows.Forms.Label TeamLabel;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox flippedCheckBox;
+        private System.Windows.Forms.CheckBox simulatorCheckBox;
     }
 }
 

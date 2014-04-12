@@ -26,7 +26,7 @@ namespace RFC.Strategy
             double scalar = 10;
             double sum = 0; 
             double max_distance = 2;
-            int[] factors = {5,3,3,2,2,0,0}; //6 robots max, 1 for luck :)
+            int[] factors = {6,4,3,1,1,0,0}; //6 robots max, 1 for luck :)
             double position_coefficient = 3; // +x is towards our goal
             BallInfo ball = msg.Ball;
 

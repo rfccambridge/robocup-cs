@@ -10,11 +10,15 @@ namespace RFC.Strategy
 {
     class Goalie
     {
-        public Goalie(Team team, int ID);
-
+        Team team;
+        public Goalie(Team team, int ID)
+        {
+            this.team = team;
+        }
         public RobotInfo getGoalie(FieldVisionMessage msg)
         {
-            msg.GetRobots(team)
+            List<RobotInfo> ours = msg.GetRobots(team);
+            return null;
         }
     }
 }

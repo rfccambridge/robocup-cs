@@ -8,7 +8,7 @@ using RFC.Core;
 
 namespace RFC.Strategy
 {
-    class Threat
+    public class Threat
     {
         public enum ThreatType
         {
@@ -20,18 +20,33 @@ namespace RFC.Strategy
         public double severity;
         public Vector2 position;
         public ThreatType type;
+        private double p;
+        private ThreatType threatType;
 
-        Threat(double sev, Vector2 pos, ThreatType typ)
+        public Threat(double sev, Vector2 pos, ThreatType typ)
         {
             severity = sev;
             position = pos;
             type = typ;
         }
-        Threat(double sev, RobotInfo robot)
+        public Threat(double sev, RobotInfo robot)
         {
             severity = sev;
             position = robot.Position;
             type = ThreatType.robot;
+        }
+        public Threat(double sev, BallInfo ball)
+        {
+            severity = sev;
+            position = ball.Position;
+            type = ThreatType.ball;
+        }
+
+        public Threat(double p, ThreatType threatType)
+        {
+            // TODO: Complete member initialization
+            this.p = p;
+            this.threatType = threatType;
         }
     }
 }
