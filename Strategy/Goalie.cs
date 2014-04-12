@@ -52,7 +52,7 @@ namespace RFC.Strategy
             Vector2 goalpos = Constants.FieldPts.OUR_GOAL;
             Vector2 ballpos = ball.Position;
             Vector2 ballvel = ball.Velocity;
-            double hold = Math.Min((ballpos - goalpos).magnitude(), Constants.Field.GOAL_WIDTH / 2); // robot distance from goal
+            double hold = Constants.Field.GOAL_WIDTH; // robot distance from goal
 
             double shadowAngle = (ballpos - goalpos).cartesianAngle(); // robot angle along semicircle if shadowing ball
 
@@ -71,7 +71,7 @@ namespace RFC.Strategy
             }
 
             double regime = guardRegime(ballvel.magnitude());
-            double angle = shadowAngle * regime + leadAngle * (1 - regime);
+            double angle = shadowAngle * (1 - regime) + leadAngle * regime;
 
             Vector2 pos = new Vector2(angle) * hold + goalpos;
             double orientation = (ballpos - pos).cartesianAngle();
