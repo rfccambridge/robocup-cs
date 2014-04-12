@@ -52,7 +52,7 @@ namespace RFC.Strategy
             Vector2 goalpos = Constants.FieldPts.OUR_GOAL;
             Vector2 ballpos = ball.Position;
             Vector2 ballvel = ball.Velocity;
-            double hold = Constants.Field.GOAL_WIDTH; // robot distance from goal
+            double hold = Constants.Field.GOAL_HEIGHT; // robot distance from goal
 
             double shadowAngle = (ballpos - goalpos).cartesianAngle(); // robot angle along semicircle if shadowing ball
 
@@ -60,12 +60,25 @@ namespace RFC.Strategy
             Line ballray = new Line(ballpos, ballvel.cartesianAngle());
             Circle guardcircle = new Circle(goalpos, hold);
             double leadAngle = shadowAngle; // robot angle along semicircle if leading ball movements
-            try
+            Vector2[] intersects = LineCircleIntersection.BothIntersections(ballray, guardcircle);
+            if (intersects.Length != 0)
             {
-                // first intersection between ball ray and guard circle
-                leadAngle = (LineCircleIntersection.Intersection(ballray, guardcircle, 0) - goalpos).cartesianAngle();
+                // intersection between ball ray and guard circle that is closest to the ball
+                
+                double distance = Double.MaxValue;
+                int use = 0;
+                for (int i = 0; i < intersects.Length; i++)
+                {
+                    if (intersects[i].distanceSq(ballpos) < distance)
+                    {
+                        use = i;
+                        distance = intersects[i].distanceSq(ballpos);
+                    }
+                }
+
+                leadAngle = (intersects[use] - goalpos).cartesianAngle();
             }
-            catch (NoIntersectionException e)
+            else
             {
                 leadAngle = (ballray.closestPointTo(goalpos) - goalpos).cartesianAngle();
             }

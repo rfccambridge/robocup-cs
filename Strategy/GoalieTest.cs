@@ -20,10 +20,10 @@ namespace RFC.Strategy
         ServiceManager msngr;
         
 
-        public GoalieTest(Team team)
+        public GoalieTest(Team team, int id)
         {
             this.team = team;
-            goalie = new Goalie(team, 5);
+            goalie = new Goalie(team, id);
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
@@ -38,10 +38,10 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage fieldVision)
         {
-            Console.WriteLine("in setuptest");
             if (!first && fieldVision.GetRobots(team).Count() > 0)
             {
                 RobotInfo rob = goalie.getGoalie(fieldVision);
+                msngr.db(""+rob.Position);
                 msngr.SendMessage(new RobotDestinationMessage(rob, false, true, true));
             }
             first = false;

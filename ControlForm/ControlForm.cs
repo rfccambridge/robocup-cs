@@ -68,7 +68,8 @@ namespace ControlForm
 
                 //new MovementTest(team);
                 //new OffTester(team);
-                new SetupTest(team);
+                //new SetupTest(team);
+                new GoalieTest(team, goalieNumber);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 

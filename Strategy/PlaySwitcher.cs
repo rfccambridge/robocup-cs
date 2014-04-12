@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RFC.Core;
 using RFC.Messaging;
-using RFC.Geometry
+using RFC.Geometry;
 
 namespace RFC.Strategy
 {

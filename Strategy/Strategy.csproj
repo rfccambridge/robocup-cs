@@ -42,6 +42,8 @@
     <Compile Include="AlexTest.cs" />
     <Compile Include="AssessThreats.cs" />
     <Compile Include="DestinationMatcher.cs" />
+    <Compile Include="Goalie.cs" />
+    <Compile Include="GoalieTest.cs" />
     <Compile Include="HowOffensive.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="KickInBehavior.cs" />
