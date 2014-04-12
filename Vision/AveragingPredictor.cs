@@ -30,11 +30,11 @@ namespace RFC.Vision
         // For marking ball position
         private Vector2 markedPosition = null;
 
-        private bool flipped;
+        public bool Flipped { get; set; }
 
-        public AveragingPredictor(bool flipped)
+        public AveragingPredictor()
         {
-            this.flipped = flipped;
+            Flipped = false;
 
             for (int i = 0; i < NUM_CAMERAS; i++)
             {
@@ -66,10 +66,10 @@ namespace RFC.Vision
                 combineRobots(team);
             
             // preparing messages
-            BallVisionMessage ball_msg = new BallVisionMessage(flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
-            RobotVisionMessage robots_msg = new RobotVisionMessage(flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
+            BallVisionMessage ball_msg = new BallVisionMessage(Flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
+            RobotVisionMessage robots_msg = new RobotVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
             BallMovedMessage move_msg = new BallMovedMessage(hasBallMoved());
-            FieldVisionMessage all_msg = new FieldVisionMessage(flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow), flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
+            FieldVisionMessage all_msg = new FieldVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow), Flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
 
             // sending message that new data is ready
             messenger.SendMessage<FieldVisionMessage>(all_msg);
