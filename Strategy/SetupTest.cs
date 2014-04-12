@@ -38,7 +38,8 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage fieldVision)
         {
-            if (!first)
+            Console.WriteLine("in setuptest");
+            if (!first && fieldVision.GetRobots(team).Count() > 0)
             {
                 RobotInfo rob = fieldVision.GetRobots(team)[0];
                 msngr.SendMessage(new KickMessage(rob, Constants.FieldPts.THEIR_GOAL));
