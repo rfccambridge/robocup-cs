@@ -22,13 +22,16 @@ namespace RFC.Strategy
 
         bool stopped = false;
 
+        ServiceManager msngr;
+
         public MovementTest(Team team)
         {
             this.team = team;
 
             object lockObject = new object();
             new QueuedMessageHandler<RobotVisionMessage>(Handle, lockObject);
-            ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+            msngr = ServiceManager.getServiceManager();
+            msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
         }
 
         public void Handle(RobotVisionMessage robotVision)
@@ -43,13 +46,15 @@ namespace RFC.Strategy
                 if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE || firstRun)
                 {
                     currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
-
-                    RobotInfo destination = new RobotInfo(waypoints[currentWaypointIndex], 0, robotId);
-                    RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
-                    ServiceManager.getServiceManager().SendMessage(destinationMessage);
-
-                    firstRun = false;
                 }
+
+                RobotInfo destination = new RobotInfo(waypoints[currentWaypointIndex], 0, robotId);
+                RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
+
+                msngr.SendMessage(destinationMessage);
+                msngr.db(destination.Position.ToString());
+                msngr.db(destination.ID.ToString());
+                firstRun = false;
             }
         }
 

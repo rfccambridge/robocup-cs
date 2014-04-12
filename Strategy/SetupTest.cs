@@ -32,13 +32,10 @@ namespace RFC.Strategy
             // static debug
 
             
-
-
         }
 
         public void Handle(FieldVisionMessage fieldVision)
         {
-            Console.WriteLine("in setuptest");
             if (!first && fieldVision.GetRobots(team).Count() > 0)
             {
                 RobotInfo rob = fieldVision.GetRobots(team)[0];

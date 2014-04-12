@@ -59,14 +59,16 @@ namespace ControlForm
                 bool flip = flippedCheckBox.Checked;
                 int maxRobotId = 12;
                 bool simulator = simulatorCheckBox.Checked;
+                int goalieNumber = (int)GoalieNumberChooser.Value;
 
                 new LogHandler();
                 
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
 
-                // new MovementTest(team);
+                //new MovementTest(team);
                 //new OffTester(team);
+                new SetupTest(team);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 

@@ -36,7 +36,10 @@
             this.button1 = new System.Windows.Forms.Button();
             this.flippedCheckBox = new System.Windows.Forms.CheckBox();
             this.simulatorCheckBox = new System.Windows.Forms.CheckBox();
+            this.GoalieNumberChooser = new System.Windows.Forms.NumericUpDown();
+            this.goalieLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ComNumberChooser)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.GoalieNumberChooser)).BeginInit();
             this.SuspendLayout();
             // 
             // RunButton
@@ -114,11 +117,29 @@
             this.simulatorCheckBox.UseVisualStyleBackColor = true;
             this.simulatorCheckBox.CheckedChanged += new System.EventHandler(this.simulatorCheckBox_CheckedChanged);
             // 
+            // GoalieNumberChooser
+            // 
+            this.GoalieNumberChooser.Location = new System.Drawing.Point(72, 165);
+            this.GoalieNumberChooser.Name = "GoalieNumberChooser";
+            this.GoalieNumberChooser.Size = new System.Drawing.Size(65, 20);
+            this.GoalieNumberChooser.TabIndex = 8;
+            // 
+            // goalieLabel
+            // 
+            this.goalieLabel.AutoSize = true;
+            this.goalieLabel.Location = new System.Drawing.Point(12, 167);
+            this.goalieLabel.Name = "goalieLabel";
+            this.goalieLabel.Size = new System.Drawing.Size(54, 13);
+            this.goalieLabel.TabIndex = 9;
+            this.goalieLabel.Text = "Goalie ID:";
+            // 
             // ControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.goalieLabel);
+            this.Controls.Add(this.GoalieNumberChooser);
             this.Controls.Add(this.simulatorCheckBox);
             this.Controls.Add(this.flippedCheckBox);
             this.Controls.Add(this.button1);
@@ -131,6 +152,7 @@
             this.Text = "Form1";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ControlForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.ComNumberChooser)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.GoalieNumberChooser)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -146,6 +168,8 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox flippedCheckBox;
         private System.Windows.Forms.CheckBox simulatorCheckBox;
+        private System.Windows.Forms.NumericUpDown GoalieNumberChooser;
+        private System.Windows.Forms.Label goalieLabel;
     }
 }
 

@@ -12,12 +12,13 @@ namespace RFC.PathPlanning
     {
         // angle and distance to go from setting up to kick
         // to actually kicking
-        const double heading_threshold = .15;
+        const double heading_threshold = .10;
         const double dist_threshold = .05;
         ServiceManager msngr;
 
         // how far back to stand. slightly more than radius
         double kick_dist = Constants.Basic.ROBOT_RADIUS * 1.5;
+        double follow_through_dist = Constants.Basic.ROBOT_RADIUS * .5;
 
         public KickPlanner()
         {
@@ -29,6 +30,9 @@ namespace RFC.PathPlanning
         public void Handle(KickMessage kick)
         {
             BallVisionMessage bvm = msngr.GetLastMessage<BallVisionMessage>();
+            if (bvm == null)
+                return;
+
             BallInfo ball = bvm.Ball;
             RobotInfo robot = kick.Source;
 
@@ -37,27 +41,33 @@ namespace RFC.PathPlanning
             double angle = diff.cartesianAngle();
             Vector2 offset = diff.normalizeToLength(kick_dist);
             Vector2 position = ball.Position - offset;
+            Vector2 followThroughOffset = diff.normalizeToLength(follow_through_dist);
+            Vector2 followThroughPosition = ball.Position + followThroughOffset;
 
             RobotInfo ideal = new RobotInfo(position, angle, robot.ID);
-
+            RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle, robot.ID);
+            msngr.db("dest: " + ideal.Position);
+            msngr.db("dist: " + robot.Position.distance(ideal.Position));
+            msngr.db("ang: " + Math.Abs(angle - robot.Orientation));
             // checking if we're close enough to start the actual kick
-            if (Math.Abs(angle - robot.Orientation) < heading_threshold && robot.Position.distance(ideal.Position) < dist_threshold)
+            if ((Math.Abs(angle - robot.Orientation) < heading_threshold) && (robot.Position.distance(ideal.Position) < dist_threshold))
             {
+                msngr.db("close enough");
                 // we are close enough
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
-                RobotInfo ball_loc = new RobotInfo(ball.Position, angle, robot.ID);
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ball_loc, false, false, true);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(idealFollowThrough, false, false, true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
             else
             {
                 // not close enough
+                msngr.db("not close enough");
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,false,false,true);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true,false,true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
         }
