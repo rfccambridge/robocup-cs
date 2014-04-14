@@ -19,10 +19,10 @@ namespace RFC.Strategy
 		List<Threat> indexedThreats;
 		Team myTeam;
         Team otherTeam;
-		double cornerZone; /*legnth of zone at endgoal where player poses passing risk only, rather than shooting*/
+		double cornerZone; /*length of zone at endgoal where player poses passing risk only, rather than shooting*/
 		double otherPassRisk; /*adjustable probability of other team's passing ability*/
 				
-		public AssessThreats(Team myTeam) 
+		public AssessThreats(Team myTeam, double otherPassRisk) 
 		{
 			this.fieldSide = true;
 			this.myTeam = myTeam;
@@ -40,7 +40,7 @@ namespace RFC.Strategy
 			indexedThreats = new List<Threat>();
 			this.myTeam = myTeam;
 			cornerZone= (Constants.Field.HEIGHT-Constants.Field.GOAL_WIDTH)/4;
-			otherPassRisk=1;
+            this.otherPassRisk = otherPassRisk;
 		}
 		public void analyzeThreats(FieldVisionMessage msg){
         
@@ -58,25 +58,7 @@ namespace RFC.Strategy
 			int ballIndex=0;
             List<Threat> prioritizedThreats = indexedThreats;
             prioritizedThreats.Sort();
-            /*for (int i = 0; i < prioritizedThreats.Count; i++)
-            {
-                int maxRiskIndex = 0;
-                for (int j = i; j < prioritizedThreats.Count; j++)
-                {
-                    if (prioritizedThreats[j].severity > maxRiskIndex)//track maximum risk index
-                    {
-                        maxRiskIndex = j;
-                    }
-                    Threat holder = prioritizedThreats[i]; //swaps elements if it exceeds the maximum risk index in unsorted part of list
-                    prioritizedThreats[i] = prioritizedThreats[j];
-                    prioritizedThreats[j] = holder;
-                    if (prioritizedThreats[j].type==Threat.ThreatType.ball)
-                    {
-                        ballIndex = maxRiskIndex;
-                    }
-                }
             
-            }*/
             for (int k = 0; k <msg.GetRobots(otherTeam).Count; k++) /*removes ball from list of threats if in possession of a player*/
             {
                 if (ballPossess(msg.GetRobots(otherTeam)[k], msg.Ball))
