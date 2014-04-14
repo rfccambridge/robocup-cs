@@ -17,35 +17,41 @@ namespace RFC.Strategy
         double otherPassRisk;
         ServiceManager msngr;
         int goalieID;
+        Goalie goalieBehavior;
 
-        public DefenseStrategy(FieldVisionMessage msg, Team myTeam)
+        public DefenseStrategy(FieldVisionMessage msg, Team myTeam, int goalie_id)
         {
             this.myTeam = myTeam;
             otherPassRisk = 1;
             assessThreats = new AssessThreats(myTeam, 1);
             msngr = ServiceManager.getServiceManager();
-            goalieID=; //need to fetch
+            goalieID = goalie_id; //need to fetch
+            goalieBehavior = new Goalie(myTeam, goalie_id);
         }
 
         public void DefenseCommand(FieldVisionMessage msg)
         {
             List<Threat> totalThreats = assessThreats.getThreats(msg);
             List<RobotInfo> topThreats = new List<RobotInfo>();
-            for (int i = 1; i < msg.GetRobots(myTeam).Count(); i++)
+
+            // n - 1 threats, because leave one out for goalie
+            for (int i = 0; i < msg.GetRobots(myTeam).Count() - 1; i++)
             {
-                topThreats[i - 1] = new RobotInfo(totalThreats[i - 1].position, 0, 0);
+                topThreats[i] = new RobotInfo(totalThreats[i].position, 0, 0);
             }
+
             List<RobotInfo> fieldPlayers = msg.GetRobots(myTeam);
-            for(int i =0; i<fieldPlayers.Count; i++)
-            {
-                if(fieldPlayers[i].ID==goalieID)
-                {
-                    fieldPlayers.RemoveAt(i);
-                }
-            }
+            RobotInfo goalie = msg.GetRobot(myTeam, goalieID);
+
+            // goalie is not a field player
+            fieldPlayers.Remove(goalie);
+
+
+            // assigning positions for field players
             List<RobotInfo> destinations = new List<RobotInfo>();
             for (int i = 0; i < fieldPlayers.Count; i++)
             {
+                // want to go right for the ball, not shadow it like a player
                 if (topThreats[i].Position == msg.Ball.Position)
                 {
                     destinations[i] = new RobotInfo(topThreats[i].Position, 0, 0);
@@ -60,15 +66,12 @@ namespace RFC.Strategy
             }
             
             DestinationMatcher.SendByDistance(fieldPlayers, destinations);
-        
-            
 
-
-
+            // assigning position for goalie
+            RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
+            goalie_dest.ID = goalieID;
+            msngr.SendMessage(new RobotDestinationMessage(goalie_dest, false, true, true));
 
         }
-
-
-
     }
 }
