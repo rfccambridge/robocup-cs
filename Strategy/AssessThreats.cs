@@ -22,7 +22,7 @@ namespace RFC.Strategy
 		double cornerZone; /*legnth of zone at endgoal where player poses passing risk only, rather than shooting*/
 		double otherPassRisk; /*adjustable probability of other team's passing ability*/
 				
-		public AssessThreats(Team myTeam)
+		public AssessThreats(Team myTeam) 
 		{
 			this.fieldSide = true;
 			this.myTeam = myTeam;
@@ -34,19 +34,9 @@ namespace RFC.Strategy
             {
                 otherTeam = Team.Blue;
             }
-            Vector2 leftGoalMid= new Vector2((Constants.Field.GOAL_XMIN+Constants.Field.GOAL_XMAX)/2,(Constants.Field.GOAL_YMIN+Constants.Field.GOAL_YMAX)/2);
-			Vector2 rightGoalMid = new Vector2((Constants.Field.GOAL_XMIN+Constants.Field.GOAL_XMAX)/2+Constants.Field.WIDTH,(Constants.Field.GOAL_YMIN+Constants.Field.GOAL_YMAX)/2);
-			if(fieldSide){
-				midpointGoal = leftGoalMid;
-				otherMidpointGoal = rightGoalMid;
-			}
-			else{
-				midpointGoal= rightGoalMid;
-				otherMidpointGoal = leftGoalMid;
-			}
-			goalPostTop = new Vector2(midpointGoal.X,Constants.Field.GOAL_YMIN);
-			goalPostBottom = new Vector2(midpointGoal.X,Constants.Field.GOAL_YMAX);
-			centerLine = midpointGoal-otherMidpointGoal;
+            goalPostTop = Constants.FieldPts.OUR_GOAL_TOP;
+            goalPostBottom = Constants.FieldPts.OUR_GOAL_BOTTOM;
+			centerLine = Constants.FieldPts.OUR_GOAL-Constants.FieldPts.THEIR_GOAL;
 			indexedThreats = new List<Threat>();
 			this.myTeam = myTeam;
 			cornerZone= (Constants.Field.HEIGHT-Constants.Field.GOAL_WIDTH)/4;
@@ -61,35 +51,33 @@ namespace RFC.Strategy
                        +playerPassRisk(msg.GetRobot(otherTeam,j-1),
                        msg), Threat.ThreatType.robot));
 			}
-			/*field analysis for open positions*/
 			return;
 		}
-		public List<Threat> getThreats(FieldVisionMessage msg){/*unfinished*/
-			analyzeThreats(msg);
+		public List<Threat> getThreats(FieldVisionMessage msg){/*creates list of Threats, then prioritizes them*/
+			analyzeThreats(msg);/*create the list of indexed Threats*/
 			int ballIndex=0;
-			bool ballPossessing= false;
-			List<Threat> compareThreats = indexedThreats;
-			List<Threat> prioritizedThreats = new List<Threat>();
-            for (int i = 0; i < compareThreats.Count; i++)
+            List<Threat> prioritizedThreats = indexedThreats;
+            prioritizedThreats.Sort();
+            /*for (int i = 0; i < prioritizedThreats.Count; i++)
             {
                 int maxRiskIndex = 0;
-                for (int j = i; j < compareThreats.Count; j++)
+                for (int j = i; j < prioritizedThreats.Count; j++)
                 {
-                    if (compareThreats[j].severity > maxRiskIndex)
+                    if (prioritizedThreats[j].severity > maxRiskIndex)//track maximum risk index
                     {
                         maxRiskIndex = j;
                     }
-                    Threat holder = compareThreats[i];
-                    compareThreats[i] = compareThreats[j];
-                    compareThreats[j] = holder;
-                    if (compareThreats[j].GetType().Equals(Threat.ThreatType.ball))
+                    Threat holder = prioritizedThreats[i]; //swaps elements if it exceeds the maximum risk index in unsorted part of list
+                    prioritizedThreats[i] = prioritizedThreats[j];
+                    prioritizedThreats[j] = holder;
+                    if (prioritizedThreats[j].type==Threat.ThreatType.ball)
                     {
                         ballIndex = maxRiskIndex;
                     }
                 }
-                prioritizedThreats = compareThreats;
-            }
-            for (int k = 0; k <msg.GetRobots(otherTeam).Count; k++)
+            
+            }*/
+            for (int k = 0; k <msg.GetRobots(otherTeam).Count; k++) /*removes ball from list of threats if in possession of a player*/
             {
                 if (ballPossess(msg.GetRobots(otherTeam)[k], msg.Ball))
                 {
@@ -103,19 +91,20 @@ namespace RFC.Strategy
 			{
 			Vector2 pathToGoal = midpointGoal-ball.Position;
 			double distanceRisk = pathToGoal.magnitude()/Constants.Field.WIDTH*100;
-			double angleRisk = Math.Abs(pathToGoal.cosineAngleWith(centerLine));/*doesn't seem like angle risk should fall with cosine*/
-			/*can alternatively try 1-(pathToGoal.AngleWith(Centerline)/(3.141592653/2))^4*/
+			double angleRisk = Math.Abs(pathToGoal.cosineAngleWith(centerLine));
 			double riskRating = distanceRisk*angleRisk;
 			return riskRating;
 			/*can expand to include velocity threats*/
 		}
 		
-		double playerShotRisk(RobotInfo player, BallInfo ball){
+		double playerShotRisk(RobotInfo player, BallInfo ball){/*risk of robot taking a shot on goal*/
 			double riskRating=0;
 			if(ballPossess(player, ball)){
 				riskRating+=ballRiskRating(ball);
 			}
-			if(Math.Abs(player.Position.X-midpointGoal.X)>Constants.Field.WIDTH/2||player.Position.distance(new Vector2(midpointGoal.X,Constants.Field.EXTENDED_HEIGHT))<cornerZone||player.Position.distance(new Vector2(midpointGoal.X,0))<cornerZone)/*checks if player is in a non-shooting zone*/
+			if(Math.Abs(player.Position.X-midpointGoal.X)>Constants.Field.WIDTH/2||
+                player.Position.distance(new Vector2(midpointGoal.X,Constants.Field.EXTENDED_HEIGHT))<cornerZone||
+                player.Position.distance(new Vector2(midpointGoal.X,0))<cornerZone)/*checks if player is in a non-shooting zone*/
 			/*could also do shot by preserving minimum angle using a circle*/
 			{
 				return riskRating;
@@ -123,8 +112,7 @@ namespace RFC.Strategy
 			else{
 				Vector2 pathToGoal = midpointGoal-ball.Position;
 				double distanceRisk = pathToGoal.magnitude()/Constants.Field.WIDTH*50;
-				double angleRisk = Math.Abs(pathToGoal.cosineAngleWith(centerLine));/*doesn't seem like angle risk should fall with cosine*/
-				/*can alternatively try 1-(pathToGoal.AngleWith(Centerline)/(3.141592653/2))^4*/
+				double angleRisk = Math.Abs(pathToGoal.cosineAngleWith(centerLine));
 				riskRating += distanceRisk*angleRisk;
 				return riskRating;
 				/*can expand to include velocity threats*/
@@ -132,10 +120,10 @@ namespace RFC.Strategy
 						
 		}
 		
-		double playerPassRisk(RobotInfo player, FieldVisionMessage msg)
+		double playerPassRisk(RobotInfo player, FieldVisionMessage msg) /*risk of team players a player can pass too*/
 		{
 		double passRisk=0;
-		for(int i=1; i<=msg.GetRobots(otherTeam).Count; i++){
+		for(int i=1; i<=msg.GetRobots(otherTeam).Count; i++){/*prevents adding self-risk to passing risk, excluded index 0 for goalie*/
 			if(indexedThreats[i].Equals(player))
 			{
 				if(i>msg.GetRobots(otherTeam).Count)
@@ -154,7 +142,7 @@ namespace RFC.Strategy
 		return passRisk;
 		}		
 		
-		bool ballPossess(RobotInfo player, BallInfo ball){
+		bool ballPossess(RobotInfo player, BallInfo ball){/*determines if robot has the ball*/
 			bool possess = false;
 			if(player.Position.distance(ball.Position)<2*Constants.Basic.ROBOT_RADIUS){
 				possess = true;
