@@ -12,7 +12,7 @@ namespace Strategy
 {
     public class OffTester
     {
-        private const double TOLERANCE = .1;
+        private const double TOLERANCE = 0.1;
 
         private Team team;
         private Team oTeam;
@@ -20,6 +20,11 @@ namespace Strategy
         private bool stopped = false;
         private bool firstRun = true;
         private OccOffenseMapper offenseMap;
+
+        private Vector2[] zoneList;
+        private const double ZONE_RAD = 5.0;
+
+        private const double BALL_HANDLE_MIN = 5.0;
 
         public OffTester(Team team)
         {
@@ -34,11 +39,72 @@ namespace Strategy
             ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
         }
 
+        private void goToBestPos(RobotInfo rob, Vector2 zoneCent, double[,] map, bool hasBall)
+        {
+            double max = 0.0;
+            int maxI = 0;
+            int maxJ = 0;
+            for (int j = (int)(zoneCent.X - ZONE_RAD); j < (int)(zoneCent.X + ZONE_RAD); j++)
+            {
+                for (int k = (int)(zoneCent.Y - ZONE_RAD); k < (int)(zoneCent.Y + ZONE_RAD); k++)
+                {
+                    if (map[j, k] > max)
+                    {
+                        max = map[j, k];
+                        maxI = j;
+                        maxJ = k;
+                    }
+                }
+            }
+            RobotInfo destination = new RobotInfo(OccOffenseMapper.indToVec(maxI, maxJ), 0, rob.ID);
+            RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, !hasBall, false);
+            ServiceManager.getServiceManager().SendMessage(destinationMessage);
+        }
+
         public void Handle(FieldVisionMessage fieldVision)
         {
             List<RobotInfo> ourTeam = fieldVision.GetRobots(team);
             List<RobotInfo> theirTeam = fieldVision.GetRobots(oTeam);
             BallInfo ball = fieldVision.Ball;
+
+            if (firstRun)
+            {
+                for (int i = 0; i < ourTeam.Count; i++)
+                {
+                    zoneList[i] = OccOffenseMapper.getZone(i);
+                }
+                offenseMap = new OccOffenseMapper(true, ourTeam, theirTeam, ball);
+                firstRun = false;
+            }
+            offenseMap.update(ourTeam, theirTeam, ball);
+            double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
+            double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball);
+
+            RobotInfo ballCarrier = null;
+            double rbd = BALL_HANDLE_MIN;
+            foreach (RobotInfo rob in ourTeam)
+            {
+                double dist = rob.Position.distance(ball.Position);
+                if (dist < rbd)
+                {
+                    ballCarrier = rob;
+                    rbd = dist;
+                }
+            }
+
+            for (int i = 0; i < ourTeam.Count; i++)
+            {
+                if ((i == 0 && ballCarrier == null) || ballCarrier.ID == ourTeam.ElementAt(i).ID)
+                {
+                    goToBestPos(ballCarrier, zoneList[i], dribMap, true);
+                }
+                else
+                {
+                    // first robot shouldn't avoid ball, thus i==0
+                    goToBestPos(ourTeam.ElementAt(i), zoneList[i], passMap, i==0);
+                }
+            }
+            /*
             int robotID = fieldVision.GetRobots(team)[0].ID;
             RobotInfo ri = fieldVision.GetRobot(team, robotID);
             if (!stopped)
@@ -67,7 +133,7 @@ namespace Strategy
                         }
                     }
                 }
-                */
+                
 
                 for (int i = 0; i < passMap.GetUpperBound(0); i++)
                 {
@@ -96,7 +162,7 @@ namespace Strategy
                 OccOffenseMapper.printDoubleMatrix(passMap);
                 Console.Write("\n\n\n");
                 
-            }
+            } */
         }
 
         public void stopMessageHandler(StopMessage message)

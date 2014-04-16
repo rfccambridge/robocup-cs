@@ -21,14 +21,14 @@ namespace RFC.Strategy
         // how far away from the line of sight should we ignore other robots?
         public const double IGN_THRESH = 20.0;
 
-        private readonly double LAT_HSTART;
-        private readonly double LAT_VSTART;
+        private static readonly double LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
+        private static readonly double LAT_VSTART = Constants.Field.YMIN;
 
-        private readonly double LAT_HEND;
-        private readonly double LAT_VEND;
+        private static readonly double LAT_HEND = Constants.Field.XMAX;
+        private static readonly double LAT_VEND = Constants.Field.YMAX;
 
-        private readonly double LAT_HSIZE;
-        private readonly double LAT_VSIZE;
+        private static readonly double LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
+        private static readonly double LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
 
         private Boolean fs;
 
@@ -37,23 +37,12 @@ namespace RFC.Strategy
         public OccOffenseMapper(Boolean fieldSide, List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
         {
             this.fs = fieldSide;
-
-            // always attack right
-            LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
-            LAT_VSTART = Constants.Field.YMIN;
-
-            LAT_HEND = Constants.Field.XMAX;
-            LAT_VEND = Constants.Field.YMAX;
-
-            LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
-            LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
-            // attack left
             update(ourTeam, theirTeam, ball);
         }
 
-        public Vector2 indToVec(int i, int j)
+        public static Vector2 indToVec(int i, int j)
         {
-            return new Vector2(i * this.LAT_HSIZE + this.LAT_HSTART, j * this.LAT_VSIZE + this.LAT_VSTART);
+            return new Vector2(i * LAT_HSIZE + LAT_HSTART, j * LAT_VSIZE + LAT_VSTART);
         }
 
         public static void printDoubleMatrix(double[,] a)
@@ -66,6 +55,37 @@ namespace RFC.Strategy
                 }
                 Console.Write(Environment.NewLine + Environment.NewLine);
             }
+        }
+
+        public static Vector2 getZone(int id)
+        {
+            // id zero indexed
+            double x;
+            double y;
+            switch (id)
+            {
+                // top zone
+                case 0:
+                    x = 1.0 * (LAT_HSTART + LAT_HEND) / 2.0;
+                    y = 3.0 * (LAT_VSTART + LAT_VEND) / 4.0;
+                    break;
+                // bottom zone
+                case 1:
+                    x = 1.0 * (LAT_HSTART + LAT_HEND) / 2.0;
+                    y = 1.0 * (LAT_VSTART + LAT_VEND) / 4.0;
+                    break;
+                // center zone
+                case 2:
+                    x = 3.0 * (LAT_HSTART + LAT_HEND) / 4.0;
+                    y = 1.0 * (LAT_VSTART + LAT_VEND) / 2.0;
+                    break;
+                // TODO: make far from other points
+                default:
+                    x = 7.0 * (LAT_HSTART + LAT_HEND) / 8.0;
+                    y = 1.0 * (LAT_VSTART + LAT_VEND) / 2.0;
+                    break;
+            }
+            return new Vector2(x, y);
         }
 
         private static double normalize(double score)
