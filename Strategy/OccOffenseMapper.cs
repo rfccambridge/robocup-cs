@@ -38,30 +38,16 @@ namespace RFC.Strategy
         {
             this.fs = fieldSide;
 
-            // attack right
-            if (fieldSide)
-            {
-                LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
-                LAT_VSTART = Constants.Field.YMIN;
+            // always attack right
+            LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
+            LAT_VSTART = Constants.Field.YMIN;
 
-                LAT_HEND = Constants.Field.XMAX;
-                LAT_VEND = Constants.Field.YMAX;
+            LAT_HEND = Constants.Field.XMAX;
+            LAT_VEND = Constants.Field.YMAX;
 
-                LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
-                LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
-            }
+            LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
+            LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
             // attack left
-            else
-            {
-                LAT_HSTART = Constants.Field.XMIN;
-                LAT_VSTART = Constants.Field.YMIN;
-
-                LAT_HEND = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0;
-                LAT_VEND = Constants.Field.YMAX;
-
-                LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
-                LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
-            }
             update(ourTeam, theirTeam, ball);
         }
 
