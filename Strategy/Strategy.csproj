@@ -46,8 +46,6 @@
     <Compile Include="KickOffBehavior.cs" />
     <Compile Include="MovementTest.cs" />
     <Compile Include="NormalBehavior.cs" />
-    <Compile Include="OccOffenseMapper.cs" />
-    <Compile Include="OffTester.cs" />
     <Compile Include="PenaltyKickBehavior.cs" />
     <Compile Include="PlaySwitcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

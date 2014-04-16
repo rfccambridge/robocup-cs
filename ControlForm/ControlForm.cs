@@ -51,7 +51,7 @@ namespace ControlForm
                 new VelocityDriver();
 
                 // new MovementTest(team);
-                new Strategy.OffTester(team);
+                //new OffTester(team);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
                 new FieldDrawer().Show();

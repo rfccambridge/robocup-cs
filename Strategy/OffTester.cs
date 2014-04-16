@@ -89,13 +89,13 @@ namespace Strategy
                     ServiceManager.getServiceManager().SendMessage(destinationMessage);
                 }
 
-                
+                /*
                 Console.Write("dribMap: ");
                 OccOffenseMapper.printDoubleMatrix(dribMap);
                 Console.Write("passMap: ");
                 OccOffenseMapper.printDoubleMatrix(passMap);
                 Console.Write("\n\n\n");
-                
+                */
             }
         }
 
