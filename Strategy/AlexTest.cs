@@ -18,7 +18,7 @@ namespace RFC.Strategy
 			object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
 			// Insert code required on object creation below this point.
-			assessThreats = new AssessThreats(Team.Yellow);
+			assessThreats = new AssessThreats(Team.Yellow,1);
 			
 		}
 		public void Handle(FieldVisionMessage msg)

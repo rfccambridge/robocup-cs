@@ -50,7 +50,7 @@ namespace RFC.Strategy
             // sending messages to get there
 
 
-            // DestinationMatcher.SendByDistance(ours, destinations);
+            DestinationMatcher.SendByDistance(ours, destinations);
 
 
         }

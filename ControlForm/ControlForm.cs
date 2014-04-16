@@ -25,11 +25,27 @@ namespace ControlForm
     {
         bool running = false;
 
+        AveragingPredictor predictor;
+
         public ControlForm()
         {
             InitializeComponent();
 
             TeamBox.DataSource = Enum.GetValues(typeof(Team));
+
+            StartVision();
+        }
+
+        public void StartVision()
+        {
+            Vision vision = new Vision();
+
+            vision.Connect("224.5.23.2", 10002);
+            vision.Start();
+
+            predictor = new AveragingPredictor();
+
+            new FieldDrawer().Show();
         }
 
         public void Run()
@@ -40,21 +56,22 @@ namespace ControlForm
                 int com = (int)ComNumberChooser.Value;
                 Team team = Team.Yellow;
                 Enum.TryParse<Team>(TeamBox.SelectedValue.ToString(), out team);
-                bool flip = false;
+                bool flip = flippedCheckBox.Checked;
                 int maxRobotId = 12;
-                bool simulator = true;
+                bool simulator = simulatorCheckBox.Checked;
+                int goalieNumber = (int)GoalieNumberChooser.Value;
 
                 new LogHandler();
-                Vision vision = new Vision();
-                new AveragingPredictor(flip);
+                
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
 
-                // new MovementTest(team);
+                //new MovementTest(team);
                 //new OffTester(team);
+                //new SetupTest(team);
+                new GoalieTest(team, goalieNumber);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
-                new FieldDrawer().Show();
 
                 if (simulator)
                 {
@@ -64,9 +81,6 @@ namespace ControlForm
                 {
                     new SerialSender(com);
                 }
-
-                vision.Connect("224.5.23.2", 10002);
-                vision.Start();
 
                 refbox.Connect("224.5.92.12", 10100);
                 refbox.Start();
@@ -92,6 +106,23 @@ namespace ControlForm
         {
             TeamBox.Enabled = false;
             ComNumberChooser.Enabled = false;
+            flippedCheckBox.Enabled = false;
+            simulatorCheckBox.Enabled = false;
+        }
+
+        private void ControlForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void flippedCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            predictor.Flipped = flippedCheckBox.Checked;
+        }
+
+        private void simulatorCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ComNumberChooser.Enabled = !simulatorCheckBox.Checked;
         }
     }
 }

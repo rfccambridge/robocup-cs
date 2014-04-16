@@ -96,8 +96,10 @@ namespace RFC.PathPlanning
                 else
                 {
                     speeds = new WheelSpeeds();
+                    Console.WriteLine("new wheel speeds");
                 }
                 msngr.SendMessage(new CommandMessage(new RobotCommand(robot.ID, speeds)));
+                msngr.db(speeds.toString());
 
             }
         }
@@ -184,31 +186,42 @@ namespace RFC.PathPlanning
             //Find the point we should head towards
             for (idx = 1; idx < path.Waypoints.Count; idx++)
             {
-                //Must be different from us
-                if (path.Waypoints[idx].Position.distanceSq(curInfo.Position) <= 1e-10)
-                    continue;
-
                 //End of the path? Then that's where we're going
                 if (idx == path.Waypoints.Count - 1)
                 {
+                    msngr.db("last");
                     nextWaypoint = path.Waypoints[idx];
                     nextWaypointIdx = idx;
                     break;
+                }
+
+                //Must be different from us
+                if (path.Waypoints[idx].Position.distanceSq(curInfo.Position) <= 1e-10)
+                {
+                    msngr.db("different");
+                    continue;
                 }
 
                 //If we're too far along the path to this waypoint from the previous, then move to the next again.
                 double distAlongTimesDistSegment = (curInfo.Position - path.Waypoints[idx - 1].Position) * (path.Waypoints[idx].Position - path.Waypoints[idx - 1].Position);
                 double distSegmentSq = path.Waypoints[idx].Position.distanceSq(path.Waypoints[idx - 1].Position);
                 if (distAlongTimesDistSegment >= 0.75 * distSegmentSq)
+                {
+                    msngr.db(" far along");
                     continue;
+                }
 
+                msngr.db("default");
                 //Otherwise, we stop here
                 nextWaypoint = path.Waypoints[idx];
                 nextWaypointIdx = idx;
                 break;
             }
 
-            
+            msngr.db("next waypoint" + nextWaypoint);
+            msngr.db("path[0]: " + path.Waypoints[0]);
+            msngr.db("path len " + path.Waypoints.Count());
+
 
             //Find the next significantly different point after that
             RobotInfo nextNextWaypoint = null;

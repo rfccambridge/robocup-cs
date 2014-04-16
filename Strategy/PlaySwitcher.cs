@@ -5,11 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using RFC.Core;
 using RFC.Messaging;
+using RFC.Geometry;
 
 namespace RFC.Strategy
 {
     class PlaySwitcher
     {
+        Vector2 position;
+        const double thresholdForBallMove = .03;
+
+        bool ballIsMoved(Vector2 ballPosition)
+        {
+            return this.position.distanceSq(ballPosition) > thresholdForBallMove;
+        }
+
         Team team;
         PlayType play;
         object lockObject;
@@ -43,10 +52,16 @@ namespace RFC.Strategy
         public void handle_refbox(RefboxStateMessage msg)
         {
             play = msg.PlayType;
+            position = ServiceManager.getServiceManager().GetLastMessage<BallVisionMessage>().Ball.Position;
         }
         
         public void handle_vision(FieldVisionMessage msg)
         {
+            if((play == PlayType.Direct_Ours || play == PlayType.Direct_Theirs || play == PlayType.Indirect_Ours || play == PlayType.Indirect_Theirs || play == PlayType.KickOff_Ours || play == PlayType.KickOff_Theirs) && ballIsMoved(msg.Ball.Position))
+            {
+                play = PlayType.NormalPlay;
+            }
+
             switch(play)
             {
                 case PlayType.NormalPlay:

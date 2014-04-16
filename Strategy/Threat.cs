@@ -8,7 +8,7 @@ using RFC.Core;
 
 namespace RFC.Strategy
 {
-    public class Threat
+    public class Threat : IComparable<Threat>
     {
         public enum ThreatType
         {
@@ -47,6 +47,21 @@ namespace RFC.Strategy
             // TODO: Complete member initialization
             this.p = p;
             this.threatType = threatType;
+        }
+
+        public int CompareTo(Threat other)
+        {
+            if (severity < other.severity) {
+                return 1;
+            }
+            else if (severity == other.severity)
+            {
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
         }
     }
 }
