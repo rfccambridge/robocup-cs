@@ -25,6 +25,7 @@ namespace ControlForm
         bool running = false;
 
         AveragingPredictor predictor;
+        FieldDrawer fd;
 
         public ControlForm()
         {
@@ -44,7 +45,9 @@ namespace ControlForm
 
             predictor = new AveragingPredictor();
 
-            new FieldDrawer().Show();
+            fd = new FieldDrawer();
+            fd.Show();
+            fd.AddMarker(new RFC.Geometry.Vector2(1, 1), new Color());
         }
 
         public void Run()
@@ -65,8 +68,8 @@ namespace ControlForm
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
 
-                //new MovementTest(team);
-                new Strategy.OffTester(team);
+                new MovementTest(team);
+                //new Strategy.OffTester(team);
                 //new SetupTest(team);
                 //new GoalieTest(team, goalieNumber);
                 new KickPlanner();

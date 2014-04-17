@@ -12,7 +12,7 @@ namespace Strategy
 {
     public class OffTester
     {
-        public const bool DEBUG = true;
+        public const bool DEBUG = false;
         private const double TOLERANCE = 0.1;
 
         private Team team;

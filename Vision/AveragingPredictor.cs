@@ -27,8 +27,6 @@ namespace RFC.Vision
 
         private object listenerLock = new object();
 
-        // For marking ball position
-        private Vector2 markedPosition = null;
 
         public bool Flipped { get; set; }
 
@@ -44,7 +42,6 @@ namespace RFC.Vision
             LoadConstants();
             messenger = ServiceManager.getServiceManager();
             new QueuedMessageHandler<VisionMessage>(Update, listenerLock);
-            new QueuedMessageHandler<BallMarkMessage>(UpdateBallMark, listenerLock);
         }
 
         /// <summary>
@@ -76,7 +73,6 @@ namespace RFC.Vision
                 ball = new BallInfo(new Vector2()); // todo: mark that this is null
             }
             RobotVisionMessage robots_msg = new RobotVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
-            BallMovedMessage move_msg = new BallMovedMessage(hasBallMoved());
             FieldVisionMessage all_msg = new FieldVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow), Flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
 
             // sending message that new data is ready
@@ -84,42 +80,9 @@ namespace RFC.Vision
             
             messenger.SendMessage<RobotVisionMessage>(robots_msg);
 
-            if (move_msg.moved)
-                messenger.SendMessage<BallMovedMessage>(move_msg);
+                
         }
 
-        public void UpdateBallMark(BallMarkMessage msg)
-        {
-            if (msg.action == BallMarkAction.Clear)
-                clearBallMark();
-            else if (msg.action == BallMarkAction.Set)
-                setBallMark();
-        }
-
-        private void setBallMark()
-        {
-            BallInfo ball = getBall();
-            if (ball == null)
-            {
-                //throw new ApplicationException("Cannot mark ball position because no ball is seen.");
-                return;
-            }
-            markedPosition = ball != null ? new Vector2(ball.Position) : null;
-        }
-
-        private void clearBallMark()
-        {
-            markedPosition = null;
-        }
-
-        private bool hasBallMoved()
-        {
-            BallInfo ball = getBall();
-            double BALL_MOVED_DIST = Constants.Plays.BALL_MOVED_DIST;
-            bool ret = (ball != null && markedPosition == null) || (ball != null &&
-                                                                    markedPosition.distanceSq(ball.Position) > BALL_MOVED_DIST * BALL_MOVED_DIST);
-            return ret;
-        }
 
         private void LoadConstants()
         {

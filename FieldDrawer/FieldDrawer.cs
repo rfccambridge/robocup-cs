@@ -152,7 +152,7 @@ namespace RFC.FieldDrawer
         State _bufferedState = new State();
         State _state = new State();
         object _stateLock = new object();
-        bool _collectingState = false;
+        bool _collectingState = true;
         object _collectingStateLock = new object();
         bool _robotsAndBallUpdated = false;
 
