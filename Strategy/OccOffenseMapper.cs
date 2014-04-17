@@ -40,6 +40,11 @@ namespace RFC.Strategy
             update(ourTeam, theirTeam, ball);
         }
 
+        public static int[] vecToInd(Vector2 v)
+        {
+            return new int[] {(int)((v.X - LAT_HSTART) / LAT_HSIZE), (int)((v.Y - LAT_VSTART) / LAT_VSIZE)};
+        }
+
         public static Vector2 indToVec(int i, int j)
         {
             return new Vector2(i * LAT_HSIZE + LAT_HSTART, j * LAT_VSIZE + LAT_VSTART);
@@ -66,23 +71,23 @@ namespace RFC.Strategy
             {
                 // top zone
                 case 0:
-                    x = 1.0 * (LAT_HSTART + LAT_HEND) / 2.0;
-                    y = 3.0 * (LAT_VSTART + LAT_VEND) / 4.0;
+                    x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
+                    y = 3.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
                     break;
                 // bottom zone
                 case 1:
-                    x = 1.0 * (LAT_HSTART + LAT_HEND) / 2.0;
-                    y = 1.0 * (LAT_VSTART + LAT_VEND) / 4.0;
+                    x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
+                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
                     break;
                 // center zone
                 case 2:
-                    x = 3.0 * (LAT_HSTART + LAT_HEND) / 4.0;
-                    y = 1.0 * (LAT_VSTART + LAT_VEND) / 2.0;
+                    x = 3.0 * (LAT_HEND - LAT_HSTART) / 4.0 + LAT_HSTART;
+                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 2.0 + LAT_VSTART;
                     break;
                 // TODO: make far from other points
                 default:
-                    x = 7.0 * (LAT_HSTART + LAT_HEND) / 8.0;
-                    y = 1.0 * (LAT_VSTART + LAT_VEND) / 2.0;
+                    x = 7.0 * (LAT_HEND - LAT_HSTART) / 8.0 + LAT_HSTART;
+                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 2.0 + LAT_VSTART;
                     break;
             }
             return new Vector2(x, y);
