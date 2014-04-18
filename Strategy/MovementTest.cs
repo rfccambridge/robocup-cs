@@ -53,8 +53,6 @@ namespace RFC.Strategy
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
 
                 msngr.SendMessage(destinationMessage);
-                msngr.vdbClear();
-                msngr.vdb(destination, Color.Red);
                 firstRun = false;
             }
         }

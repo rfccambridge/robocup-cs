@@ -43,6 +43,8 @@ namespace RFC.FieldDrawer
 
     public class FieldDrawer
     {
+        public bool debug_motion = true;
+
         public event EventHandler<EventArgs<WaypointInfo>> WaypointAdded;
         public event EventHandler<EventArgs<WaypointInfo>> WaypointRemoved;
         public event EventHandler<EventArgs<WaypointMovedInfo>> WaypointMoved;
@@ -200,6 +202,8 @@ namespace RFC.FieldDrawer
             msngr.RegisterListener<RobotVisionMessage>(HandleRobotMessage, new object());
             msngr.RegisterListener<BallVisionMessage>(HandleBallMessage, new object());
             msngr.RegisterListener<VisualDebugMessage>(HandleVisualDebugMessage, new object());
+            msngr.RegisterListener<RobotPathMessage>(HandlePathMessage, new object());
+            msngr.RegisterListener<RobotDestinationMessage>(HandleDestinationMessage, new object());
         }
 
         public void Init(int w, int h)
@@ -237,11 +241,11 @@ namespace RFC.FieldDrawer
             lock (_stateLock)
             {
                 List<RobotInfo> robots = message.GetRobots();
-                foreach (Team team in Enum.GetValues(typeof(Team)))
-                    _bufferedState.Robots[team].Clear();
                 foreach (RobotInfo robot in robots)
                     // Note: robots with duplicate ID's are ignored
-                    if (!_bufferedState.Robots[robot.Team].ContainsKey(robot.ID))
+                    if (_bufferedState.Robots[robot.Team].ContainsKey(robot.ID))
+                        _bufferedState.Robots[robot.Team][robot.ID].RobotInfo = robot;
+                    else
                         _bufferedState.Robots[robot.Team].Add(robot.ID, new RobotDrawingInfo(robot));
 
                 _robotsAndBallUpdated = true;
@@ -267,6 +271,30 @@ namespace RFC.FieldDrawer
             else
             {
                 this.AddMarker(msg.position, msg.c);
+            }
+        }
+
+        public void HandlePathMessage(RobotPathMessage msg)
+        {
+
+            if (debug_motion)
+            {
+                lock (_stateLock)
+                {
+                    DrawPath(msg.Path);
+                }
+            }
+            
+        }
+
+        public void HandleDestinationMessage(RobotDestinationMessage msg)
+        {
+            if (debug_motion)
+            {
+                lock(_stateLock)
+                {
+                    DrawArrow(msg.Destination.Team, msg.Destination.ID, ArrowType.Destination, msg.Destination.Position);
+                }
             }
         }
 
@@ -522,6 +550,7 @@ namespace RFC.FieldDrawer
 
         public void ClearMarkers()
         {
+            
             lock (_collectingStateLock)
             {
                 if (!_collectingState)
@@ -529,6 +558,7 @@ namespace RFC.FieldDrawer
                 _bufferedState.Markers.Clear();
                 _state.Markers.Clear();
             }
+             
             
         }
         public int AddMarker(Vector2 location, Color color)
