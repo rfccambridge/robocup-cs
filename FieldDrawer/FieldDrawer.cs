@@ -123,14 +123,14 @@ namespace RFC.FieldDrawer
                 Robots[Team.Yellow].Clear();
                 Robots[Team.Blue].Clear();
                 Ball = null;
-                //Markers.Clear();
+                Markers.Clear();
 
                 NextRobotHandle = 0;
-                //NextMarkerHandle = 0;
+                NextMarkerHandle = 0;
           }
         }
 
-        const double MARKER_SIZE = 0.025;
+        const double MARKER_SIZE = 0.05;
 
         //Local copies of constants for the field size and parameters
         //They will not change when constants are reloaded!
@@ -196,9 +196,10 @@ namespace RFC.FieldDrawer
 
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
-
-            ServiceManager.getServiceManager().RegisterListener<RobotVisionMessage>(HandleRobotMessage, new object());
-            ServiceManager.getServiceManager().RegisterListener<BallVisionMessage>(HandleBallMessage, new object());
+            ServiceManager msngr = ServiceManager.getServiceManager();
+            msngr.RegisterListener<RobotVisionMessage>(HandleRobotMessage, new object());
+            msngr.RegisterListener<BallVisionMessage>(HandleBallMessage, new object());
+            msngr.RegisterListener<VisualDebugMessage>(HandleVisualDebugMessage, new object());
         }
 
         public void Init(int w, int h)
@@ -254,6 +255,18 @@ namespace RFC.FieldDrawer
             lock (_stateLock)
             {
                 _bufferedState.Ball = message.Ball;
+            }
+        }
+
+        public void HandleVisualDebugMessage(VisualDebugMessage msg)
+        {
+            if (msg.clear)
+            {
+                this.ClearMarkers();
+            }
+            else
+            {
+                this.AddMarker(msg.position, msg.c);
             }
         }
 
@@ -403,7 +416,10 @@ namespace RFC.FieldDrawer
             {                
                 drawField();
                 foreach (Marker marker in _state.Markers.Values)
+                {
                     drawMarker(marker);
+
+                }
                 
                 foreach (Team team in Enum.GetValues(typeof(Team)))
                     foreach (RobotDrawingInfo robot in _state.Robots[team].Values)                
@@ -504,6 +520,17 @@ namespace RFC.FieldDrawer
             }
         }
 
+        public void ClearMarkers()
+        {
+            lock (_collectingStateLock)
+            {
+                if (!_collectingState)
+                    throw new ApplicationException("Not collecting state!");
+                _bufferedState.Markers.Clear();
+                _state.Markers.Clear();
+            }
+            
+        }
         public int AddMarker(Vector2 location, Color color)
         {
             return AddMarker(location, color, null);
@@ -516,7 +543,7 @@ namespace RFC.FieldDrawer
                 if (!_collectingState)
                     throw new ApplicationException("Not collecting state!");
                 int handle = _bufferedState.NextMarkerHandle;
-                _bufferedState.Markers.Add(handle, new Marker(location, 0, color, obj));
+                _bufferedState.Markers.Add(handle, new Marker(location, color, obj));
                 unchecked { _bufferedState.NextMarkerHandle++; }
                 return handle;
             }

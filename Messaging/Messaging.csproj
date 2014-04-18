@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -55,8 +56,7 @@
     <Compile Include="VisionMessage.cs" />
     <Compile Include="RobotVisionMessage.cs" />
     <Compile Include="BallVisionMessage.cs" />
-    <Compile Include="BallMarkMessage.cs" />
-    <Compile Include="BallMovedMessage.cs" />
+    <Compile Include="VisualDebugMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Geometry\Geometry.csproj">

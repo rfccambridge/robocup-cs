@@ -47,7 +47,6 @@ namespace ControlForm
 
             fd = new FieldDrawer();
             fd.Show();
-            fd.AddMarker(new RFC.Geometry.Vector2(1, 1), new Color());
         }
 
         public void Run()

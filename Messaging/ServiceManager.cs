@@ -6,6 +6,9 @@ using System.Text;
 using System.ComponentModel.Design;
 using System.Threading.Tasks;
 using System.Threading;
+using RFC.Geometry;
+using RFC.Core;
+using System.Drawing;
 
 namespace RFC.Messaging
 {
@@ -92,6 +95,36 @@ namespace RFC.Messaging
         public void db(string msg)
         {
             debug(msg);
+        }
+
+        // visual debug to field drawer
+        public void vdb(RobotDestinationMessage r)
+        {
+            vdb(r,new Color());
+        }
+        public void vdb(RobotInfo r)
+        {
+            vdb(r,new Color());
+        }
+        public void vdb(Vector2 r)
+        {
+            vdb(r, new Color());
+        }
+        public void vdb(RobotDestinationMessage r, Color c)
+        {
+            vdb(r.Destination,c);
+        }
+        public void vdb(RobotInfo r, Color c)
+        {
+            vdb(r.Position,c);
+        }
+        public void vdb(Vector2 r, Color c)
+        {
+            SendMessage<VisualDebugMessage>(new VisualDebugMessage(r,c));
+        }
+        public void vdbClear()
+        {
+            SendMessage<VisualDebugMessage>(new VisualDebugMessage());
         }
 
         public void SendMessage<T>(T message) where T : Message

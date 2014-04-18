@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RFC.Messaging;
 using RFC.Core;
 using RFC.Geometry;
+using System.Drawing;
 
 namespace RFC.Strategy
 {
@@ -17,7 +18,7 @@ namespace RFC.Strategy
         Team team;
 
         int currentWaypointIndex = 0;
-        Vector2[] waypoints = new Vector2[] { new Vector2(2, 1) };
+        Vector2[] waypoints = new Vector2[] { new Vector2(2, 1), new Vector2(1,2) };
         bool firstRun = true;
 
         bool stopped = false;
@@ -52,8 +53,8 @@ namespace RFC.Strategy
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
 
                 msngr.SendMessage(destinationMessage);
-                msngr.db(destination.Position.ToString());
-                msngr.db(destination.ID.ToString());
+                msngr.vdbClear();
+                msngr.vdb(destination, Color.Red);
                 firstRun = false;
             }
         }
