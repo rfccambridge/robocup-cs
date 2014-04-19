@@ -14,7 +14,7 @@ double VD_XY_BASIS_SCALE 50.0 #Wheel speeds required for 1 m/s movement
 double VD_R_BASIS_SCALE 40.0  #Wheel speeds required for 1 rev/s movement 
         
 #Max wheel speed change per frame of control
-double VD_MAX_WHEEL_SPEED_CHANGE_PER_FRAME 2
+double VD_MAX_WHEEL_SPEED_CHANGE_PER_FRAME 20
 
 #How much should we weight in the direction we will need to head for the next waypoint?
 double VD_NEXT_NEXT_PROP 0.3

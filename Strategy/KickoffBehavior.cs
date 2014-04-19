@@ -15,7 +15,7 @@ namespace RFC.Strategy
         Team team;
         ServiceManager msngr;
 
-        public KickOffBehavior(Team team)
+        public KickOffBehavior(Team team, int goalie_id)
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();

@@ -18,13 +18,13 @@ namespace RFC.Strategy
         DefenseStrategy defense;
         Goalie goalieStrategy;
 
-        public WaitBehavior(Team team, int max_robots, DefenseStrategy defense, Goalie goalie)
+        public WaitBehavior(Team team, int goalie_id, int max_robots)
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();
             this.max_robot_id = max_robots;
-            this.defense = defense;
-            this.goalieStrategy = goalie;
+            this.defense = new DefenseStrategy(team, goalie_id);
+            this.goalieStrategy = new Goalie(team, goalie_id);
         }
 
         // completely stop. set wheel speeds to zero whether we can see it or not

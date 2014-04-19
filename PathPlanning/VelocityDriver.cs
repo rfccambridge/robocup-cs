@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using RFC.Core;
 using RFC.Geometry;
 using RFC.Messaging;
@@ -54,6 +55,7 @@ namespace RFC.PathPlanning
         Dictionary<int, RobotPath> lastPaths = new Dictionary<int, RobotPath>();
 
         bool stopped = false;
+        Stopwatch sw;
 
         private static double interp(Pair<double, double>[] pairs, double d)
         {
@@ -79,6 +81,8 @@ namespace RFC.PathPlanning
             new QueuedMessageHandler<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
             new QueuedMessageHandler<RobotPathMessage>(handleRobotPathMessage, lockObject);
             ServiceManager.getServiceManager().RegisterListener<StopMessage>(handleStopMessage, lockObject);
+
+            sw = Stopwatch.StartNew();
         }
 
         public void handleRobotVisionMessage(RobotVisionMessage rvm)
@@ -100,7 +104,8 @@ namespace RFC.PathPlanning
                 }
                 msngr.SendMessage(new CommandMessage(new RobotCommand(robot.ID, speeds)));
                 msngr.db(speeds.toString());
-
+                msngr.db("VelocityDriver period (ticks): " + sw.Elapsed.Ticks);
+                sw.Restart();
             }
         }
 
