@@ -48,7 +48,10 @@ namespace RFC.Messaging
             {
 
                 lock (this) {
-                    Parallel.ForEach<Tuple<Handler<T>, object>>(handlers, handler => launchThread(handler,message));
+                    foreach (Tuple<Handler<T>, object> handler in handlers)
+                    {
+                        new Task(() => launchThread(handler, message)).Start();
+                    }
                 }
             }
 

@@ -32,7 +32,6 @@ namespace RFC.Strategy
         PenaltyKickBehavior penaltyKickBehavior;
         KickOffBehavior kickOffBehavior;
 
-
         public PlaySwitcher(Team our_team, int goalie_id)
         {
             team = our_team;

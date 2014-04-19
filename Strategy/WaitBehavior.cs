@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RFC.Messaging;
 using RFC.Core;
 using RFC.PathPlanning;
+using RFC.Geometry;
 
 namespace RFC.Strategy
 {
@@ -14,13 +15,16 @@ namespace RFC.Strategy
         Team team;
         ServiceManager msngr;
         int max_robot_id;
+        DefenseStrategy defense;
+        Goalie goalieStrategy;
 
         public WaitBehavior(Team team, int goalie_id, int max_robots)
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();
             this.max_robot_id = max_robots;
-
+            this.defense = new DefenseStrategy(team, goalie_id);
+            this.goalieStrategy = new Goalie(team, goalie_id);
         }
 
         // completely stop. set wheel speeds to zero whether we can see it or not
@@ -37,13 +41,24 @@ namespace RFC.Strategy
         // need to stay 500mm away from ball
         public void Stop(FieldVisionMessage msg)
         {
-            //TODO: go to intelligent places during this time
+            List<RobotInfo> fieldPlayers = msg.GetRobots(team);
+            RobotInfo goalie = msg.GetRobot(team, goalieStrategy.ID);
 
-            foreach (RobotInfo rob in msg.GetRobots())
+            // goalie is not a field player
+            fieldPlayers.Remove(goalie);
+
+            List<RobotInfo> avoidingDestinations = new List<RobotInfo>();
+            foreach (RobotInfo rob in defense.GetShadowPositions(msg.GetRobots().Count - 1))
             {
-                RobotInfo dest = Avoider.avoid(rob, msg.Ball.Position, .50);
-                msngr.SendMessage(new RobotDestinationMessage(dest, true, false, true));
+                avoidingDestinations.Add(Avoider.avoid(rob, msg.Ball.Position, .50));
             }
+            
+            DestinationMatcher.SendByDistance(fieldPlayers, avoidingDestinations);
+
+            // assigning position for goalie
+            RobotInfo goalie_dest = goalieStrategy.getGoalie(msg);
+            goalie_dest.ID = goalieStrategy.ID;
+            msngr.SendMessage(new RobotDestinationMessage(goalie_dest, false, true, true));
         }
     }
 }
