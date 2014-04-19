@@ -68,8 +68,8 @@ namespace ControlForm
                 new VelocityDriver();
 
                 //new MovementTest(team);
-                //new Strategy.OffTester(team);
-                new SetupTest(team, goalieNumber);
+                new Strategy.OffTester(team);
+                //new SetupTest(team, goalieNumber);
                 //new GoalieTest(team, goalieNumber);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);

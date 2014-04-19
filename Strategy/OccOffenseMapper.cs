@@ -71,17 +71,17 @@ namespace RFC.Strategy
             {
                 // top zone
                 case 0:
-                    x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
+                    x = 1.0 * (LAT_HEND - LAT_HSTART) / 3.0 + LAT_HSTART;
                     y = 3.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
                     break;
                 // bottom zone
                 case 1:
-                    x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
+                    x = 1.0 * (LAT_HEND - LAT_HSTART) / 3.0 + LAT_HSTART;
                     y = 1.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
                     break;
                 // center zone
                 case 2:
-                    x = 3.0 * (LAT_HEND - LAT_HSTART) / 4.0 + LAT_HSTART;
+                    x = 2.0 * (LAT_HEND - LAT_HSTART) / 3.0 + LAT_HSTART;
                     y = 1.0 * (LAT_VEND - LAT_VSTART) / 2.0 + LAT_VSTART;
                     break;
                 // TODO: make far from other points
