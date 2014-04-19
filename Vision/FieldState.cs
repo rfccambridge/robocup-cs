@@ -47,6 +47,7 @@ namespace RFC.Vision
             double DELTA_DIST_SQ_MERGE = Constants.Predictor.DELTA_DIST_SQ_MERGE;
             double VELOCITY_DT = Constants.Predictor.VELOCITY_DT;
 
+            // flip coordinates in message if necessary
             if (Constants.Predictor.FLIP_COORDINATES)
             {
                 VisionMessage newMessage = new VisionMessage(msg.CameraID);
@@ -59,14 +60,15 @@ namespace RFC.Vision
             }
 
             #region Update ball
-            // Ball can timeout for a signle camera (such as bots)
+            // Ball can time out for a single camera (such as bots)
             if (msg.Ball == null)
             {
                 if (ball == null ||
                     (ball != null && (time - ball.LastSeen <= Constants.Predictor.MAX_SECONDS_TO_KEEP_INFO)))
+                    // stop tracking ball
                     ball = null;
             }
-            // If we see the ball for the fist time, just record it; otherwise update
+            // If we see the ball for the first time, just record it
             else if (ball == null)
             {
                 ball = new BallInfo(msg.Ball.Position, new Vector2(0, 0)); // Don't know velocity yet
@@ -76,6 +78,7 @@ namespace RFC.Vision
                 // We have just seen the ball                    
                 ball.LastSeen = time;
             }
+            // otherwise update ball state
             else
             {
                 BallInfo newBall = msg.Ball;
@@ -88,9 +91,9 @@ namespace RFC.Vision
 
                 // Update velocity if a reasonable interval has passed
                 double dt = time - ballDtStart;
-                if (dt > VELOCITY_DT)
+                if (dt > VELOCITY_DT) // lower limit; avoid jitter
                 {
-                    Vector2 d = msg.Ball.Position - ballAtDtStart.Position;
+                    Vector2 d = newBall.Position - ballAtDtStart.Position;
                     ball.Velocity = WEIGHT_OLD * ball.Velocity + WEIGHT_NEW * d / dt;
 
                     // Reset velocity interval
@@ -120,6 +123,7 @@ namespace RFC.Vision
                 matchByPosPredicate = new Predicate<RobotInfo>(delegate(RobotInfo robot)
                 {
                     // TODO: Figure this out, temporarily forcing to look by ID
+                    // distance close enough OR ID matches
                     return (robot.Position.distanceSq(newRobot.Position) < DELTA_DIST_SQ_MERGE ||
                             robot.ID == newRobot.ID);
                 });
