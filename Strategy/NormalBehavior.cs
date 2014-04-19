@@ -13,7 +13,7 @@ namespace RFC.Strategy
         Team team;
         ServiceManager msngr;
 
-        public NormalBehavior(Team team)
+        public NormalBehavior(Team team, int goalie_id)
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();

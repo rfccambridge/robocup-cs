@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RFC.Messaging;
 using RFC.Core;
+using RFC.Geometry;
 
 namespace RFC.Strategy
 {
@@ -12,26 +13,70 @@ namespace RFC.Strategy
     {
         Team team;
         ServiceManager msngr;
+        int kicker_id;
+        int goalie_id;
+        Goalie goalieBehave;
 
-        public PenaltyKickBehavior(Team team)
+        public PenaltyKickBehavior(Team team, int goalie_id)
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();
+            this.kicker_id = 0;
+            this.goalie_id = goalie_id;
+            this.goalieBehave = new Goalie(team, goalie_id);
         }
 
         public void Ours(FieldVisionMessage msg)
         {
-            //TODO
+            RobotInfo kicker = msg.GetRobot(team, kicker_id);
+            List<RobotInfo> rest = msg.GetRobots(team);
+            rest.Remove(kicker);
+
+            ShotOpportunity shot = Shot1.evaluate(msg, team);
+            KickMessage km = new KickMessage(kicker, shot.target);
+            msngr.SendMessage(km);
+
+            // making sure the rest of ours are behind the line
+            foreach (RobotInfo robot in rest)
+            {
+                if (robot.Position.X > Constants.FieldPts.THEIR_PENALTY_KICK_MARK.X - .4)
+                {
+                    // need to move the robot back
+                    robot.Position = new Vector2(Constants.FieldPts.THEIR_PENALTY_KICK_MARK.X - .4, robot.Position.Y);
+                    msngr.SendMessage(new RobotDestinationMessage(robot, true, false, true));
+                }
+            }
+            
         }
 
         public void OursSetup(FieldVisionMessage msg)
         {
-            //TODO
+            // set ID of our kicker for when we take it
+            kicker_id = 0;
+
+            
         }
 
         public void Theirs(FieldVisionMessage msg)
         {
-            //TODO
+            RobotInfo goalie = msg.GetRobot(team, goalie_id);
+            List<RobotInfo> rest = msg.GetRobots(team);
+            rest.Remove(goalie);
+
+            // getting desired position
+            goalie = goalieBehave.getGoalie(msg);
+            msngr.SendMessage(new RobotDestinationMessage(goalie, false, true, true));
+
+            // making sure the rest of ours are behind the line
+            foreach (RobotInfo robot in rest)
+            {
+                if (robot.Position.X < Constants.FieldPts.OUR_PENALTY_KICK_MARK.X + .4)
+                {
+                    // need to move the robot back
+                    robot.Position = new Vector2(Constants.FieldPts.OUR_PENALTY_KICK_MARK.X + .4, robot.Position.Y);
+                    msngr.SendMessage(new RobotDestinationMessage(robot, true, false, true));
+                }
+            }
         }
     }
 }

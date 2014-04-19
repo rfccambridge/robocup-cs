@@ -15,7 +15,7 @@ namespace RFC.Strategy
         ServiceManager msngr;
         int max_robot_id;
 
-        public WaitBehavior(Team team, int max_robots)
+        public WaitBehavior(Team team, int goalie_id, int max_robots)
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();

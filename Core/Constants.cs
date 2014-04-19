@@ -257,6 +257,12 @@ namespace RFC.Core
 			/// <summary> Top point of their goal </summary>
 			static public Vector2 THEIR_GOAL_TOP { get { InitializeIfNeeded(); return _THEIR_GOAL_TOP; } } static volatile Vector2 _THEIR_GOAL_TOP;
 
+            /// <summary> Their PenaltyKick Mark </summary>
+            static public Vector2 THEIR_PENALTY_KICK_MARK { get { InitializeIfNeeded(); return _THEIR_PENALTY_KICK_MARK; } } static volatile Vector2 _THEIR_PENALTY_KICK_MARK;
+
+            /// <summary> Our PenaltyKick Mark </summary>
+            static public Vector2 OUR_PENALTY_KICK_MARK { get { InitializeIfNeeded(); return _OUR_PENALTY_KICK_MARK; } } static volatile Vector2 _OUR_PENALTY_KICK_MARK;
+
 			//EXTENDED BOUNDS---------------------------------------------------------
 
 			/// <summary> Top left corner of field including ref zone </summary>
@@ -333,7 +339,7 @@ namespace RFC.Core
 				double dx = (float)ConstantsRaw.get<double>("plays", "FIELD_WIDTH") / 2;
 				double dy = (float)ConstantsRaw.get<double>("plays", "FIELD_HEIGHT") / 2;
 				double dyg = (float)ConstantsRaw.get<double>("plays", "GOAL_HEIGHT") / 2;
-
+                
 				_TOP_LEFT = new Vector2(-dx, dy);
 				_BOTTOM_LEFT = new Vector2(-dx, -dy);
 				_TOP_RIGHT = new Vector2(dx, dy);
@@ -359,6 +365,9 @@ namespace RFC.Core
 				_THEIR_GOAL = new Vector2(dx, 0);
 				_THEIR_GOAL_BOTTOM = new Vector2(dx, -dyg);
 				_THEIR_GOAL_TOP = new Vector2(dx, dyg);
+
+                _THEIR_PENALTY_KICK_MARK = _THEIR_GOAL - new Vector2(.75,0);
+                _OUR_PENALTY_KICK_MARK = _OUR_GOAL + new Vector2(.75,0);
 
 				double extwidth = ConstantsRaw.get<double>("plays", "EXTENDED_BORDER_WIDTH");
 				_EXTENDED_TOP_LEFT = new Vector2(-dx - extwidth, dy + extwidth);

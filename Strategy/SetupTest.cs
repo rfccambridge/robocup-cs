@@ -23,7 +23,7 @@ namespace RFC.Strategy
         public SetupTest(Team team)
         {
             this.team = team;
-            testing = new KickOffBehavior(team);
+            testing = new KickOffBehavior(team,0);
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
