@@ -56,7 +56,7 @@ namespace RFC.Logging
         {
             lock (secretaryLock)
             {
-                secretary.WriteLine(DateTime.Now + ": " + m.bio());
+                secretary.WriteLine(DateTime.Now.Millisecond + ": " + m.bio());
             }
         }
     }
