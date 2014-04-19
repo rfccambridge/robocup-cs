@@ -173,7 +173,8 @@ namespace RFC.FieldDrawer
 
         const int NUM_VALUES_TO_AVG = 30;
         double interpretFreqAvg, interpretDurationAvg, controllerDurationAvg;
-        int interpretFreqCnt = 0, interpretDurationCnt = 0, controllerDurationCnt = 0;        
+        int interpretFreqCnt = 0, interpretDurationCnt = 0, controllerDurationCnt = 0;
+        ServiceManager msngr;
 
         public bool Visible
         {
@@ -198,7 +199,7 @@ namespace RFC.FieldDrawer
 
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
-            ServiceManager msngr = ServiceManager.getServiceManager();
+            msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener<RobotVisionMessage>(HandleRobotMessage, new object());
             msngr.RegisterListener<BallVisionMessage>(HandleBallMessage, new object());
             msngr.RegisterListener<VisualDebugMessage>(HandleVisualDebugMessage, new object());

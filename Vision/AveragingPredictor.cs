@@ -58,6 +58,7 @@ namespace RFC.Vision
 
             fieldStates[msg.CameraID].Update(msg);
 
+            // calculates ball and robot positions, averaged over cameras
             combineBall();
             foreach (Team team in Enum.GetValues(typeof(Team)))
                 combineRobots(team);
@@ -165,8 +166,8 @@ namespace RFC.Vision
 
             // The outer list is has one entry per physical robot, each entry is a list made up of 
             // infos for that robot believed by different cameras. We later average over the inner list.
-            // TODO: in the future, the parent predictor could keep it's own state so that paternless
-            // ids stay stay steady
+            // TODO: in the future, the parent predictor could keep its own state so that patternless
+            // ids stay steady
             List<List<RobotInfo>> robotSightings = new List<List<RobotInfo>>();
 
             // Technically, need to record acquisition time for each camera, but it's ok

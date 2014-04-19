@@ -9,11 +9,11 @@ using RFC.Geometry;
 
 namespace RFC.Strategy
 {
-    class Goalie
+    public class Goalie
     {
         // goalie info
         Team team;
-        int ID;
+        public int ID {get; private set;}
 
         public Goalie(Team team, int ID)
         {

@@ -29,6 +29,24 @@ namespace RFC.Strategy
             goalieBehavior = new Goalie(myTeam, goalie_id);
         }
 
+        public List<RobotInfo> GetShadowPositions(List<Threat> threats, int n)
+        {
+            List<RobotInfo> results = new List<RobotInfo>();
+            foreach (Threat threat in threats)
+            {
+                Vector2 difference = Constants.FieldPts.OUR_GOAL - threat.position;
+                difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
+                results.Add(new RobotInfo(threat.position + difference, 0, 0));
+            }
+            return results;
+        }
+
+        public List<RobotInfo> GetShadowPositions(int n)
+        {
+            List<Threat> totalThreats = assessThreats.getThreats(msngr.GetLastMessage<FieldVisionMessage>());
+            return GetShadowPositions(totalThreats, n);
+        }
+
         public void DefenseCommand(FieldVisionMessage msg)
         {
             List<Threat> totalThreats = assessThreats.getThreats(msg);
