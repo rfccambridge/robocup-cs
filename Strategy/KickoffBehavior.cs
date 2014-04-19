@@ -12,46 +12,99 @@ namespace RFC.Strategy
 {
     public class KickOffBehavior
     {
+
+
         Team team;
         ServiceManager msngr;
+        int GoalieID;
 
-        public KickOffBehavior(Team team, int goalie_id)
+        public RobotInfo[] KickoffPositions(int n)
+        {
+            //generates symmetric starting positions given number of non-goalie robots
+            //here, n is the number of robots NOT INCLUDING GOALIE. 
+            RobotInfo[] destinations = new RobotInfo[n];
+            if (n > 2)
+            {
+
+
+
+                Vector2 position0 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 2);
+                destinations[0] = new RobotInfo(position0, 0, 0);
+
+                Vector2 position1 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 6);
+                destinations[1] = new RobotInfo(position1, 0, 0);
+
+                Vector2 position2 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, 5 * Constants.Field.HEIGHT / 6);
+                destinations[2] = new RobotInfo(position2, 0, 0);
+
+                for (int i = 1; i < n - 2; i++)
+                {
+                    Vector2 position = new Vector2(Constants.Field.WIDTH / 6, Constants.Field.HEIGHT * i / (n - 2));
+                    destinations[i + 3] = new RobotInfo(position, 0, 0);
+                }
+            }
+            else if (n == 2)
+            {
+                Vector2 position0 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 2);
+                destinations[0] = new RobotInfo(position0, 0, 0);
+
+                Vector2 position1 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 6);
+                destinations[1] = new RobotInfo(position1, 0, 0);
+            }
+            else if (n == 1)
+            {
+                Vector2 position0 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 2);
+                destinations[0] = new RobotInfo(position0, 0, 0);
+            }
+            return destinations;
+        }
+
+        public KickOffBehavior(Team team, int GoalieID)
+
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();
+            this.GoalieID = GoalieID;
         }
 
         public void Ours(FieldVisionMessage msg)
         {
             //TODO
-            // initial kick, then transition to normal play
+            // center robot does initial kick 
+            // when DetectTouch(center robot) is true, transition to normal play
+            
+            
         }
 
         public void OursSetup(FieldVisionMessage msg)
         {
             //TODO
-            // probably just hardcode in positions
+            //hardcode positions:
+                //Center robot
+                //2 wings
+                //everyone else in back
+
             // assume that we start on the left side of the field
 
             // getting our robots
             List<RobotInfo> ours = msg.GetRobots(team);
-            int n = ours.Count();
+
+            //We deal with Goalie separately
+            int n = ours.Count() - 1;
 
             // getting destinations we want to go to
-            // for now just put them in a line
-            List<RobotInfo> destinations = new List<RobotInfo>();
-            for (int i = 0; i < n; i++)
-            {
-                Vector2 position = new Vector2(2-Constants.Basic.ROBOT_RADIUS*4 * i, 0);
-                destinations.Add(new RobotInfo(position,1.5,0));
-            }
+         
+            Vector2 positionGoalie = Constants.FieldPts.OUR_GOAL + new Vector2(Constants.Basic.ROBOT_RADIUS,0);
+                RobotInfo robot = new RobotInfo(positionGoalie,0,GoalieID);
+            RobotDestinationMessage msg2 = new RobotDestinationMessage(robot,true,true);
+            msngr.SendMessage(msg2);
 
-            // this function matches the closest robot to closest destination and handles
-            // sending messages to get there
+            List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
 
-
+            RobotInfo goalie = msg.GetRobot(team,GoalieID);
+            ours.Remove(goalie);
+          
             DestinationMatcher.SendByDistance(ours, destinations);
-
 
         }
 
@@ -59,12 +112,40 @@ namespace RFC.Strategy
         {
             //TODO
             // detect when play has started, then switch to normal play
+
         }
 
         public void TheirsSetup(FieldVisionMessage msg)
         {
             //TODO
             // probably just hardcoded positions
+            // put one robot in the center, two on wings, a goalie, and the rest in back. 
+            //reuse code from OursSetup
+            List<RobotInfo> ours = msg.GetRobots(team);
+
+            //We deal with Goalie separately
+            int n = ours.Count() - 1;
+
+            // getting destinations we want to go to
+
+            Vector2 positionGoalie = Constants.FieldPts.OUR_GOAL + new Vector2(Constants.Basic.ROBOT_RADIUS, 0);
+            RobotInfo robot = new RobotInfo(positionGoalie, 0, GoalieID);
+            RobotDestinationMessage msg2 = new RobotDestinationMessage(robot, true, true);
+            msngr.SendMessage(msg2);
+
+            List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
+
+            RobotInfo goalie = msg.GetRobot(team, GoalieID);
+            ours.Remove(goalie);
+
+            
+            for (int i = 0; i < n; i++)
+            {
+                destinations[i] = RFC.PathPlanning.Avoider.avoid(destinations[i], msg.Ball.Position, 500); 
+                //also need to avoid other side of field
+            }
+
+            DestinationMatcher.SendByDistance(ours, destinations);
         }
     }
 }
