@@ -8,13 +8,20 @@ using RFC.Geometry;
 
 namespace RFC.Strategy
 {
-    class Shot1
+    public class ShotOpportunity
     {
-        Team team;
-
-        public Shot1 (Team team2){
-               team = team2;
+        public Vector2 target;
+        public double arc;
+        public ShotOpportunity(Vector2 t, double a)
+        {
+            this.target = t;
+            this.arc = a;
         }
+    }
+
+    public static class Shot1
+    {
+
        
         // private class to represent the beginning or end of something
         // that blocks vision to the goal
@@ -31,7 +38,7 @@ namespace RFC.Strategy
 
         // Finds the best place to aim when taking a shot and judges how good
         // a shot it is
-        public List <double> evaluate (FieldVisionMessage fvm) {
+        public static ShotOpportunity evaluate (FieldVisionMessage fvm, Team team) {
             List <RobotInfo> locations = fvm.GetRobots();
 
             // finding beginning and end of all occlusions from other robots as edges
@@ -89,12 +96,14 @@ namespace RFC.Strategy
             }
 
             // returning the angle in the middle and how wide an angle we have
-            List<double> shot_arc = new List<double>();
-            double shot = ((statuses[(index - 1) * 2 + 1].d + statuses[index * 2].d)/2.0);
-            double arc = open_arc[2*index];  
-            shot_arc.Add(shot);
-            shot_arc.Add(arc);
-            return shot_arc;
+            double shot_angle = ((statuses[(index - 1) * 2 + 1].d + statuses[index * 2].d)/2.0);
+            double arc = open_arc[2*index]; 
+ 
+            // finding intersection of shot with goal line
+            double dx = Constants.FieldPts.THEIR_GOAL.X - fvm.Ball.Position.X;
+
+            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, fvm.Ball.Position.Y + dx * Math.Tan(shot_angle));
+            return new ShotOpportunity(shot_vec, arc);
         }
 
     }
