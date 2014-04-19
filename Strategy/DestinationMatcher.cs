@@ -22,6 +22,9 @@ namespace RFC.Strategy
             int n = robots.Count();
             ServiceManager msngr = ServiceManager.getServiceManager();
 
+            if (robots.Count != destinations.Count)
+                throw new Exception("different numbers of robots and destinations: " + robots.Count + ", " + destinations.Count);
+
             // sending dest messages for each one
             for (int i = 0; i < n; i++)
             {

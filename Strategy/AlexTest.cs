@@ -11,19 +11,20 @@ namespace RFC.Strategy
 	
 	public class AlexTest
 	{
-		AssessThreats assessThreats;
+        DefenseStrategy defenseStrategy;
 		
-		public AlexTest()
+		public AlexTest(Team myTeam, int goalie_id)
 		{
 			object lockObject = new object();
+            defenseStrategy = new DefenseStrategy(myTeam, goalie_id);
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
-			// Insert code required on object creation below this point.
-			assessThreats = new AssessThreats(Team.Yellow,1);
+			
 			
 		}
 		public void Handle(FieldVisionMessage msg)
         {
-			assessThreats.getThreats(msg);
+            defenseStrategy.DefenseCommand(msg);
+
 		}
 		
 	}

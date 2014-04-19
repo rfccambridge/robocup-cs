@@ -256,6 +256,7 @@ namespace RFC.Simulator
         /// </summary>
         private void step(double dt)
         {
+            dt = dt / 5;
             lock (updateLock)
             {
                 //Grab constants for this iteration
