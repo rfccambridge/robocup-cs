@@ -67,7 +67,8 @@ namespace ControlForm
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
 
-                new MovementTest(team);
+                new AlexTest(team, goalieNumber);
+                //new MovementTest(team);
                 //new Strategy.OffTester(team);
                 //new SetupTest(team);
                 //new GoalieTest(team, goalieNumber);

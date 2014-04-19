@@ -19,7 +19,7 @@ namespace RFC.Strategy
         int goalieID;
         Goalie goalieBehavior;
 
-        public DefenseStrategy(FieldVisionMessage msg, Team myTeam, int goalie_id)
+        public DefenseStrategy(Team myTeam, int goalie_id)
         {
             this.myTeam = myTeam;
             otherPassRisk = 1;
@@ -32,19 +32,34 @@ namespace RFC.Strategy
         public void DefenseCommand(FieldVisionMessage msg)
         {
             List<Threat> totalThreats = assessThreats.getThreats(msg);
+            /*foreach (Threat threat in totalThreats)
+            {
+                Console.WriteLine("Threat has position " + threat.position);
+            }*/
+
             List<RobotInfo> topThreats = new List<RobotInfo>();
 
             // n - 1 threats, because leave one out for goalie
-            for (int i = 0; i < msg.GetRobots(myTeam).Count() - 1; i++)
-            {
-                topThreats[i] = new RobotInfo(totalThreats[i].position, 0, 0);
-            }
-
             List<RobotInfo> fieldPlayers = msg.GetRobots(myTeam);
+            for (int i = 0; i <fieldPlayers.Count-1; i++)
+            {
+                topThreats.Add(new RobotInfo(totalThreats[i].position, 0, 0));
+                //Console.WriteLine("Just added " + topThreats[i].Position + " to topThreats");
+            }
+            //Console.WriteLine("length of topThreats is " + topThreats.Count);
+
+            
             RobotInfo goalie = msg.GetRobot(myTeam, goalieID);
 
-            // goalie is not a field player
-            fieldPlayers.Remove(goalie);
+            // Remove goalie from fieldPlayers
+            for (int i = 0; i < fieldPlayers.Count; i++)
+            {
+                if (fieldPlayers[i].ID == goalieID)
+                {
+                    fieldPlayers.RemoveAt(i);
+                    break;
+                }
+            }
 
 
             // assigning positions for field players
@@ -54,13 +69,14 @@ namespace RFC.Strategy
                 // want to go right for the ball, not shadow it like a player
                 if (topThreats[i].Position == msg.Ball.Position)
                 {
-                    destinations[i] = new RobotInfo(topThreats[i].Position, 0, 0);
+                    destinations.Add(new RobotInfo(topThreats[i].Position, 0, 0));
                 }
                 else
                 {
-                    Vector2 difference = Constants.FieldPts.OUR_GOAL - topThreats[i].Position;
+                    //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
+                    Vector2 difference = Constants.FieldPts.OUR_GOAL-topThreats[i].Position;
                     difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
-                    destinations[i] = new RobotInfo(topThreats[i].Position + difference, 0, 0);
+                    destinations.Add(new RobotInfo(topThreats[i].Position + difference, 0, 0));
                 }
 
             }
