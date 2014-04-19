@@ -28,7 +28,7 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage msg)
         {
-            behave.OursSetup(msg);
+            behave.TheirsSetup(msg);
         }
 
 

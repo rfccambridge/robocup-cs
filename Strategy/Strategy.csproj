@@ -58,6 +58,7 @@
     <Compile Include="PlaySwitcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SetupTest.cs" />
+    <Compile Include="SetupTest1.cs" />
     <Compile Include="Shot1.cs" />
     <Compile Include="Threat.cs" />
     <Compile Include="WaitBehavior.cs" />

@@ -28,33 +28,35 @@ namespace RFC.Strategy
 
 
 
-                Vector2 position0 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 2);
+                Vector2 position0 = new Vector2( -Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, 0);
 
-                Vector2 position1 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 6);
+                Vector2 position1 = new Vector2( - Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 12);
                 destinations[1] = new RobotInfo(position1, 0, 0);
 
-                Vector2 position2 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, 5 * Constants.Field.HEIGHT / 6);
+                Vector2 position2 = new Vector2( - Constants.Basic.ROBOT_RADIUS, 5 * Constants.Field.HEIGHT / 12);
                 destinations[2] = new RobotInfo(position2, 0, 0);
 
                 for (int i = 1; i < n - 2; i++)
                 {
-                    Vector2 position = new Vector2(Constants.Field.WIDTH / 6, Constants.Field.HEIGHT * i / (n - 2));
+                    Vector2 position = new Vector2(Constants.Field.WIDTH / 6, Constants.Field.HEIGHT * i / (n - 2)) + Constants.FieldPts.BOTTOM_LEFT;
                     destinations[i + 2] = new RobotInfo(position, 0, 0);
                 }
             }
             else if (n == 2)
             {
-                Vector2 position0 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 2);
+                Vector2 position0 = new Vector2(-Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, 0);
 
-                Vector2 position1 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 6);
+                Vector2 position1 = new Vector2(-Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 6);
                 destinations[1] = new RobotInfo(position1, 0, 0);
+
             }
             else if (n == 1)
             {
-                Vector2 position0 = new Vector2(Constants.Field.WIDTH / 2 - Constants.Basic.ROBOT_RADIUS, Constants.Field.HEIGHT / 2);
+                Vector2 position0 = new Vector2(-Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, 0);
+
             }
             return destinations;
         }
@@ -87,10 +89,10 @@ namespace RFC.Strategy
             // assume that we start on the left side of the field
 
             // getting our robots
-            List<RobotInfo> ours = msg.GetRobots(team);
+            List<RobotInfo> ours = msg.GetRobotsExcept(team, GoalieID);//msg.GetRobots(team);
 
             //We deal with Goalie separately
-            int n = ours.Count() - 1;
+            int n = ours.Count();
 
             // getting destinations we want to go to
          
@@ -101,9 +103,6 @@ namespace RFC.Strategy
 
             List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
 
-            RobotInfo goalie = msg.GetRobot(team,GoalieID);
-            ours.Remove(goalie);
-          
             DestinationMatcher.SendByDistance(ours, destinations);
 
         }
@@ -121,10 +120,9 @@ namespace RFC.Strategy
             // probably just hardcoded positions
             // put one robot in the center, two on wings, a goalie, and the rest in back. 
             //reuse code from OursSetup
-            List<RobotInfo> ours = msg.GetRobots(team);
-
+            List<RobotInfo> ours = msg.GetRobotsExcept(team, GoalieID);//msg.GetRobots(team);
             //We deal with Goalie separately
-            int n = ours.Count() - 1;
+            int n = ours.Count();
 
             // getting destinations we want to go to
 
@@ -135,13 +133,10 @@ namespace RFC.Strategy
 
             List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
 
-            RobotInfo goalie = msg.GetRobot(team, GoalieID);
-            ours.Remove(goalie);
-
             
             for (int i = 0; i < n; i++)
             {
-                destinations[i] = RFC.PathPlanning.Avoider.avoid(destinations[i], msg.Ball.Position, 500); 
+                destinations[i] = RFC.PathPlanning.Avoider.avoid(destinations[i], msg.Ball.Position, .5+ Constants.Basic.ROBOT_RADIUS); 
                 //also need to avoid other side of field
             }
 
