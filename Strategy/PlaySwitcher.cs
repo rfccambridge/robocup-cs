@@ -32,7 +32,7 @@ namespace RFC.Strategy
         KickOffBehavior kickOffBehavior;
 
 
-        public PlaySwitcher(Team our_team, int max_robots)
+        public PlaySwitcher(Team our_team, int max_robots, int goalieId)
         {
             team = our_team;
             lockObject = new object();
@@ -41,8 +41,9 @@ namespace RFC.Strategy
             new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
 
             // initializing behavior components
+            Goalie goalie = new Goalie(team, goalieId);
             normalBehavior = new NormalBehavior(team);
-            waitBehavior = new WaitBehavior(team,max_robots);
+            waitBehavior = new WaitBehavior(team,max_robots, new DefenseStrategy(team, goalieId), goalie);
             kickInBehavior = new KickInBehavior(team);
             penaltyKickBehavior = new PenaltyKickBehavior(team);
             kickOffBehavior = new KickOffBehavior(team);
