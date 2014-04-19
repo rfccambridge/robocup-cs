@@ -52,11 +52,9 @@ namespace RFC.Strategy
             {
                 shooterThreats.Add(new Threat(playerShotRisk(robot, msg.Ball, getRobots, ballRisk), robot));
             }
+            indexedThreats = new List<Threat>();
             analyzeThreats(msg, getRobots, ballRisk);/*create the list of indexed Threats*/
-            foreach (Threat threat in indexedThreats)
-            {
-                //Console.WriteLine("Position of threat in indexedThreats after analyzeThreats is " + threat.position);
-            }
+           
             List<Threat> prioritizedThreats = indexedThreats;
             prioritizedThreats.Sort();
                     
@@ -67,6 +65,11 @@ namespace RFC.Strategy
                     prioritizedThreats.RemoveAt(0);
                 }
             }
+            /*foreach (Threat threat in prioritizedThreats)
+            {
+                Console.WriteLine("Position of threat in prioritizedThreats after analyzeThreats is " + threat.position);
+            }
+            Console.WriteLine("End cycle");*/
             return prioritizedThreats;
             
         }

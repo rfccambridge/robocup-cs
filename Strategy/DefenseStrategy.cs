@@ -75,10 +75,17 @@ namespace RFC.Strategy
                 {
                     //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
                     Vector2 difference = Constants.FieldPts.OUR_GOAL-topThreats[i].Position;
-                    difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
+                    difference=difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
                     destinations.Add(new RobotInfo(topThreats[i].Position + difference, 0, 0));
                 }
+                //Console.WriteLine("Index " + i + " of destinations is " + destinations[i].Position);
 
+            }
+            msngr.vdbClear();
+            foreach (RobotInfo rob in topThreats)
+            {
+                msngr.vdb(rob);
+                //Console.WriteLine("position of a topThreat is " + rob.Position);
             }
             
             DestinationMatcher.SendByDistance(fieldPlayers, destinations);
@@ -86,7 +93,8 @@ namespace RFC.Strategy
             // assigning position for goalie
             RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
             goalie_dest.ID = goalieID;
-            msngr.SendMessage(new RobotDestinationMessage(goalie_dest, false, true, true));
+            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, true));
+            Console.WriteLine(new RobotDestinationMessage(goalie_dest, false, true, true))
 
         }
     }
