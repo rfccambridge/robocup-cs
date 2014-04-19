@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="AlexTest.cs" />
     <Compile Include="AssessThreats.cs" />
+    <Compile Include="BounceKicker.cs" />
     <Compile Include="DefenseStrategy.cs" />
     <Compile Include="DestinationMatcher.cs" />
     <Compile Include="Goalie.cs" />

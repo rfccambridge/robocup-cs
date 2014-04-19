@@ -19,6 +19,7 @@ namespace RFC.Strategy
         ServiceManager msngr;
         HowOffensive judge;
         bool first = true;
+        BounceKicker bkick;
 
         public SetupTest(Team team)
         {
@@ -28,7 +29,7 @@ namespace RFC.Strategy
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
-
+            this.bkick = new BounceKicker(team);
             // static debug
 
             
@@ -36,13 +37,8 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage fieldVision)
         {
-            if (!first && fieldVision.GetRobots(team).Count() > 0)
-            {
-                RobotInfo rob = fieldVision.GetRobots(team)[0];
-                msngr.SendMessage(new KickMessage(rob, Constants.FieldPts.THEIR_GOAL));
-            }
-            first = false;
-            
+
+            bkick.arrange_kick(fieldVision, 0, 1);
         }
 
         public void stopMessageHandler(StopMessage message)
