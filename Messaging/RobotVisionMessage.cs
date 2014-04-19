@@ -16,7 +16,7 @@ namespace RFC.Messaging
 
 		public List<RobotInfo> GetRobots(Team team)
 		{
-            return robots[team];
+            return new List<RobotInfo>(robots[team]);
 		}
 
 		public List<RobotInfo> GetRobots()
@@ -39,7 +39,7 @@ namespace RFC.Messaging
 				                               id.ToString() + " found on team " + team.ToString());
 			}
 
-            return robot;
+            return new RobotInfo(robot);
 		}
 	}
 }
