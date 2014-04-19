@@ -25,7 +25,10 @@ namespace Strategy
         private Vector2[] zoneList;
         private const double ZONE_RAD = 0.5;
 
-        private const double BALL_HANDLE_MIN = 5.0;
+        private const double BALL_HANDLE_MIN = 0.1;
+
+        private const double SHOT_THRESH = 10;
+        private const double BSHOT_THRESH = 20;
 
         public OffTester(Team team)
         {
@@ -40,7 +43,34 @@ namespace Strategy
             ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
         }
 
-        private void goToBestPos(RobotInfo rob, Vector2 zoneCent, double[,] map, bool hasBall)
+        private RobotInfo goodBounceShot(List<RobotInfo> ourTeam, RobotInfo ballCarrier, double[,] map)
+        {
+            if (ballCarrier == null) return null;
+            RobotInfo bestRob = null;
+            double bestVal = 0.0;
+            foreach (RobotInfo rob in ourTeam)
+            {
+                if (ballCarrier.ID != rob.ID)
+                {
+                    int[] inds = OccOffenseMapper.vecToInd(rob.Position);
+                    if (inds[0] >= 0 && inds[0] < map.GetLength(0) && inds[1] >= 0 && inds[1] < map.GetLength(1) && map[inds[0], inds[1]] > bestVal)
+                    {
+                        bestRob = rob;
+                        bestVal = map[inds[0], inds[1]];
+                    }
+                }
+            }
+            return (bestVal < BSHOT_THRESH) ? null : bestRob;
+        }
+
+        private void pickUpBall(RobotInfo rob, BallInfo ball)
+        {
+            RobotInfo destination = new RobotInfo(ball.Position, 0, rob.ID);
+            RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
+            ServiceManager.getServiceManager().SendMessage(destinationMessage);
+        }
+
+        private void goToBestPos(RobotInfo rob, Vector2 zoneCent, double[,] map, bool hasBall, BallInfo ball)
         {
             if (rob == null) return;
             double max = 0.0;
@@ -61,18 +91,25 @@ namespace Strategy
                 }
             }
             Vector2 destVect = OccOffenseMapper.indToVec(maxI, maxJ);
-            RobotInfo destination = new RobotInfo(destVect, 0, rob.ID);
+            double orientation = 0.0;
+            if (hasBall)
+            {
+                orientation = (Constants.FieldPts.THEIR_GOAL - rob.Position).cartesianAngle();
+            }
+            else
+            {
+                orientation = (ball.Position - rob.Position).cartesianAngle()
+                    + 0.5 * Math.Acos((Constants.FieldPts.THEIR_GOAL - rob.Position).cosineAngleWith(ball.Position - rob.Position));
+            }
+            RobotInfo destination = new RobotInfo(destVect, orientation, rob.ID);
             RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, !hasBall, false);
             ServiceManager.getServiceManager().SendMessage(destinationMessage);
             // debugging
-            if (DEBUG)
-            {
+            /*
                 Console.WriteLine("RobotID: " + rob.ID + "\nzoneCent: " + zoneCent + "\nGoing to: (" + destVect.X + ", " + destVect.Y + ")\n");
-                /*
                 Console.Write("Map: ");
                 OccOffenseMapper.printDoubleMatrix(map);
-                */
-            }
+            */
         }
 
         public void Handle(FieldVisionMessage fieldVision)
@@ -96,8 +133,11 @@ namespace Strategy
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
             double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball);
 
+            // TODO: can (and probably should) merge if statements
             RobotInfo ballCarrier = null;
             double rbd = BALL_HANDLE_MIN;
+            RobotInfo closestToBall = null;
+            double minToBall = 100.0;
             foreach (RobotInfo rob in ourTeam)
             {
                 double dist = rob.Position.distance(ball.Position);
@@ -106,18 +146,39 @@ namespace Strategy
                     ballCarrier = rob;
                     rbd = dist;
                 }
+                if (dist < minToBall)
+                {
+                    minToBall = dist;
+                    closestToBall = rob;
+                }
             }
 
             for (int i = 0; i < ourTeam.Count; i++)
             {
-                if ((i == 0 && ballCarrier == null) || ballCarrier.ID == ourTeam.ElementAt(i).ID)
+                int[] inds = OccOffenseMapper.vecToInd(ourTeam.ElementAt(i).Position);
+                RobotInfo bpr = goodBounceShot(ourTeam, ballCarrier, passMap);
+                if (ballCarrier != null && ballCarrier.ID == ourTeam.ElementAt(i).ID && inds[0] >= 0 && inds[0] < dribMap.GetLength(0)
+                    && inds[1] >= 0 && inds[1] < dribMap.GetLength(1) && dribMap[inds[0], inds[1]] > SHOT_THRESH)
                 {
-                    goToBestPos(ballCarrier, zoneList[i], dribMap, true);
+                    // will be shot function
+                    KickMessage kickM = new KickMessage(ballCarrier, Constants.FieldPts.THEIR_GOAL);
+                    ServiceManager.getServiceManager().SendMessage(kickM);
+                }
+                else if (bpr != null)
+                {
+                    // do bounce pass
+                }
+                else if (ballCarrier == null && closestToBall.ID == ourTeam.ElementAt(i).ID)
+                {
+                    pickUpBall(closestToBall, ball);
+                }
+                else if (ballCarrier != null && ballCarrier.ID == ourTeam.ElementAt(i).ID)
+                {
+                    goToBestPos(ballCarrier, zoneList[i], dribMap, true, ball);
                 }
                 else if (ourTeam.ElementAt(i) != null)
                 {
-                    // outer robot shouldn't avoid ball, thus i==0
-                    goToBestPos(ourTeam.ElementAt(i), zoneList[i], passMap, i==0);
+                    goToBestPos(ourTeam.ElementAt(i), zoneList[i], passMap, false, ball);
                 }
             }
         }
