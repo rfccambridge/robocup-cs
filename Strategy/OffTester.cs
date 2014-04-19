@@ -25,7 +25,7 @@ namespace Strategy
         private Vector2[] zoneList;
         private const double ZONE_RAD = 0.5;
 
-        private const double BALL_HANDLE_MIN = 0.1;
+        private const double BALL_HANDLE_MIN = 0.2;
 
         private const double SHOT_THRESH = 10;
         private const double BSHOT_THRESH = 20;
@@ -160,7 +160,6 @@ namespace Strategy
                 if (ballCarrier != null && ballCarrier.ID == ourTeam.ElementAt(i).ID && inds[0] >= 0 && inds[0] < dribMap.GetLength(0)
                     && inds[1] >= 0 && inds[1] < dribMap.GetLength(1) && dribMap[inds[0], inds[1]] > SHOT_THRESH)
                 {
-                    // will be shot function
                     KickMessage kickM = new KickMessage(ballCarrier, Constants.FieldPts.THEIR_GOAL);
                     ServiceManager.getServiceManager().SendMessage(kickM);
                 }
