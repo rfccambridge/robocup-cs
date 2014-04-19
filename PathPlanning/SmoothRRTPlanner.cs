@@ -709,7 +709,7 @@ namespace RFC.PathPlanning
                 len += path[path.Count - 1].distance(desiredState.Position);
                 len -= desiredState.Position.distance(path[0]);
                 score -= len * EXCESS_LEN_SCORE;
-
+                
                 //Lose per node in the path if it's too sharp a bend.
                 for (int j = 1; j < path.Count - 1; j++)
                 {
@@ -720,8 +720,11 @@ namespace RFC.PathPlanning
                     score += PER_BEND_SCORE * (vec1 * vec2) / vec1.magnitude() / vec2.magnitude();
                 }
 
+                /*
                 //Win/lose points if the first segment of the path agrees 
                 //with our current velocity, multiplied by the current speed
+                
+
                 int firstStep = 1;
                 Vector2 firstVec = null;
                 while (firstStep < path.Count && (firstVec = path[firstStep] - path[firstStep - 1]).magnitudeSq() < 1e-12)
@@ -734,6 +737,8 @@ namespace RFC.PathPlanning
                     double dScore = firstDir * currentState.Velocity * VELOCITY_AGREEMENT_SCORE;
                     score += dScore;
                 }
+
+                
 
                 //Win/lose points if the path agrees with our old path, multiplied by the current speed
                 if (oldPath != null && path.Count > 1 && oldPath.Waypoints.Count > 1)
@@ -760,6 +765,7 @@ namespace RFC.PathPlanning
                         currentState.Velocity.magnitude();
                     score += dScore;
                 }
+                */
 
                 //Is it the best path so far?
                 if (score > bestPathScore)

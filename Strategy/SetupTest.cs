@@ -30,7 +30,6 @@ namespace RFC.Strategy
             msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
 
             // static debug
-
             
         }
 
