@@ -18,7 +18,7 @@ namespace RFC.Strategy
         Team team;
 
         int currentWaypointIndex = 0;
-        Vector2[] waypoints = new Vector2[] { new Vector2(2, 1), new Vector2(1,2) };
+        Vector2[] waypoints = new Vector2[] { new Vector2(1,2) };
         bool firstRun = true;
 
         bool stopped = false;
@@ -40,20 +40,21 @@ namespace RFC.Strategy
             if (!stopped && robotVision.GetRobots().Count > 0)
             {
                 if (firstRun)
-                    robotId = robotVision.GetRobots(team)[0].ID; // take first robot
-
-                RobotInfo info = robotVision.GetRobot(team, robotId);
-
-                if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE || firstRun)
                 {
-                    currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+                    robotId = robotVision.GetRobots(team)[0].ID; // take first robot
                 }
+            RobotInfo info = robotVision.GetRobot(team, robotId);
 
-                RobotInfo destination = new RobotInfo(waypoints[currentWaypointIndex], 0, robotId);
-                RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
+            if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE || firstRun)
+            {
+                currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+            }
 
-                msngr.SendMessage(destinationMessage);
-                firstRun = false;
+            RobotInfo destination = new RobotInfo(waypoints[currentWaypointIndex], 0, robotId);
+            RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
+
+            msngr.SendMessage(destinationMessage);
+            firstRun = false;
             }
         }
 

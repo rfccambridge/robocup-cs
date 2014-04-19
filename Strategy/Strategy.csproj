@@ -46,7 +46,6 @@
     <Compile Include="DefenseStrategy.cs" />
     <Compile Include="DestinationMatcher.cs" />
     <Compile Include="Goalie.cs" />
-    <Compile Include="GoalieEric.cs" />
     <Compile Include="GoalieTest.cs" />
     <Compile Include="HowOffensive.cs" />
     <Compile Include="Interfaces.cs" />

@@ -23,6 +23,7 @@ namespace RFC.Strategy
         PlayType play;
         object lockObject;
         int max_robots;
+        int goalie_id;
 
         // play behaviors
         NormalBehavior normalBehavior;
@@ -31,21 +32,21 @@ namespace RFC.Strategy
         PenaltyKickBehavior penaltyKickBehavior;
         KickOffBehavior kickOffBehavior;
 
-
-        public PlaySwitcher(Team our_team, int max_robots)
+        public PlaySwitcher(Team our_team, int goalie_id)
         {
             team = our_team;
             lockObject = new object();
-            this.max_robots = max_robots;
+            this.max_robots = 12;
+            this.goalie_id = goalie_id;
             new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
             new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
 
             // initializing behavior components
-            normalBehavior = new NormalBehavior(team);
-            waitBehavior = new WaitBehavior(team,max_robots);
-            kickInBehavior = new KickInBehavior(team);
-            penaltyKickBehavior = new PenaltyKickBehavior(team);
-            kickOffBehavior = new KickOffBehavior(team);
+            normalBehavior = new NormalBehavior(team, goalie_id);
+            waitBehavior = new WaitBehavior(team, goalie_id, max_robots);
+            kickInBehavior = new KickInBehavior(team, goalie_id);
+            penaltyKickBehavior = new PenaltyKickBehavior(team, goalie_id);
+            kickOffBehavior = new KickOffBehavior(team, goalie_id);
 
         }
 
