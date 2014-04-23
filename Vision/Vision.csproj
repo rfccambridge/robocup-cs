@@ -45,9 +45,6 @@
     <Compile Include="AveragingPredictor.cs" />
     <Compile Include="FieldState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SmoothingPredictor.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Vision.cs" />
   </ItemGroup>
   <ItemGroup>

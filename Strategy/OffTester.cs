@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Strategy
 {
@@ -132,6 +133,14 @@ namespace Strategy
             offenseMap.update(ourTeam, theirTeam, ball);
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
             double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball);
+            ServiceManager.getServiceManager().vdbClear();
+            for (int i = 0; i < passMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < passMap.GetLength(1); j++)
+                {
+                    ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(passMap[i,j], 0, 400000));
+                }
+            }
 
             // TODO: can (and probably should) merge if statements
             RobotInfo ballCarrier = null;
