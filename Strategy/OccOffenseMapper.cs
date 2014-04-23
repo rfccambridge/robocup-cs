@@ -10,16 +10,17 @@ using System.Threading.Tasks;
 
 namespace RFC.Strategy
 {
-    public class OccOffenseMapper : OffenseMapper
+    public class OccOffenseMapper
     {
         // normalize map to this number
         public const double NORM_TO = 100.0;
         // higher num -> better resolution
-        public const int LAT_NUM = 20;
+        public const int LAT_NUM = 10;
         // in degrees
         public const double BOUNCE_ANGLE = 20.0;
         // how far away from the line of sight should we ignore other robots?
-        public const double IGN_THRESH = 20.0;
+        public const double IGN_THRESH = .2;
+        Team team;
 
         private static readonly double LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
         private static readonly double LAT_VSTART = Constants.Field.YMIN;
@@ -34,15 +35,15 @@ namespace RFC.Strategy
 
         private double[,] shotMap = new double[LAT_NUM, LAT_NUM];
 
-        public OccOffenseMapper(Boolean fieldSide, List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
+        public OccOffenseMapper(Team team)
         {
-            this.fs = fieldSide;
-            update(ourTeam, theirTeam, ball);
+            this.team = team;
+            //update(ourTeam, theirTeam, ball);
         }
 
         public static int[] vecToInd(Vector2 v)
         {
-            return new int[] {(int)((v.X - LAT_HSTART) / LAT_HSIZE), (int)((v.Y - LAT_VSTART) / LAT_VSIZE)};
+            return new int[] {(int)Math.Round((v.X - LAT_HSTART) / LAT_HSIZE), (int)Math.Round((v.Y - LAT_VSTART) / LAT_VSIZE)};
         }
 
         public static Vector2 indToVec(int i, int j)
@@ -100,12 +101,13 @@ namespace RFC.Strategy
             return score;
         }
 
-        public void update(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
+        public void update(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
         {
             for (double x = LAT_HSTART; x < LAT_HEND; x += LAT_HSIZE)
             {
                 for (double y = LAT_VSTART; y < LAT_VEND; y += LAT_VSIZE)
                 {
+                    /*
                     Vector2 pos = new Vector2(x, y);
 
                     // find angle of opening for position
@@ -115,20 +117,23 @@ namespace RFC.Strategy
 
                     // iterate through other robots, adding distance between (line of sight between position and goal) and other robot
                     Vector2 vecCentGoal = pos - Constants.FieldPts.THEIR_GOAL;
-                    double distSum = 200.0;
+                    double distSum = 1;
                     foreach (RobotInfo rob in theirTeam)
                     {
-                        double m = vecCentGoal.Y / vecCentGoal.X;
-                        double b = y - m * x;
-                        double dist = Math.Abs(rob.Position.Y - m * rob.Position.X - b) / Math.Sqrt(m * m + 1);
-                        if (dist < IGN_THRESH)
+                        
+                        double dist = (rob.Position - pos).perpendicularComponent(vecCentGoal).magnitude();
+                        if (dist < IGN_THRESH && ((vecCentGoal - rob.Position).magnitude() > (vecCentGoal - pos).magnitude()))
                         {
-                            distSum -= IGN_THRESH * Math.Exp(-dist);
+                            distSum -= 1 * Math.Exp(-dist);
                         }
                     }
 
-                    int i = (int)((x - LAT_HSTART) / LAT_HSIZE);
-                    int j = (int)((y - LAT_VSTART) / LAT_VSIZE);
+                    if (distSum < 0)
+                        distSum = 0;
+                    */
+                    int[] ind = vecToInd(new Vector2(x, y));
+                    int i = ind[0];
+                    int j = ind[1];
                     // shouldn't happen but just to be safe
                     if (i > LAT_NUM - 1)
                     {
@@ -140,7 +145,11 @@ namespace RFC.Strategy
                     }
                     // make nonlinear (put in threshold)
                     // subtract (so that number of robots doesn't factor in)
-                    shotMap[i, j] = normalize(goalAngle * distSum);
+                    //shotMap[i, j] = normalize(goalAngle * distSum);
+                    
+
+                    ShotOpportunity shot = Shot1.evaluate(fmsg, team);
+                    shotMap[i, j] = shot.arc;
                 }
             }
         }
@@ -191,8 +200,9 @@ namespace RFC.Strategy
                         bounceScore = 0;
                     }
 
-                    int i = (int)((x - LAT_HSTART) / LAT_HSIZE);
-                    int j = (int)((y - LAT_VSTART) / LAT_VSIZE);
+                    int[] ind = vecToInd(new Vector2(x, y));
+                    int i = ind[0];
+                    int j = ind[1];
                     // shouldn't happen but just to be safe
                     if (i > LAT_NUM - 1)
                     {
