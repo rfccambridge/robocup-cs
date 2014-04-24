@@ -42,13 +42,13 @@ namespace Strategy
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
-
+            /*
             Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(0, 0))[1]);
             Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(1, 0))[1]);
             Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(0, 1))[1]);
             Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(1, 1))[1]);
             Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(3, 2))[1]);
-            Console.WriteLine(OccOffenseMapper.vecToInd(new Vector2()));
+            Console.WriteLine(OccOffenseMapper.vecToInd(new Vector2()));*/
         }
 
         private RobotInfo goodBounceShot(List<RobotInfo> ourTeam, RobotInfo ballCarrier, double[,] map)
@@ -140,16 +140,21 @@ namespace Strategy
             offenseMap.update(ourTeam, theirTeam, ball, fieldVision);
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
             double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball);
+            /*
             ServiceManager.getServiceManager().vdbClear();
             for (int i = 0; i < passMap.GetLength(0); i++)
             {
                 for (int j = 0; j < passMap.GetLength(1); j++)
                 {
+<<<<<<< HEAD
                     Console.WriteLine(dribMap[i, j]);
                     ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(dribMap[i,j], 0, 0.5));
+=======
+                    ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(passMap[i,j], 0, 40));
+>>>>>>> 55d6cf80aa0db4818ed7a499cb580ac1d2e828b5
                 }
             }
-
+            */
             // TODO: can (and probably should) merge if statements
             RobotInfo ballCarrier = null;
             double rbd = BALL_HANDLE_MIN;

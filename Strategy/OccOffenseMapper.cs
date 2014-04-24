@@ -107,7 +107,7 @@ namespace RFC.Strategy
             {
                 for (double y = LAT_VSTART; y < LAT_VEND; y += LAT_VSIZE)
                 {
-                    /*
+                    
                     Vector2 pos = new Vector2(x, y);
 
                     // find angle of opening for position
@@ -130,7 +130,7 @@ namespace RFC.Strategy
 
                     if (distSum < 0)
                         distSum = 0;
-                    */
+                    
                     int[] ind = vecToInd(new Vector2(x, y));
                     int i = ind[0];
                     int j = ind[1];
@@ -145,11 +145,11 @@ namespace RFC.Strategy
                     }
                     // make nonlinear (put in threshold)
                     // subtract (so that number of robots doesn't factor in)
-                    //shotMap[i, j] = normalize(goalAngle * distSum);
+                    shotMap[i, j] = normalize(goalAngle * distSum);
                     
 
-                    ShotOpportunity shot = Shot1.evaluate(fmsg, team);
-                    shotMap[i, j] = shot.arc;
+                    //ShotOpportunity shot = Shot1.evaluate(fmsg, team);
+                    //shotMap[i, j] = shot.arc;
                 }
             }
         }
@@ -182,7 +182,7 @@ namespace RFC.Strategy
                     {
 
                         double dist = (rob.Position - pos).perpendicularComponent(vecToBall).magnitude();
-                        if (dist < IGN_THRESH && ((vecToBall - rob.Position).magnitude() > (vecToBall - pos).magnitude()))
+                        if (dist < IGN_THRESH && ((vecToBall - rob.Position).magnitude() < (vecToBall - pos).magnitude()))
                         {
                             distSum -= 1 * Math.Exp(-dist);
                         }
