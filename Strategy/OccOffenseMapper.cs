@@ -109,7 +109,7 @@ namespace RFC.Strategy
                 {
                     
                     Vector2 pos = new Vector2(x, y);
-
+                    /*
                     // find angle of opening for position
                     Vector2 vecBotGoal = Constants.FieldPts.THEIR_GOAL_BOTTOM - pos;
                     Vector2 vecTopGoal = Constants.FieldPts.THEIR_GOAL_TOP - pos;
@@ -130,7 +130,7 @@ namespace RFC.Strategy
 
                     if (distSum < 0)
                         distSum = 0;
-                    
+                    */
                     int[] ind = vecToInd(new Vector2(x, y));
                     int i = ind[0];
                     int j = ind[1];
@@ -145,11 +145,10 @@ namespace RFC.Strategy
                     }
                     // make nonlinear (put in threshold)
                     // subtract (so that number of robots doesn't factor in)
-                    shotMap[i, j] = normalize(goalAngle * distSum);
+                    // shotMap[i, j] = normalize(goalAngle * distSum);
                     
-
-                    //ShotOpportunity shot = Shot1.evaluate(fmsg, team);
-                    //shotMap[i, j] = shot.arc;
+                    ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
+                    shotMap[i, j] = shot.arc;
                 }
             }
         }
@@ -165,7 +164,7 @@ namespace RFC.Strategy
         // within bounce angle -> good
         // make sure pass between ball and position is good
         // make sure position has good shot
-        public double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
+        public double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
         {
             double[,] map = new double[LAT_NUM, LAT_NUM];
             for (double x = LAT_HSTART; x < LAT_HEND; x += LAT_HSIZE)
@@ -176,6 +175,7 @@ namespace RFC.Strategy
                     Vector2 vecToBall = ball.Position - pos;
                     Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
 
+                    /*
                     // see if position has good line of sight with ball
                     double distSum = 1;
                     foreach (RobotInfo rob in theirTeam)
@@ -191,6 +191,7 @@ namespace RFC.Strategy
                     {
                         distSum = 0;
                     }
+                    */
 
                     // calculate bounce score
                     // make .5(1+cos)
@@ -215,7 +216,9 @@ namespace RFC.Strategy
                     {
                         j = LAT_NUM - 1;
                     }
-                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
+                    //map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
+                    ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
+                    map[i, j] = normalize(shotMap[i, j] * bounceScore * shot.arc);
                 }
             }
             return map;

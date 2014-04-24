@@ -139,22 +139,20 @@ namespace Strategy
             }
             offenseMap.update(ourTeam, theirTeam, ball, fieldVision);
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
-            double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball);
+            double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision);
+            
             /*
             ServiceManager.getServiceManager().vdbClear();
             for (int i = 0; i < passMap.GetLength(0); i++)
             {
                 for (int j = 0; j < passMap.GetLength(1); j++)
                 {
-<<<<<<< HEAD
                     Console.WriteLine(dribMap[i, j]);
                     ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(dribMap[i,j], 0, 0.5));
-=======
-                    ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(passMap[i,j], 0, 40));
->>>>>>> 55d6cf80aa0db4818ed7a499cb580ac1d2e828b5
                 }
             }
             */
+
             // TODO: can (and probably should) merge if statements
             RobotInfo ballCarrier = null;
             double rbd = BALL_HANDLE_MIN;
