@@ -177,16 +177,19 @@ namespace RFC.Strategy
                     Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
 
                     // see if position has good line of sight with ball
-                    double distSum = 200.0;
+                    double distSum = 1;
                     foreach (RobotInfo rob in theirTeam)
                     {
-                        double m = vecToBall.Y / vecToBall.X;
-                        double b = y - m * x;
-                        double dist = Math.Abs(ball.Position.Y - m * ball.Position.X - b) / Math.Sqrt(m * m + 1);
-                        if (dist < IGN_THRESH)
+
+                        double dist = (rob.Position - pos).perpendicularComponent(vecToBall).magnitude();
+                        if (dist < IGN_THRESH && ((vecToBall - rob.Position).magnitude() > (vecToBall - pos).magnitude()))
                         {
-                            distSum -= IGN_THRESH * Math.Exp(-dist);
+                            distSum -= 1 * Math.Exp(-dist);
                         }
+                    }
+                    if (distSum < 0)
+                    {
+                        distSum = 0;
                     }
 
                     // calculate bounce score
@@ -212,8 +215,6 @@ namespace RFC.Strategy
                     {
                         j = LAT_NUM - 1;
                     }
-                    // make nonlinear (put in threshold)
-                    // subtract (so that number of robots doesn't factor in)
                     map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
                 }
             }
