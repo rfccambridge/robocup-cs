@@ -146,7 +146,12 @@ namespace Strategy
             {
                 for (int j = 0; j < passMap.GetLength(1); j++)
                 {
+<<<<<<< HEAD
+                    Console.WriteLine(dribMap[i, j]);
+                    ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(dribMap[i,j], 0, 0.5));
+=======
                     ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(passMap[i,j], 0, 40));
+>>>>>>> 55d6cf80aa0db4818ed7a499cb580ac1d2e828b5
                 }
             }
             */
