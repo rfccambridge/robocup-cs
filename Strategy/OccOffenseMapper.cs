@@ -15,7 +15,7 @@ namespace RFC.Strategy
         // normalize map to this number
         public const double NORM_TO = 100.0;
         // higher num -> better resolution
-        public const int LAT_NUM = 10;
+        public const int LAT_NUM = 40;
         // in degrees
         public const double BOUNCE_ANGLE = 20.0;
         // how far away from the line of sight should we ignore other robots?

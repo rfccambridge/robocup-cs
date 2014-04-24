@@ -26,7 +26,7 @@ namespace RFC.Messaging
         // private constructor so no one can make another instance
         private ServiceManager()
         {
-
+            // nothing
         }
 
         abstract class HandlerHolder
