@@ -41,6 +41,11 @@ namespace RFC.Strategy
         // a shot it is
         public static ShotOpportunity evaluate(FieldVisionMessage fvm, Team team)
         {
+            Vector2 pos = fvm.Ball.Position;
+            return evaluatePosition(fvm, pos, team);
+        }
+        public static ShotOpportunity evaluatePosition(FieldVisionMessage fvm, Vector2 from_position, Team team)
+        {
             List<RobotInfo> locations = fvm.GetRobots();
 
             // finding beginning and end of all occlusions from other robots as edges
@@ -48,7 +53,7 @@ namespace RFC.Strategy
             for (int i = 0; i < locations.Count(); i++)
             {
                 RobotInfo robot = locations[i];
-                Vector2 difference = robot.Position - fvm.Ball.Position;
+                Vector2 difference = robot.Position - from_position;
                 double sweep = Math.Asin((Constants.Basic.ROBOT_RADIUS + Constants.Basic.BALL_RADIUS) / difference.magnitude());
                 double angle = difference.cartesianAngle();
                 intervals.Add(new edge(angle - sweep, false));
@@ -56,8 +61,8 @@ namespace RFC.Strategy
             }
 
             // adding in edges of goal
-            Vector2 goal1 = Constants.FieldPts.THEIR_GOAL_BOTTOM - fvm.Ball.Position;
-            Vector2 goal2 = Constants.FieldPts.THEIR_GOAL_TOP - fvm.Ball.Position;
+            Vector2 goal1 = Constants.FieldPts.THEIR_GOAL_BOTTOM - from_position;
+            Vector2 goal2 = Constants.FieldPts.THEIR_GOAL_TOP - from_position;
             double angle1 = goal1.cartesianAngle();
             double angle2 = goal2.cartesianAngle();
             intervals.Add(new edge(angle1, true));
@@ -112,9 +117,9 @@ namespace RFC.Strategy
             double arc = open_arc[index];
 
             // finding intersection of shot with goal line
-            double dx = Constants.FieldPts.THEIR_GOAL.X - fvm.Ball.Position.X;
+            double dx = Constants.FieldPts.THEIR_GOAL.X - from_position.X;
 
-            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, fvm.Ball.Position.Y + dx * Math.Tan(shot_angle));
+            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, from_position.Y + dx * Math.Tan(shot_angle));
             return new ShotOpportunity(shot_vec, arc);
         }
 
