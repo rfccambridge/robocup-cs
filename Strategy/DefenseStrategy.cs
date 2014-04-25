@@ -70,10 +70,14 @@ namespace RFC.Strategy
             RobotInfo goalie = msg.GetRobot(myTeam, goalieID);
 
             // Remove goalie from fieldPlayers
+            
             for (int i = 0; i < fieldPlayers.Count; i++)
             {
+                Console.WriteLine("fieldPlayer " + i + "has ID" + fieldPlayers[i].ID);
                 if (fieldPlayers[i].ID == goalieID)
                 {
+                    //Console.WriteLine("goalieID is " + goalieID);
+                    //Console.WriteLine("Will remove player with ID " + fieldPlayers[i].ID);
                     fieldPlayers.RemoveAt(i);
                     break;
                 }
@@ -136,11 +140,8 @@ namespace RFC.Strategy
             RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
             goalie_dest.ID = goalieID;
             msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, true));
-<<<<<<< HEAD
             //Console.WriteLine(new RobotDestinationMessage(goalie_dest, false, true, true));
-=======
-            Console.WriteLine(new RobotDestinationMessage(goalie_dest, false, true, true));
->>>>>>> ec388d5928e4d91c7412b27d19e37a8fec8fb462
+
 
         }
     }
