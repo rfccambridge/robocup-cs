@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="AlexTest.cs" />
     <Compile Include="AssessThreats.cs" />
+    <Compile Include="BounceKicker.cs" />
+    <Compile Include="BounceTest.cs" />
     <Compile Include="DefenseStrategy.cs" />
     <Compile Include="DestinationMatcher.cs" />
     <Compile Include="Goalie.cs" />
@@ -50,6 +52,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="KickInBehavior.cs" />
     <Compile Include="KickOffBehavior.cs" />
+    <Compile Include="MidfieldPlay.cs" />
     <Compile Include="MovementTest.cs" />
     <Compile Include="NormalBehavior.cs" />
     <Compile Include="OccOffenseMapper.cs" />

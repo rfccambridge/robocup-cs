@@ -37,6 +37,7 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage fieldVision)
         {
+
             if (!first && fieldVision.GetRobots(team).Count() > 0)
             {
                 pen_behave.Ours(fieldVision);

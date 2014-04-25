@@ -132,7 +132,7 @@ namespace RFC.FieldDrawer
           }
         }
 
-        const double MARKER_SIZE = 0.05;
+        const double MARKER_SIZE = 0.02;
 
         //Local copies of constants for the field size and parameters
         //They will not change when constants are reloaded!

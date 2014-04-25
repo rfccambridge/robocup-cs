@@ -136,7 +136,11 @@ namespace RFC.Strategy
             RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
             goalie_dest.ID = goalieID;
             msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, true));
+<<<<<<< HEAD
             //Console.WriteLine(new RobotDestinationMessage(goalie_dest, false, true, true));
+=======
+            Console.WriteLine(new RobotDestinationMessage(goalie_dest, false, true, true));
+>>>>>>> ec388d5928e4d91c7412b27d19e37a8fec8fb462
 
         }
     }

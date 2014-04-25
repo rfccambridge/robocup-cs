@@ -7,13 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Strategy
 {
     public class OffTester
     {
-        public const bool DEBUG = false;
-        private const double TOLERANCE = 0.1;
+        public enum State { Normal, Shot, BounceShot };
+        private State state;
 
         private Team team;
         private Team oTeam;
@@ -23,16 +24,31 @@ namespace Strategy
         private OccOffenseMapper offenseMap;
 
         private Vector2[] zoneList;
+        // the radius in meters of a robot's zone
         private const double ZONE_RAD = 0.5;
 
+        // how close the ball must be to a robot to recognize it as having possession
         private const double BALL_HANDLE_MIN = 0.2;
 
+        // the lower the number, the more likely to make a shot
         private const double SHOT_THRESH = 10;
         private const double BSHOT_THRESH = 20;
+
+        // how long should a play continue before it times out (in milliseconds)?
+        private const int SHOT_TIMEOUT = 5000;
+        private const int BSHOT_TIMEOUT = 5000;
+
+        // when did the current play start executing?
+        private int playStartTime;
+
+        // last known ball carrier before a special function has executed
+        private RobotInfo shootingRobot = null;
+        private RobotInfo bouncingRobot = null;
 
         public OffTester(Team team)
         {
             this.team = team;
+            this.state = 0;
             if (team == Team.Blue)
                 this.oTeam = Team.Yellow;
             else
@@ -41,6 +57,14 @@ namespace Strategy
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+            /*
+            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(0, 0))[1]);
+            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(1, 0))[1]);
+            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(0, 1))[1]);
+            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(1, 1))[1]);
+            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(3, 2))[1]);
+            Console.WriteLine(OccOffenseMapper.vecToInd(new Vector2()));
+            */
         }
 
         private RobotInfo goodBounceShot(List<RobotInfo> ourTeam, RobotInfo ballCarrier, double[,] map)
@@ -112,9 +136,8 @@ namespace Strategy
             */
         }
 
-        public void Handle(FieldVisionMessage fieldVision)
+        private void normalPlay(FieldVisionMessage fieldVision)
         {
-            if (stopped) return;
             List<RobotInfo> ourTeam = fieldVision.GetRobots(team);
             List<RobotInfo> theirTeam = fieldVision.GetRobots(oTeam);
             BallInfo ball = fieldVision.Ball;
@@ -126,12 +149,24 @@ namespace Strategy
                 {
                     zoneList[i] = OccOffenseMapper.getZone(i);
                 }
-                offenseMap = new OccOffenseMapper(true, ourTeam, theirTeam, ball);
+                offenseMap = new OccOffenseMapper(team);
                 firstRun = false;
             }
-            offenseMap.update(ourTeam, theirTeam, ball);
+            offenseMap.update(ourTeam, theirTeam, ball, fieldVision);
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
-            double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball);
+            double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision);
+
+            /*
+            ServiceManager.getServiceManager().vdbClear();
+            for (int i = 0; i < passMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < passMap.GetLength(1); j++)
+                {
+                    Console.WriteLine(dribMap[i, j]);
+                    ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(dribMap[i,j], 0, 0.5));
+                }
+            }
+            */
 
             // TODO: can (and probably should) merge if statements
             RobotInfo ballCarrier = null;
@@ -152,6 +187,8 @@ namespace Strategy
                     closestToBall = rob;
                 }
             }
+            // used for other play functions
+            shootingRobot = ballCarrier;
 
             for (int i = 0; i < ourTeam.Count; i++)
             {
@@ -160,12 +197,16 @@ namespace Strategy
                 if (ballCarrier != null && ballCarrier.ID == ourTeam.ElementAt(i).ID && inds[0] >= 0 && inds[0] < dribMap.GetLength(0)
                     && inds[1] >= 0 && inds[1] < dribMap.GetLength(1) && dribMap[inds[0], inds[1]] > SHOT_THRESH)
                 {
-                    KickMessage kickM = new KickMessage(ballCarrier, Constants.FieldPts.THEIR_GOAL);
-                    ServiceManager.getServiceManager().SendMessage(kickM);
+                    state = State.Shot;
+                    playStartTime = DateTime.Now.Millisecond;
                 }
                 else if (bpr != null)
                 {
-                    // do bounce pass
+                    // used for other play functions
+                    bouncingRobot = bpr;
+
+                    state = State.BounceShot;
+                    playStartTime = DateTime.Now.Millisecond;
                 }
                 else if (ballCarrier == null && closestToBall.ID == ourTeam.ElementAt(i).ID)
                 {
@@ -179,6 +220,56 @@ namespace Strategy
                 {
                     goToBestPos(ourTeam.ElementAt(i), zoneList[i], passMap, false, ball);
                 }
+            }
+        }
+
+        public void setState(State s)
+        {
+            state = s;
+        }
+
+        public void shotPlay(FieldVisionMessage fieldVision)
+        {
+            // TODO: hopefully we don't play through midnight, otherwise I don't think this will work...
+            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN && DateTime.Now.Millisecond - playStartTime >= SHOT_TIMEOUT)
+            {
+                state = State.Normal;
+            }
+        }
+
+        public void bounceShotPlay(FieldVisionMessage fieldVision)
+        {
+            // TODO: hopefully we don't play through midnight, otherwise I don't think this will work...
+            if (DateTime.Now.Millisecond - playStartTime >= BSHOT_TIMEOUT)
+            {
+                state = State.Normal;
+            }
+        }
+
+        public void reset()
+        {
+            state = State.Normal;
+        }
+
+        public void Handle(FieldVisionMessage fieldVision)
+        {
+            // TODO: if timeout, make sure isn't affected by stoppage of play
+            if (stopped) return;
+            switch (state)
+            {
+                case State.Normal:
+                    playStartTime = 0;
+                    normalPlay(fieldVision);
+                    break;
+                case State.Shot:
+                    shotPlay(fieldVision);
+                    break;
+                case State.BounceShot:
+                    bounceShotPlay(fieldVision);
+                    break;
+                default:
+                    this.reset();
+                    break;
             }
         }
 

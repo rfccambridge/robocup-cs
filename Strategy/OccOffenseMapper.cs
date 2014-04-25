@@ -10,16 +10,17 @@ using System.Threading.Tasks;
 
 namespace RFC.Strategy
 {
-    public class OccOffenseMapper : OffenseMapper
+    public class OccOffenseMapper
     {
         // normalize map to this number
         public const double NORM_TO = 100.0;
         // higher num -> better resolution
-        public const int LAT_NUM = 20;
+        public const int LAT_NUM = 40;
         // in degrees
         public const double BOUNCE_ANGLE = 20.0;
         // how far away from the line of sight should we ignore other robots?
-        public const double IGN_THRESH = 20.0;
+        public const double IGN_THRESH = .2;
+        Team team;
 
         private static readonly double LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
         private static readonly double LAT_VSTART = Constants.Field.YMIN;
@@ -31,18 +32,20 @@ namespace RFC.Strategy
         private static readonly double LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
 
         private Boolean fs;
+        private ServiceManager msngr;
 
         private double[,] shotMap = new double[LAT_NUM, LAT_NUM];
 
-        public OccOffenseMapper(Boolean fieldSide, List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
+        public OccOffenseMapper(Team team)
         {
-            this.fs = fieldSide;
-            update(ourTeam, theirTeam, ball);
+            this.team = team;
+            msngr = ServiceManager.getServiceManager();
+            //update(ourTeam, theirTeam, ball);
         }
 
         public static int[] vecToInd(Vector2 v)
         {
-            return new int[] {(int)((v.X - LAT_HSTART) / LAT_HSIZE), (int)((v.Y - LAT_VSTART) / LAT_VSIZE)};
+            return new int[] {(int)Math.Round((v.X - LAT_HSTART) / LAT_HSIZE), (int)Math.Round((v.Y - LAT_VSTART) / LAT_VSIZE)};
         }
 
         public static Vector2 indToVec(int i, int j)
@@ -72,12 +75,12 @@ namespace RFC.Strategy
                 // top zone
                 case 0:
                     x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
-                    y = 3.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
+                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
                     break;
                 // bottom zone
                 case 1:
                     x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
-                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
+                    y = 3.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
                     break;
                 // center zone
                 case 2:
@@ -100,14 +103,15 @@ namespace RFC.Strategy
             return score;
         }
 
-        public void update(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
+        public void update(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
         {
             for (double x = LAT_HSTART; x < LAT_HEND; x += LAT_HSIZE)
             {
                 for (double y = LAT_VSTART; y < LAT_VEND; y += LAT_VSIZE)
                 {
+                    
                     Vector2 pos = new Vector2(x, y);
-
+                    /*
                     // find angle of opening for position
                     Vector2 vecBotGoal = Constants.FieldPts.THEIR_GOAL_BOTTOM - pos;
                     Vector2 vecTopGoal = Constants.FieldPts.THEIR_GOAL_TOP - pos;
@@ -115,20 +119,23 @@ namespace RFC.Strategy
 
                     // iterate through other robots, adding distance between (line of sight between position and goal) and other robot
                     Vector2 vecCentGoal = pos - Constants.FieldPts.THEIR_GOAL;
-                    double distSum = 200.0;
+                    double distSum = 1;
                     foreach (RobotInfo rob in theirTeam)
                     {
-                        double m = vecCentGoal.Y / vecCentGoal.X;
-                        double b = y - m * x;
-                        double dist = Math.Abs(rob.Position.Y - m * rob.Position.X - b) / Math.Sqrt(m * m + 1);
-                        if (dist < IGN_THRESH)
+                        
+                        double dist = (rob.Position - pos).perpendicularComponent(vecCentGoal).magnitude();
+                        if (dist < IGN_THRESH && ((vecCentGoal - rob.Position).magnitude() > (vecCentGoal - pos).magnitude()))
                         {
-                            distSum -= IGN_THRESH * Math.Exp(-dist);
+                            distSum -= 1 * Math.Exp(-dist);
                         }
                     }
 
-                    int i = (int)((x - LAT_HSTART) / LAT_HSIZE);
-                    int j = (int)((y - LAT_VSTART) / LAT_VSIZE);
+                    if (distSum < 0)
+                        distSum = 0;
+                    */
+                    int[] ind = vecToInd(new Vector2(x, y));
+                    int i = ind[0];
+                    int j = ind[1];
                     // shouldn't happen but just to be safe
                     if (i > LAT_NUM - 1)
                     {
@@ -140,7 +147,10 @@ namespace RFC.Strategy
                     }
                     // make nonlinear (put in threshold)
                     // subtract (so that number of robots doesn't factor in)
-                    shotMap[i, j] = normalize(goalAngle * distSum);
+                    // shotMap[i, j] = normalize(goalAngle * distSum);
+                    
+                    ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
+                    shotMap[i, j] = shot.arc;
                 }
             }
         }
@@ -156,7 +166,7 @@ namespace RFC.Strategy
         // within bounce angle -> good
         // make sure pass between ball and position is good
         // make sure position has good shot
-        public double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
+        public double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
         {
             double[,] map = new double[LAT_NUM, LAT_NUM];
             for (double x = LAT_HSTART; x < LAT_HEND; x += LAT_HSIZE)
@@ -167,18 +177,23 @@ namespace RFC.Strategy
                     Vector2 vecToBall = ball.Position - pos;
                     Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
 
+                    
                     // see if position has good line of sight with ball
-                    double distSum = 200.0;
+                    double distSum = 1;
                     foreach (RobotInfo rob in theirTeam)
                     {
-                        double m = vecToBall.Y / vecToBall.X;
-                        double b = y - m * x;
-                        double dist = Math.Abs(ball.Position.Y - m * ball.Position.X - b) / Math.Sqrt(m * m + 1);
-                        if (dist < IGN_THRESH)
+
+                        double dist = (rob.Position - pos).perpendicularComponent(vecToBall).magnitude();
+                        if (dist < IGN_THRESH && ((vecToBall - rob.Position).magnitude() < (vecToBall - pos).magnitude()))
                         {
-                            distSum -= IGN_THRESH * Math.Exp(-dist);
+                            distSum -= 1 * Math.Exp(-dist);
                         }
                     }
+                    if (distSum < 0)
+                    {
+                        distSum = 0;
+                    }
+                    
 
                     // calculate bounce score
                     // make .5(1+cos)
@@ -191,8 +206,9 @@ namespace RFC.Strategy
                         bounceScore = 0;
                     }
 
-                    int i = (int)((x - LAT_HSTART) / LAT_HSIZE);
-                    int j = (int)((y - LAT_VSTART) / LAT_VSIZE);
+                    int[] ind = vecToInd(new Vector2(x, y));
+                    int i = ind[0];
+                    int j = ind[1];
                     // shouldn't happen but just to be safe
                     if (i > LAT_NUM - 1)
                     {
@@ -202,9 +218,11 @@ namespace RFC.Strategy
                     {
                         j = LAT_NUM - 1;
                     }
-                    // make nonlinear (put in threshold)
-                    // subtract (so that number of robots doesn't factor in)
+                    
                     map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
+                    //ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
+                    //map[i, j] = normalize(shotMap[i, j] * bounceScore * shot.arc);
+                    //msngr.vdb(new Vector2(x,y), Utilities.ColorUtils.numToColor(map[i,j],0,20));
                 }
             }
             return map;

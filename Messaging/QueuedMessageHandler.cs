@@ -20,6 +20,7 @@ namespace RFC.Messaging
             this.handler = handler;
             this.lockObject = lockObject;
 
+            // register myself to receive messages
             ServiceManager.getServiceManager().RegisterListener<T>(handleMessage, null);
         }
 

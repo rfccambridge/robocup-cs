@@ -34,6 +34,7 @@ namespace RFC.Vision
         {
             Flipped = false;
 
+            // make new field state memory for each camera
             for (int i = 0; i < NUM_CAMERAS; i++)
             {
                 fieldStates[i] = new FieldState();
@@ -41,6 +42,7 @@ namespace RFC.Vision
 
             LoadConstants();
             messenger = ServiceManager.getServiceManager();
+            // register handler to receive messages
             new QueuedMessageHandler<VisionMessage>(Update, listenerLock);
         }
 
@@ -53,9 +55,10 @@ namespace RFC.Vision
                     info.Orientation + Math.PI, info.Team, info.ID);
         }
 
+        // update robot positions with new vision data
         public void Update(VisionMessage msg)
         {
-
+            // update each FieldState with new vision data
             fieldStates[msg.CameraID].Update(msg);
 
             // calculates ball and robot positions, averaged over cameras
