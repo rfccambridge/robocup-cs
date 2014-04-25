@@ -99,20 +99,44 @@ namespace RFC.Strategy
                 //Console.WriteLine("Index " + i + " of destinations is " + destinations[i].Position);
 
             }
-            msngr.vdbClear();
+            //msngr.vdbClear();
             foreach (RobotInfo rob in topThreats)
             {
-                msngr.vdb(rob);
+                //msngr.vdb(rob);
                 //Console.WriteLine("position of a topThreat is " + rob.Position);
             }
             
-            DestinationMatcher.SendByDistance(fieldPlayers, destinations);
+                      
+            int[] assignments = DestinationMatcher.GetAssignments(fieldPlayers, destinations);
+            int n = fieldPlayers.Count();
+            ServiceManager msngr = ServiceManager.getServiceManager();
+
+            if (fieldPlayers.Count != destinations.Count)
+                throw new Exception("different numbers of robots and destinations: " + fieldPlayers.Count + ", " + destinations.Count);
+
+            // sending dest messages for each one
+            for (int i = 0; i <n; i++)
+            {
+                if (destinations[assignments[i]].Position == msg.Ball.Position)
+                {
+                    KickMessage km = new KickMessage(fieldPlayers[i], Constants.FieldPts.THEIR_GOAL);
+                    msngr.SendMessage(km);
+                }
+                else
+                {
+                    RobotInfo dest = new RobotInfo(destinations[assignments[i]]);
+                    dest.ID = fieldPlayers[i].ID;
+
+                    msngr.SendMessage(new RobotDestinationMessage(dest, true, false, true));
+                }
+            }
+        
 
             // assigning position for goalie
             RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
             goalie_dest.ID = goalieID;
             msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, true));
-            Console.WriteLine(new RobotDestinationMessage(goalie_dest, false, true, true))
+            //Console.WriteLine(new RobotDestinationMessage(goalie_dest, false, true, true));
 
         }
     }
