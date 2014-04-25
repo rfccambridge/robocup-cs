@@ -34,9 +34,14 @@ namespace RFC.Strategy
             List<RobotInfo> rest = msg.GetRobots(team);
 
             ShotOpportunity shot = Shot1.evaluate(msg, team);
-            msngr.vdb(shot.target);
-            KickMessage km = new KickMessage(kicker, shot.target);
-            msngr.SendMessage(km);
+            if (shot.target != null)
+            {
+                //msngr.vdbClear();
+                //msngr.vdb(shot.target);
+                KickMessage km = new KickMessage(kicker, shot.target);
+                msngr.SendMessage(km);
+            }
+            
 
             // making sure the rest of ours are behind the line
             foreach (RobotInfo robot in rest)
