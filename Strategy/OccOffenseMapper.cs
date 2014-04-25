@@ -32,12 +32,14 @@ namespace RFC.Strategy
         private static readonly double LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
 
         private Boolean fs;
+        private ServiceManager msngr;
 
         private double[,] shotMap = new double[LAT_NUM, LAT_NUM];
 
         public OccOffenseMapper(Team team)
         {
             this.team = team;
+            msngr = ServiceManager.getServiceManager();
             //update(ourTeam, theirTeam, ball);
         }
 
@@ -175,7 +177,7 @@ namespace RFC.Strategy
                     Vector2 vecToBall = ball.Position - pos;
                     Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
 
-                    /*
+                    
                     // see if position has good line of sight with ball
                     double distSum = 1;
                     foreach (RobotInfo rob in theirTeam)
@@ -191,7 +193,7 @@ namespace RFC.Strategy
                     {
                         distSum = 0;
                     }
-                    */
+                    
 
                     // calculate bounce score
                     // make .5(1+cos)
@@ -216,9 +218,11 @@ namespace RFC.Strategy
                     {
                         j = LAT_NUM - 1;
                     }
-                    //map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
-                    ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
-                    map[i, j] = normalize(shotMap[i, j] * bounceScore * shot.arc);
+                    
+                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
+                    //ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
+                    //map[i, j] = normalize(shotMap[i, j] * bounceScore * shot.arc);
+                    //msngr.vdb(new Vector2(x,y), Utilities.ColorUtils.numToColor(map[i,j],0,20));
                 }
             }
             return map;

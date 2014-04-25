@@ -99,10 +99,8 @@ namespace RFC.Strategy
             // finding biggest open arc
             double maximum = 0;
             int index = -1;
-            Console.WriteLine("arcs:");
             for (int i = 0; i < open_arc.Count(); i++)
             {
-                Console.WriteLine("open arc: " + open_arc[i]);
                 if (open_arc[i] > maximum)
                 {
                     maximum = open_arc[i];
