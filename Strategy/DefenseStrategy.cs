@@ -64,6 +64,7 @@ namespace RFC.Strategy
                 topThreats.Add(new RobotInfo(totalThreats[i].position, 0, 0));
                 //Console.WriteLine("Just added " + topThreats[i].Position + " to topThreats");
             }
+            
             //Console.WriteLine("length of topThreats is " + topThreats.Count);
 
             
