@@ -52,7 +52,7 @@ namespace RFC.Strategy
             Vector2 goalpos = Constants.FieldPts.OUR_GOAL;
             Vector2 ballpos = ball.Position;
             Vector2 ballvel = ball.Velocity;
-            double hold = Constants.Field.GOAL_HEIGHT; // robot distance from goal
+            double hold = Constants.Field.GOAL_HEIGHT/2; // robot distance from goal
 
             double shadowAngle = (ballpos - goalpos).cartesianAngle(); // robot angle along semicircle if shadowing ball
 
