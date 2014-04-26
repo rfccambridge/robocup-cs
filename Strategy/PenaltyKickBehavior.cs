@@ -59,8 +59,28 @@ namespace RFC.Strategy
 
         public void OursSetup(FieldVisionMessage msg)
         {
-            // set ID of our kicker for when we take it
+            // set kicker id
             kicker_id = 0;
+
+            RobotInfo kicker = msg.GetRobot(team, kicker_id);
+            List<RobotInfo> rest = msg.GetRobots(team);
+
+            // todo: send kicker into position
+            Vector2 dest = msg.Ball.Position - new Vector2(Constants.Basic.ROBOT_RADIUS * 2, 0);
+            msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(dest,0,team,kicker_id), true, false, true));
+
+
+            // making sure the rest of ours are behind the line
+            foreach (RobotInfo robot in rest)
+            {
+                if (robot.ID != kicker_id && robot.Position.X > Constants.FieldPts.THEIR_PENALTY_KICK_MARK.X - .8)
+                {
+                    // need to move the robot back
+                    RobotInfo destination = new RobotInfo(robot);
+                    destination.Position = new Vector2(Constants.FieldPts.THEIR_PENALTY_KICK_MARK.X - .8, robot.Position.Y);
+                    msngr.SendMessage(new RobotDestinationMessage(destination, true, false, true));
+                }
+            }
 
             
         }

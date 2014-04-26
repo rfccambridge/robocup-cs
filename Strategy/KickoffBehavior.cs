@@ -109,14 +109,6 @@ namespace RFC.Strategy
 
         public void Theirs(FieldVisionMessage msg)
         {
-            //TODO
-            // detect when play has started, then switch to normal play
-
-        }
-
-        public void TheirsSetup(FieldVisionMessage msg)
-        {
-            //TODO
             // probably just hardcoded positions
             // put one robot in the center, two on wings, a goalie, and the rest in back. 
             //reuse code from OursSetup
@@ -133,14 +125,21 @@ namespace RFC.Strategy
 
             List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
 
-            
+
             for (int i = 0; i < n; i++)
             {
-                destinations[i] = RFC.PathPlanning.Avoider.avoid(destinations[i], msg.Ball.Position, .5+ Constants.Basic.ROBOT_RADIUS); 
+                destinations[i] = RFC.PathPlanning.Avoider.avoid(destinations[i], msg.Ball.Position, .5 + Constants.Basic.ROBOT_RADIUS);
                 //also need to avoid other side of field
             }
 
             DestinationMatcher.SendByDistance(ours, destinations);
+
+        }
+
+        public void TheirsSetup(FieldVisionMessage msg)
+        {
+            this.Theirs(msg);
+            
         }
     }
 }
