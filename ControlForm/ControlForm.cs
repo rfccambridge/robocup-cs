@@ -69,8 +69,8 @@ namespace ControlForm
 
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
-                new Strategy.OffTester(team);
-                //new SetupTest(team);
+                //new Strategy.OffTester(team);
+                new SetupTest(team);
                 //new GoalieTest(team, goalieNumber);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);

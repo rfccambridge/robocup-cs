@@ -483,7 +483,7 @@ namespace RFC.Simulator
 
             Vector2 robotFaceDir = new Vector2(robot.Orientation);
             Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * robotFaceDir;
-            if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
+            if (kickerPosition.distanceSq(ball.Position) < 10 * KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
             {
                 Vector2 newVel = robotFaceDir * getKickSpeed(kickerStrength);
                 LastTouched = robot.Team;
