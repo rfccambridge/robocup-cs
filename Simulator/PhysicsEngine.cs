@@ -233,7 +233,7 @@ namespace RFC.Simulator
             double freq = Constants.Time.SIM_ENGINE_FREQUENCY;
             double period = 1.0 / freq * 1000; // in ms
 
-            runLoop.SetPeriod(1.0 / Constants.Time.SIM_ENGINE_FREQUENCY /10);
+            runLoop.SetPeriod(1.0 / Constants.Time.SIM_ENGINE_FREQUENCY);
             runLoop.Start();
         }
 
