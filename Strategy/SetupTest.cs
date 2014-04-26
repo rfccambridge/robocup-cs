@@ -15,17 +15,15 @@ namespace RFC.Strategy
         
         Team team;
         bool stopped = false;
-        KickOffBehavior testing;
         ServiceManager msngr;
         HowOffensive judge;
-        PenaltyKickBehavior pen_behave;
+        KickOffBehavior pen_behave;
         bool first = true;
 
         public SetupTest(Team team, int goalie_id)
         {
             this.team = team;
-            testing = new KickOffBehavior(team,0);
-            pen_behave = new PenaltyKickBehavior(team, goalie_id);
+            pen_behave = new KickOffBehavior(team, goalie_id);
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
@@ -40,10 +38,9 @@ namespace RFC.Strategy
 
             if (!first && fieldVision.GetRobots(team).Count() > 0)
             {
-                pen_behave.Ours(fieldVision);
+                pen_behave.OursSetup(fieldVision);
             }
             first = false;
-            Console.WriteLine("in loop");
             
         }
 

@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace Strategy
+namespace RFC.Strategy
 {
     public class OffTester
     {
@@ -52,7 +52,7 @@ namespace Strategy
         public OffTester(Team team)
         {
             this.team = team;
-            this.state = 0;
+            this.state = State.Normal;
             if (team == Team.Blue)
                 this.oTeam = Team.Yellow;
             else
@@ -185,6 +185,8 @@ namespace Strategy
                     closestToBall = rob;
                 }
             }
+
+
             // used for other play functions
             shootingRobot = ballCarrier;
             Vector2[] bestDrib = getBestPos(dribMap);
@@ -227,7 +229,10 @@ namespace Strategy
                 // get open
                 else if (ourTeam.ElementAt(i) != null)
                 {
+                    // assign this robot to the best open zone
                     if (numOcc > bestPass.GetLength(0)) continue;
+
+
                     Vector2 destVect = bestPass[numOcc];
                     numOcc++;
                     RobotInfo rob = ourTeam.ElementAt(i);
