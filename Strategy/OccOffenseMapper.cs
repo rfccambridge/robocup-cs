@@ -31,10 +31,12 @@ namespace RFC.Strategy
         private static readonly double LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
         private static readonly double LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
 
-        private Boolean fs;
         private ServiceManager msngr;
 
         private double[,] shotMap = new double[LAT_NUM, LAT_NUM];
+
+        // square root of number of zones
+        public static int ZONE_NUM = 3;
 
         public OccOffenseMapper(Team team)
         {
@@ -67,6 +69,7 @@ namespace RFC.Strategy
 
         public static Vector2 getZone(int id)
         {
+            /*
             // id zero indexed
             double x;
             double y;
@@ -93,6 +96,12 @@ namespace RFC.Strategy
                     y = 1.0 * (LAT_VEND - LAT_VSTART) / 2.0 + LAT_VSTART;
                     break;
             }
+            return new Vector2(x, y);
+            */
+            double offsetX = (LAT_HEND - LAT_HSTART) / ZONE_NUM / 2.0;
+            double x = LAT_HSTART + offsetX + (LAT_HEND - LAT_HSTART) / 3 * (id % 3);
+            double offsetY = (LAT_VEND - LAT_VSTART) / ZONE_NUM / 2.0;
+            double y = LAT_VSTART + offsetY + (LAT_VEND - LAT_VSTART) / 3 * (id % 3);
             return new Vector2(x, y);
         }
 

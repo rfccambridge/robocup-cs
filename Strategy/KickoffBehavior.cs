@@ -16,6 +16,7 @@ namespace RFC.Strategy
 
         Team team;
         ServiceManager msngr;
+        Goalie goalieBehave;
         int GoalieID;
 
         public RobotInfo[] KickoffPositions(int n)
@@ -28,7 +29,7 @@ namespace RFC.Strategy
 
 
 
-                Vector2 position0 = new Vector2( -Constants.Basic.ROBOT_RADIUS, 0);
+                Vector2 position0 = new Vector2( -2*Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, 0);
 
                 Vector2 position1 = new Vector2( - Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 12);
@@ -45,16 +46,16 @@ namespace RFC.Strategy
             }
             else if (n == 2)
             {
-                Vector2 position0 = new Vector2(-Constants.Basic.ROBOT_RADIUS, 0);
+                Vector2 position0 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, 0);
 
-                Vector2 position1 = new Vector2(-Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 6);
+                Vector2 position1 = new Vector2(-Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 12);
                 destinations[1] = new RobotInfo(position1, 0, 0);
 
             }
             else if (n == 1)
             {
-                Vector2 position0 = new Vector2(-Constants.Basic.ROBOT_RADIUS, 0);
+                Vector2 position0 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, 0);
 
             }
@@ -67,6 +68,7 @@ namespace RFC.Strategy
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();
             this.GoalieID = GoalieID;
+            this.goalieBehave = new Goalie(team, GoalieID);
         }
 
         public void Ours(FieldVisionMessage msg)
@@ -116,13 +118,11 @@ namespace RFC.Strategy
             //We deal with Goalie separately
             int n = ours.Count();
 
+            // sending goalie
+            RobotInfo goalie = goalieBehave.getGoalie(msg);
+            msngr.SendMessage(new RobotDestinationMessage(goalie, false, true, true));
+
             // getting destinations we want to go to
-
-            Vector2 positionGoalie = Constants.FieldPts.OUR_GOAL + new Vector2(Constants.Basic.ROBOT_RADIUS, 0);
-            RobotInfo robot = new RobotInfo(positionGoalie, 0, GoalieID);
-            RobotDestinationMessage msg2 = new RobotDestinationMessage(robot, true, true);
-            msngr.SendMessage(msg2);
-
             List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
 
 
