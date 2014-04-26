@@ -35,9 +35,6 @@ namespace RFC.Strategy
 
         private double[,] shotMap = new double[LAT_NUM, LAT_NUM];
 
-        // square root of number of zones
-        public static int ZONE_NUM = 3;
-
         public OccOffenseMapper(Team team)
         {
             this.team = team;
@@ -67,7 +64,8 @@ namespace RFC.Strategy
             }
         }
 
-        public static Vector2 getZone(int id)
+        // zones are indexed(x,y)
+        public static Vector2 getZone(int xi, int yi, int zone_num)
         {
             /*
             // id zero indexed
@@ -98,10 +96,10 @@ namespace RFC.Strategy
             }
             return new Vector2(x, y);
             */
-            double offsetX = (LAT_HEND - LAT_HSTART) / ZONE_NUM / 2.0;
-            double x = LAT_HSTART + offsetX + (LAT_HEND - LAT_HSTART) / 3 * (id % 3);
-            double offsetY = (LAT_VEND - LAT_VSTART) / ZONE_NUM / 2.0;
-            double y = LAT_VSTART + offsetY + (LAT_VEND - LAT_VSTART) / 3 * (id % 3);
+            double offsetX = (LAT_HEND - LAT_HSTART) / zone_num / 2.0;
+            double x = LAT_HSTART + offsetX + (LAT_HEND - LAT_HSTART) / zone_num * xi;
+            double offsetY = (LAT_VEND - LAT_VSTART) / zone_num / 2.0;
+            double y = LAT_VSTART + offsetY + (LAT_VEND - LAT_VSTART) / zone_num * yi;
             return new Vector2(x, y);
         }
 
