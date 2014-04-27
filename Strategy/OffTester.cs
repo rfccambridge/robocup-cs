@@ -2,6 +2,7 @@
 using RFC.Geometry;
 using RFC.Messaging;
 using RFC.Strategy;
+using RFC.PathPlanning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -218,6 +219,7 @@ namespace RFC.Strategy
 
             // defining ball carrier
             RobotInfo ballCarrier = null;
+            int ballCarrier_id = -1;
             double rbd = BALL_HANDLE_MIN;
             RobotInfo closestToBall = null;
             double minToBall = 100.0;
@@ -228,6 +230,7 @@ namespace RFC.Strategy
                 {
                     ballCarrier = rob;
                     rbd = dist;
+                    ballCarrier_id = rob.ID;
                 }
                 if (dist < minToBall)
                 {
@@ -239,14 +242,19 @@ namespace RFC.Strategy
 
             // used for other play functions
             shootingRobot = ballCarrier;
-            int[] shooting_inds = OccOffenseMapper.vecToInd(shootingRobot.Position);
             QuantifiedPosition bestDrib = getBestPos(dribMap);
 
             // what should the robot with the ball do ? -------------------------------------------------
             QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
             ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team);
 
-            if (shootingRobot != null && shot_op.arc > SHOT_THRESH)
+            if (ballCarrier == null)
+            {
+                // go get the ball
+                DribblePlanner.GetPossession(closestToBall, fieldVision);
+                ballCarrier_id = closestToBall.ID;
+            }
+            else if (shootingRobot != null && shot_op.arc > SHOT_THRESH)
             {
                 // shoot on goal
                 state = State.Shot;
@@ -268,7 +276,7 @@ namespace RFC.Strategy
             {
                 // else just dribble the ball somewhere
                 RobotInfo destination = bestDrib.position;
-                double orientation = (Constants.FieldPts.THEIR_GOAL - ballCarrier.Position).cartesianAngle();
+                double orientation = (Constants.FieldPts.THEIR_GOAL - ball.Position).cartesianAngle();
                 destination.Orientation = orientation;
                 destination.ID = ballCarrier.ID;
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
@@ -280,7 +288,7 @@ namespace RFC.Strategy
             List<RobotInfo> passers = new List<RobotInfo>();
             foreach (RobotInfo rob in ourTeam)
             {
-                if (rob.ID != goalie_id && rob.ID != ballCarrier.ID)
+                if (rob.ID != goalie_id && rob.ID != ballCarrier_id)
                 {
                     passers.Add(rob);
                 }
@@ -301,7 +309,7 @@ namespace RFC.Strategy
             best_by_zone.Reverse();
 
             List<RobotInfo> passingDestinations = new List<RobotInfo>();
-            for (int i = 0; i < n_passers; i++)
+            for (int i = 0; i < passers.Count; i++)
             {
                 RobotInfo current = best_by_zone[i].position;
                 current.Orientation = (ball.Position - current.Position).cartesianAngle()

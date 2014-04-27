@@ -69,7 +69,7 @@ namespace ControlForm
 
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
-                new OffTester(team);
+                new OffTester(team, goalieNumber);
                 //new SetupTest(team);
                 //new GoalieTest(team, goalieNumber);
                 new KickPlanner();
