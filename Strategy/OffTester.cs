@@ -251,7 +251,7 @@ namespace RFC.Strategy
             QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
             ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team);
             
-            /*
+            
             if (ballCarrier == null)
             {
                 // go get the ball
@@ -286,7 +286,7 @@ namespace RFC.Strategy
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
                 msngr.SendMessage(destinationMessage);
             }
-             * */
+            
 
             // what should other robots do? -----------------------------------------------------------
             
@@ -299,6 +299,9 @@ namespace RFC.Strategy
                 }
             }
 
+            //offenseMap.drawMap(passMap);
+
+            
             // trying non max supression
             List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
             maxima.Sort();
@@ -315,6 +318,7 @@ namespace RFC.Strategy
             }
 
             DestinationMatcher.SendByDistance(passers, passingDestinations);
+            
             System.Threading.Thread.Sleep(100);
         }
 

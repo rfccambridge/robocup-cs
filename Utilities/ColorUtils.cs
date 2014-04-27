@@ -39,11 +39,11 @@ namespace RFC.Utilities
             {
                 return Color.GreenYellow;
             }
-            else if (num < min + 8.0 * (max - min) / 5.0)
+            else if (num < min + 8.0 * (max - min) / n)
             {
                 return Color.Green;
             }
-            else if (num < min + 9.0 * (max - min) / 5.0)
+            else if (num < min + 9.0 * (max - min) / n)
             {
                 return Color.DarkCyan;
             }

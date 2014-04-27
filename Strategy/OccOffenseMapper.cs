@@ -24,7 +24,7 @@ namespace RFC.Strategy
         public const double IGN_THRESH = .15;
         Team team;
 
-        private static readonly double LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
+        private static readonly double LAT_HSTART = Constants.Field.XMIN/2;
         private static readonly double LAT_VSTART = Constants.Field.YMIN;
 
         private static readonly double LAT_HEND = Constants.Field.XMAX;
@@ -190,12 +190,13 @@ namespace RFC.Strategy
                     // see if position has good line of sight with ball
                     double distSum = 1.0;
                     double tooClose = 1.0;
+                    
                     foreach (RobotInfo rob in theirTeam)
                     {
 
                         Vector2 dist = (rob.Position - pos);
                         double perpdist = dist.perpendicularComponent(vecToBall).magnitude();
-                        if (perpdist < IGN_THRESH && ((vecToBall - rob.Position).magnitude() < (vecToBall - pos).magnitude()))
+                        if (perpdist < IGN_THRESH && (ball.Position - rob.Position).cosineAngleWith(vecToBall) > 0 && Vector2.dotproduct(pos,ball.Position,rob.Position) > Vector2.dotproduct(rob.Position,ball.Position, rob.Position))
                         {
                             distSum -= 1 * Math.Exp(-perpdist);
                         }
@@ -209,16 +210,18 @@ namespace RFC.Strategy
                     {
                         distSum = 0;
                     }
-
+                    
                     // account for distance to ball
-                    double distScore = Math.Atan2(1,Math.Max(Constants.Basic.ROBOT_RADIUS*4,vecToBall.magnitude()));
+                    double distScore = Math.Atan2(1,vecToBall.magnitude());
+                    if (Constants.Basic.ROBOT_RADIUS * 4 > vecToBall.magnitude())
+                        distScore = 0;
 
                     // calculate bounce score
                     // make .5(1+cos)
                     double currentBounceAngle = 180 * Math.Acos(vecToBall.cosineAngleWith(vecToGoal)) / Math.PI;
                     if (double.IsNaN(currentBounceAngle))
                         currentBounceAngle = 0;
-                    double bounceScore = 90 - Math.Abs(currentBounceAngle - 90);
+                    double bounceScore = 180 - currentBounceAngle;
                     double worstBounceScore = 90 - Math.Abs(BOUNCE_ANGLE - 90);
                     // if bounce score is worse than what robot can handle then position is pretty crappy
                     if (bounceScore < worstBounceScore)
