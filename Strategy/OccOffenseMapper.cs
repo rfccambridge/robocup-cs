@@ -2,6 +2,7 @@
 using RFC.Geometry;
 using RFC.Messaging;
 using RFC.Strategy;
+using RFC.PathPlanning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -236,8 +237,14 @@ namespace RFC.Strategy
                     {
                         j = LAT_NUM - 1;
                     }
+
+                    double isValid = 0;
+                    if (Avoider.isValid(pos))
+                        isValid = 1;
                     
-                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose);
+                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose * isValid);
+
+                    
 
                     //Console.WriteLine("result: " + normalize(shotMap[i, j] * bounceScore * distSum * distScore));
                     //ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);

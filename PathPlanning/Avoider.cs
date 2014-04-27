@@ -9,6 +9,27 @@ namespace RFC.PathPlanning
 {
     public static class Avoider
     {
+        // checks if this point is in bounds and outside of defense areas
+        public static bool isValid(Vector2 target)
+        {
+            IList<Geom> left = Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA;
+            IList<Geom> right = Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA;
+            IEnumerable<Geom> all = left.Concat(right);
+            foreach (Geom g in all)
+            {
+                if (g is Circle)
+                {
+                    if (((Circle)g).contains(target))
+                        return false;
+                }
+                else if (g is Rectangle)
+                {
+                    if (((Rectangle)g).contains(target))
+                        return false;
+                }
+            }
+            return true;
+        }
         // given a desired location, and a place to stay away from, calculate the closest
         // place that's still within bounds. used for staying 50cm away from ball during
         // kickin and kickoff
