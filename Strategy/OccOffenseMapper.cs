@@ -211,7 +211,7 @@ namespace RFC.Strategy
                     }
 
                     // account for distance to ball
-                    double distScore = Math.Atan2(1,Math.Max(Constants.Basic.ROBOT_RADIUS*3,vecToBall.magnitude()));
+                    double distScore = Math.Atan2(1,Math.Max(Constants.Basic.ROBOT_RADIUS*4,vecToBall.magnitude()));
 
                     // calculate bounce score
                     // make .5(1+cos)

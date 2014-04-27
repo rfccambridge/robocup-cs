@@ -18,12 +18,12 @@ namespace RFC.Strategy
         //</summary>
         public static void SendByDistance(List<RobotInfo> robots, List<RobotInfo> destinations)
         {
+            if (robots.Count != destinations.Count)
+                throw new Exception("different numbers of robots and destinations: " + robots.Count + ", " + destinations.Count);
+
             int[] assignments = GetAssignments(robots, destinations);
             int n = robots.Count();
             ServiceManager msngr = ServiceManager.getServiceManager();
-
-            if (robots.Count != destinations.Count)
-                throw new Exception("different numbers of robots and destinations: " + robots.Count + ", " + destinations.Count);
 
             // sending dest messages for each one
             for (int i = 0; i < n; i++)
@@ -31,18 +31,17 @@ namespace RFC.Strategy
                 RobotInfo dest = new RobotInfo(destinations[assignments[i]]);
                 dest.ID = robots[i].ID;
 
+                //Console.WriteLine("robot(" + robots[i].ID + ") " + robots[i].Position + " -> dests(" + assignments[i] + ") " + destinations[assignments[i]].Position);
+
                 msngr.SendMessage(new RobotDestinationMessage(dest, true, false, true));
             }
         }
 
         public static int[] GetAssignments(List<RobotInfo> robots, List<RobotInfo> destinations) 
         {
+            if (robots.Count != destinations.Count)
+                throw new Exception("different numbers of robots and destinations: " + robots.Count + ", " + destinations.Count);
             int n = robots.Count();
-            if (n != destinations.Count())
-            {
-                ServiceManager.getServiceManager().SendMessage(new LogMessage("ERROR: # of robots and destinations don't match"));
-                return null;
-            }
 
             // getting cost matrix
             int[,] costs = constructDistanceMatrix(robots, destinations);
@@ -69,7 +68,7 @@ namespace RFC.Strategy
             {
                 for (int d = 0; d < n; d++)
                 {
-                    costs[r, d] = (int)Math.Round(Math.Pow(robots[r].Position.distance(destinations[d].Position),exponent));
+                    costs[r, d] = (int)Math.Round(10000*Math.Pow(robots[r].Position.distance(destinations[d].Position),exponent));
                 }
             }
 

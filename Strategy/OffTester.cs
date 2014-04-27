@@ -68,6 +68,7 @@ namespace RFC.Strategy
         private short numOcc = 0;
         private int teamSize = 0;
         private int goalie_id;
+        bool frame;
 
         // square root of number of zones
         public static int ZONE_NUM = 3;
@@ -84,6 +85,7 @@ namespace RFC.Strategy
                 this.oTeam = Team.Blue;
 
             this.goalie_id = goalie_id;
+            frame = false;
 
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
@@ -311,8 +313,8 @@ namespace RFC.Strategy
                 passingDestinations.Add(current);
             }
 
-            // sending
             DestinationMatcher.SendByDistance(passers, passingDestinations);
+            System.Threading.Thread.Sleep(100);
         }
 
         public void setState(State s)
