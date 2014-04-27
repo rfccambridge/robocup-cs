@@ -79,7 +79,7 @@ namespace RFC.Vision
             RobotVisionMessage robots_msg = new RobotVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
             FieldVisionMessage all_msg = new FieldVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow), Flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
 
-            // sending message that new data is ready
+            // sending message containing new data
             messenger.SendMessage<FieldVisionMessage>(all_msg);
             
             messenger.SendMessage<RobotVisionMessage>(robots_msg);

@@ -87,6 +87,9 @@ namespace RFC.Strategy
 				indexedThreats.Add(dummy);
                 //Console.WriteLine("Added robot to indexedThreats with position " + dummy.position);
 			}
+            indexedThreats.Add(new Threat(-1, Constants.FieldPts.OUR_GOAL + new Vector2(1, 1), Threat.ThreatType.space));
+            indexedThreats.Add(new Threat(-2, Constants.FieldPts.OUR_GOAL + new Vector2(1, -1), Threat.ThreatType.space));
+            indexedThreats.Add(new Threat(-3, Constants.FieldPts.OUR_GOAL + new Vector2(1.5, 0), Threat.ThreatType.space));
 			return;
 		}
 		

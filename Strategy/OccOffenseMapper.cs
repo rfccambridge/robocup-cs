@@ -31,13 +31,17 @@ namespace RFC.Strategy
         private static readonly double LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
         private static readonly double LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
 
-        private Boolean fs;
+        private ServiceManager msngr;
 
         private double[,] shotMap = new double[LAT_NUM, LAT_NUM];
+
+        // square root of number of zones
+        public static int ZONE_NUM = 3;
 
         public OccOffenseMapper(Team team)
         {
             this.team = team;
+            msngr = ServiceManager.getServiceManager();
             //update(ourTeam, theirTeam, ball);
         }
 
@@ -65,6 +69,7 @@ namespace RFC.Strategy
 
         public static Vector2 getZone(int id)
         {
+            /*
             // id zero indexed
             double x;
             double y;
@@ -73,12 +78,12 @@ namespace RFC.Strategy
                 // top zone
                 case 0:
                     x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
-                    y = 3.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
+                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
                     break;
                 // bottom zone
                 case 1:
                     x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
-                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
+                    y = 3.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
                     break;
                 // center zone
                 case 2:
@@ -91,6 +96,12 @@ namespace RFC.Strategy
                     y = 1.0 * (LAT_VEND - LAT_VSTART) / 2.0 + LAT_VSTART;
                     break;
             }
+            return new Vector2(x, y);
+            */
+            double offsetX = (LAT_HEND - LAT_HSTART) / ZONE_NUM / 2.0;
+            double x = LAT_HSTART + offsetX + (LAT_HEND - LAT_HSTART) / 3 * (id % 3);
+            double offsetY = (LAT_VEND - LAT_VSTART) / ZONE_NUM / 2.0;
+            double y = LAT_VSTART + offsetY + (LAT_VEND - LAT_VSTART) / 3 * (id % 3);
             return new Vector2(x, y);
         }
 
@@ -109,7 +120,7 @@ namespace RFC.Strategy
                 {
                     
                     Vector2 pos = new Vector2(x, y);
-
+                    /*
                     // find angle of opening for position
                     Vector2 vecBotGoal = Constants.FieldPts.THEIR_GOAL_BOTTOM - pos;
                     Vector2 vecTopGoal = Constants.FieldPts.THEIR_GOAL_TOP - pos;
@@ -130,7 +141,7 @@ namespace RFC.Strategy
 
                     if (distSum < 0)
                         distSum = 0;
-                    
+                    */
                     int[] ind = vecToInd(new Vector2(x, y));
                     int i = ind[0];
                     int j = ind[1];
@@ -145,11 +156,10 @@ namespace RFC.Strategy
                     }
                     // make nonlinear (put in threshold)
                     // subtract (so that number of robots doesn't factor in)
-                    shotMap[i, j] = normalize(goalAngle * distSum);
+                    // shotMap[i, j] = normalize(goalAngle * distSum);
                     
-
-                    //ShotOpportunity shot = Shot1.evaluate(fmsg, team);
-                    //shotMap[i, j] = shot.arc;
+                    ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
+                    shotMap[i, j] = shot.arc;
                 }
             }
         }
@@ -165,7 +175,7 @@ namespace RFC.Strategy
         // within bounce angle -> good
         // make sure pass between ball and position is good
         // make sure position has good shot
-        public double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
+        public double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
         {
             double[,] map = new double[LAT_NUM, LAT_NUM];
             for (double x = LAT_HSTART; x < LAT_HEND; x += LAT_HSIZE)
@@ -176,6 +186,7 @@ namespace RFC.Strategy
                     Vector2 vecToBall = ball.Position - pos;
                     Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
 
+                    
                     // see if position has good line of sight with ball
                     double distSum = 1;
                     foreach (RobotInfo rob in theirTeam)
@@ -191,6 +202,7 @@ namespace RFC.Strategy
                     {
                         distSum = 0;
                     }
+                    
 
                     // calculate bounce score
                     // make .5(1+cos)
@@ -215,7 +227,11 @@ namespace RFC.Strategy
                     {
                         j = LAT_NUM - 1;
                     }
+                    
                     map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
+                    //ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
+                    //map[i, j] = normalize(shotMap[i, j] * bounceScore * shot.arc);
+                    //msngr.vdb(new Vector2(x,y), Utilities.ColorUtils.numToColor(map[i,j],0,20));
                 }
             }
             return map;

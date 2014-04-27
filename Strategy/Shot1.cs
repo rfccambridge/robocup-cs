@@ -39,7 +39,23 @@ namespace RFC.Strategy
 
         // Finds the best place to aim when taking a shot and judges how good
         // a shot it is
-        public static ShotOpportunity evaluate(FieldVisionMessage fvm, Team team, Vector2 hypo_ball, bool goal_shot)
+        public static ShotOpportunity evaluate(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
+        {
+            return evaluateGoal(fvm, team, hypo_ball);
+        }
+
+        public static ShotOpportunity evaluateGoal(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
+        {
+            return evaluateGeneral(fvm, team, hypo_ball, Constants.FieldPts.THEIR_GOAL_TOP, Constants.FieldPts.THEIR_GOAL_BOTTOM);
+        }
+
+        public static ShotOpportunity evaluateField(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
+        {
+            return evaluateGeneral(fvm, team, hypo_ball, Constants.FieldPts.TOP_RIGHT, Constants.FieldPts.BOTTOM_RIGHT);
+        }
+
+        
+        public static ShotOpportunity evaluateGeneral(FieldVisionMessage fvm, Vector2 from_position, Team team, Vector2 top, Vector2 bottom)
         {
             List<RobotInfo> locations = fvm.GetRobots();
 
@@ -56,6 +72,7 @@ namespace RFC.Strategy
             }
 
             // adding in edges of goal
+<<<<<<< HEAD
             if (goal_shot)
             {
                 Vector2 goal1 = Constants.FieldPts.THEIR_GOAL_BOTTOM - hypo_ball;
@@ -74,6 +91,14 @@ namespace RFC.Strategy
                 intervals.Add(new edge(angle1, true));
                 intervals.Add(new edge(angle2, false));
             }
+=======
+            Vector2 goal1 = Constants.FieldPts.THEIR_GOAL_BOTTOM - from_position;
+            Vector2 goal2 = Constants.FieldPts.THEIR_GOAL_TOP - from_position;
+            double angle1 = goal1.cartesianAngle();
+            double angle2 = goal2.cartesianAngle();
+            intervals.Add(new edge(angle1, true));
+            intervals.Add(new edge(angle2, false));
+>>>>>>> 0854047ac93883ab7ed5133d11a2a808296f7274
 
             // sorting edges so we can sweep over it
             List<edge> Sort = intervals.OrderBy(o => o.d).ToList();
@@ -106,10 +131,8 @@ namespace RFC.Strategy
             // finding biggest open arc
             double maximum = 0;
             int index = -1;
-            Console.WriteLine("arcs:");
             for (int i = 0; i < open_arc.Count(); i++)
             {
-                Console.WriteLine("open arc: " + open_arc[i]);
                 if (open_arc[i] > maximum)
                 {
                     maximum = open_arc[i];
@@ -124,9 +147,15 @@ namespace RFC.Strategy
             double arc = open_arc[index];
 
             // finding intersection of shot with goal line
+<<<<<<< HEAD
             double dx = Constants.FieldPts.THEIR_GOAL.X - hypo_ball.X;
 
             Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, hypo_ball.Y + dx * Math.Tan(shot_angle));
+=======
+            double dx = Constants.FieldPts.THEIR_GOAL.X - from_position.X;
+
+            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, from_position.Y + dx * Math.Tan(shot_angle));
+>>>>>>> 0854047ac93883ab7ed5133d11a2a808296f7274
             return new ShotOpportunity(shot_vec, arc);
         }
 

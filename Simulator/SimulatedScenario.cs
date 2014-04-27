@@ -77,6 +77,7 @@ namespace RFC.Simulator
             List<RobotInfo> blueRobots = new List<RobotInfo>();
 
             yellowRobots.Add(new RobotInfo(new Vector2(-1.0, -1), 0, Team.Yellow, 0));
+            
             if (numYellow > 1)
                 yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 0), 0, Team.Yellow, 1));
             if (numYellow > 2)
