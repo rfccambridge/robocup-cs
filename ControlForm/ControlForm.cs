@@ -72,7 +72,7 @@ namespace ControlForm
                 new OffTester(team, goalieNumber);
                 //new SetupTest(team);
                 //new GoalieTest(team, goalieNumber);
-                new SetupTest1(team, goalieNumber);
+                //new SetupTest1(team, goalieNumber);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 
