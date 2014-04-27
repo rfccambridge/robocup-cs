@@ -23,6 +23,7 @@ namespace RFC.Strategy
         private bool stopped = false;
         private bool firstRun = true;
         private OccOffenseMapper offenseMap;
+        private ServiceManager msngr;
 
         private Vector2[,] zoneList;
         // the radius in meters of a robot's zone
@@ -84,7 +85,8 @@ namespace RFC.Strategy
 
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
-            ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+            this.msngr = ServiceManager.getServiceManager();
+            msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
 
             // moved here from "if first" ifstatement
             zoneList = new Vector2[ZONE_NUM, ZONE_NUM];
@@ -132,7 +134,7 @@ namespace RFC.Strategy
         {
             RobotInfo destination = new RobotInfo(ball.Position, 0, rob.ID);
             RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
-            ServiceManager.getServiceManager().SendMessage(destinationMessage);
+            msngr.SendMessage(destinationMessage);
         }
 
 
@@ -177,7 +179,7 @@ namespace RFC.Strategy
             {
                 for (int yi = min_yi; yi < max_yi; yi++)
                 {
-                    if (map[xi,yi] < best)
+                    if (map[xi,yi] > best)
                     {
                         best = map[xi,yi];
                         best_x = xi;
@@ -187,7 +189,25 @@ namespace RFC.Strategy
             }
 
             RobotInfo optimal_bouncer = new RobotInfo(OccOffenseMapper.indToVec(best_x,best_y), 0, -1);
+            msngr.vdb(optimal_bouncer, Color.White);
+            //Console.WriteLine("zx: " + zx + " zy: " + zy + " best_X: " + best_x + " best_y: " + best_y + " vec: " + optimal_bouncer.Position);
             return new QuantifiedPosition(optimal_bouncer, best);
+        }
+
+        private void drawMap(double[,] map)
+        {
+            double max = map.Cast<double>().Max();
+            double min = map.Cast<double>().Min();
+            
+            msngr.vdbClear();
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    //Console.WriteLine("min: " + min + " max: " + max + " map: " + map[i, j]);
+                    msngr.vdb(OccOffenseMapper.indToVec(i, j), RFC.Utilities.ColorUtils.numToColor(map[i, j], min, max));
+                }
+            }
         }
 
         private void normalPlay(FieldVisionMessage fieldVision)
@@ -203,17 +223,9 @@ namespace RFC.Strategy
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
             double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision);
 
-            /*
-            ServiceManager.getServiceManager().vdbClear();
-            for (int i = 0; i < passMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < passMap.GetLength(1); j++)
-                {
-                    Console.WriteLine(dribMap[i, j]);
-                    ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(dribMap[i,j], 0, 0.5));
-                }
-            }
-            */
+            drawMap(passMap);
+            
+            
 
             // TODO: can (and probably should) merge if statements
 
@@ -251,7 +263,7 @@ namespace RFC.Strategy
             if (ballCarrier == null)
             {
                 // go get the ball
-                DribblePlanner.GetPossession(closestToBall, fieldVision);
+                //DribblePlanner.GetPossession(closestToBall, fieldVision);
                 ballCarrier_id = closestToBall.ID;
             }
             else if (shootingRobot != null && shot_op.arc > SHOT_THRESH)
@@ -280,7 +292,7 @@ namespace RFC.Strategy
                 destination.Orientation = orientation;
                 destination.ID = ballCarrier.ID;
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
-                ServiceManager.getServiceManager().SendMessage(destinationMessage);
+                msngr.SendMessage(destinationMessage);
             }
 
             // what should other robots do? -----------------------------------------------------------
@@ -318,7 +330,7 @@ namespace RFC.Strategy
             }
 
             // sending
-            DestinationMatcher.SendByDistance(passers, passingDestinations);
+            //DestinationMatcher.SendByDistance(passers, passingDestinations);
         }
 
         public void setState(State s)
