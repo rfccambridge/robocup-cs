@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace RFC.Strategy
 {
@@ -200,7 +201,7 @@ namespace RFC.Strategy
                         }
 
                         // also checking if too close
-                        if (dist.magnitude() < Constants.Basic.ROBOT_RADIUS * 3)
+                        if (dist.magnitude() < Constants.Basic.ROBOT_RADIUS * 4)
                             tooClose = 0.0;
 
                     }
@@ -253,6 +254,87 @@ namespace RFC.Strategy
                 }
             }
             return map;
+        }
+
+        // used for debugging drawn maps
+        public void drawMap(double[,] map)
+        {
+            double max = map.Cast<double>().Max();
+            double min = map.Cast<double>().Min();
+
+            msngr.vdbClear();
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    //Console.WriteLine("min: " + min + " max: " + max + " map: " + map[i, j]);
+                    msngr.vdb(OccOffenseMapper.indToVec(i, j), RFC.Utilities.ColorUtils.numToColor(map[i, j], min, max));
+                }
+            }
+        }
+
+        // Nonmax suppression
+        public double[,] nonMaxSupression(double[,] map)
+        {
+            double[,] result = new double[map.GetLength(0),map.GetLength(1)];
+
+            for (int i = 1; i < map.GetLength(0) - 1; i++)
+            {
+                for (int j = 1; j < map.GetLength(1) -1; j++)
+                {
+                    if (map[i, j] < map[i - 1, j])
+                        break;
+                    if (map[i, j] < map[i + 1, j])
+                        break;
+                    if (map[i, j] < map[i - 1, j - 1])
+                        break;
+                    if (map[i, j] < map[i - 0, j - 1])
+                        break;
+                    if (map[i, j] < map[i + 1, j - 1])
+                        break;
+                    if (map[i, j] < map[i - 1, j + 1])
+                        break;
+                    if (map[i, j] < map[i - 0, j + 1])
+                        break;
+                    if (map[i, j] < map[i + 1, j + 1])
+                        break;
+                    result[i, j] = map[i, j];
+                }
+            }
+            return result;
+        }
+
+        // get list from Nonmax supression
+        public List<QuantifiedPosition> getLocalMaxima(double[,] map)
+        {
+            List<QuantifiedPosition> maxima = new List<QuantifiedPosition>();
+            msngr.vdbClear();
+            for (int i = 1; i < map.GetLength(0) - 1; i++)
+            {
+                for (int j = 1; j < map.GetLength(1) - 1; j++)
+                {
+                    if (map[i, j] <= map[i - 1, j])
+                        continue;
+                    if (map[i, j] <= map[i + 1, j])
+                        continue;
+                    if (map[i, j] <= map[i - 1, j - 1])
+                        continue;
+                    if (map[i, j] <= map[i - 0, j - 1])
+                        continue;
+                    if (map[i, j] <= map[i + 1, j - 1])
+                        continue;
+                    if (map[i, j] <= map[i - 1, j + 1])
+                        continue;
+                    if (map[i, j] <= map[i - 0, j + 1])
+                        continue;
+                    if (map[i, j] <= map[i + 1, j + 1])
+                        continue;
+                    maxima.Add(new QuantifiedPosition(new RobotInfo(indToVec(i, j), 0, 0), map[i, j]));
+                    msngr.vdb(indToVec(i, j), Color.White);
+
+                }
+            }
+            return maxima;
         }
     }
 }

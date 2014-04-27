@@ -12,6 +12,24 @@ using System.Drawing;
 
 namespace RFC.Strategy
 {
+    public class QuantifiedPosition : IComparable<QuantifiedPosition>
+    {
+        public RobotInfo position;
+        public double potential;
+
+        public QuantifiedPosition(RobotInfo bouncer, double potential)
+        {
+            this.position = bouncer;
+            this.potential = potential;
+        }
+
+        // sortable
+        public int CompareTo(QuantifiedPosition other)
+        {
+            return potential.CompareTo(other.potential);
+        }
+    }
+
     public class OffTester
     {
         public enum State { Normal, Shot, BounceShot };
@@ -54,23 +72,7 @@ namespace RFC.Strategy
         // square root of number of zones
         public static int ZONE_NUM = 3;
 
-        public class QuantifiedPosition : IComparable<QuantifiedPosition>
-        {
-            public RobotInfo position;
-            public double potential;
-
-            public QuantifiedPosition(RobotInfo bouncer, double potential)
-            {
-                this.position = bouncer;
-                this.potential = potential;
-            }
-
-            // sortable
-            public int CompareTo(QuantifiedPosition other)
-            {
-                return potential.CompareTo(other.potential);
-            }
-        }
+        
 
         public OffTester(Team team, int goalie_id)
         {
@@ -194,21 +196,7 @@ namespace RFC.Strategy
             return new QuantifiedPosition(optimal_bouncer, best);
         }
 
-        private void drawMap(double[,] map)
-        {
-            double max = map.Cast<double>().Max();
-            double min = map.Cast<double>().Min();
-            
-            msngr.vdbClear();
-            for (int i = 0; i < map.GetLength(0); i++)
-            {
-                for (int j = 0; j < map.GetLength(1); j++)
-                {
-                    //Console.WriteLine("min: " + min + " max: " + max + " map: " + map[i, j]);
-                    msngr.vdb(OccOffenseMapper.indToVec(i, j), RFC.Utilities.ColorUtils.numToColor(map[i, j], min, max));
-                }
-            }
-        }
+        
 
         private void normalPlay(FieldVisionMessage fieldVision)
         {
@@ -223,7 +211,8 @@ namespace RFC.Strategy
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
             double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision);
 
-            drawMap(passMap);
+
+            //offenseMap.drawMap(passMap);
             
             
 
@@ -259,11 +248,12 @@ namespace RFC.Strategy
             // what should the robot with the ball do ? -------------------------------------------------
             QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
             ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team);
-
+            
+            /*
             if (ballCarrier == null)
             {
                 // go get the ball
-                //DribblePlanner.GetPossession(closestToBall, fieldVision);
+                DribblePlanner.GetPossession(closestToBall, fieldVision);
                 ballCarrier_id = closestToBall.ID;
             }
             else if (shootingRobot != null && shot_op.arc > SHOT_THRESH)
@@ -279,7 +269,7 @@ namespace RFC.Strategy
                 state = State.BounceShot;
                 playStartTime = DateTime.Now.Millisecond;
             }
-            else if (false /* put conditions to see if we should get rid of the ball ASAP */)
+            else if (false ) // put conditions to see if we should get rid of the ball ASAP
             {
                 // just get rid of the ball
                 // TODO
@@ -294,6 +284,7 @@ namespace RFC.Strategy
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
                 msngr.SendMessage(destinationMessage);
             }
+             * */
 
             // what should other robots do? -----------------------------------------------------------
             
@@ -306,31 +297,22 @@ namespace RFC.Strategy
                 }
             }
 
-            // get best positions from each zone
-            List<QuantifiedPosition> best_by_zone = new List<QuantifiedPosition>();
-            for (int xi = 0; xi < ZONE_NUM; xi++)
-            {
-                for (int yi = 0; yi < ZONE_NUM; yi++)
-                {
-                    best_by_zone.Add(getBestPosInZone(passMap, xi, yi));
-                }
-            }
-            
-            // sorting
-            best_by_zone.Sort();
-            best_by_zone.Reverse();
+            // trying non max supression
+            List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
+            maxima.Sort();
+            maxima.Reverse();
 
             List<RobotInfo> passingDestinations = new List<RobotInfo>();
             for (int i = 0; i < passers.Count; i++)
             {
-                RobotInfo current = best_by_zone[i].position;
+                RobotInfo current = maxima[i].position;
                 current.Orientation = (ball.Position - current.Position).cartesianAngle()
                                 + 0.5 * Math.Acos((Constants.FieldPts.THEIR_GOAL - current.Position).cosineAngleWith(ball.Position - current.Position));
                 passingDestinations.Add(current);
             }
 
             // sending
-            //DestinationMatcher.SendByDistance(passers, passingDestinations);
+            DestinationMatcher.SendByDistance(passers, passingDestinations);
         }
 
         public void setState(State s)

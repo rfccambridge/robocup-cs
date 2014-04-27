@@ -46,7 +46,7 @@ namespace RFC.Strategy
         }
         public static ShotOpportunity evaluatePosition(FieldVisionMessage fvm, Vector2 from_position, Team team)
         {
-            List<RobotInfo> locations = fvm.GetRobots();
+            List<RobotInfo> locations = fvm.GetRobots(Team.Blue);
 
             // finding beginning and end of all occlusions from other robots as edges
             List<edge> intervals = new List<edge>();
