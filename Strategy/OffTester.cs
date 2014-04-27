@@ -308,8 +308,9 @@ namespace RFC.Strategy
             for (int i = 0; i < passers.Count; i++)
             {
                 RobotInfo current = maxima[i].position;
-                current.Orientation = (ball.Position - current.Position).cartesianAngle()
-                                + 0.5 * Math.Acos((Constants.FieldPts.THEIR_GOAL - current.Position).cosineAngleWith(ball.Position - current.Position));
+                Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - current.Position;
+                Vector2 vector2 = ball.Position - current.Position;
+                current.Orientation = (vector1.cartesianAngle() + vector2.cartesianAngle()) / 2.0;
                 passingDestinations.Add(current);
             }
 
