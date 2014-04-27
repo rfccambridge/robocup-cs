@@ -569,19 +569,15 @@ namespace RFC.FieldDrawer
 
         public int AddMarker(Vector2 location, Color color, Object obj)
         {
-            lock (_stateLock)
+            lock (_collectingStateLock)
             {
-                lock (_collectingStateLock)
-                {
-                    if (!_collectingState)
-                        throw new ApplicationException("Not collecting state!");
-                    int handle = _bufferedState.NextMarkerHandle;
-                    _bufferedState.Markers.Add(handle, new Marker(location, color, obj));
-                    unchecked { _bufferedState.NextMarkerHandle++; }
-                    return handle;
-                }
+                if (!_collectingState)
+                    throw new ApplicationException("Not collecting state!");
+                int handle = _bufferedState.NextMarkerHandle;
+                _bufferedState.Markers.Add(handle, new Marker(location, color, obj));
+                unchecked { _bufferedState.NextMarkerHandle++; }
+                return handle;
             }
-            
         }
         public void RemoveMarker(int handle)
         {
