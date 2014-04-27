@@ -15,11 +15,11 @@ namespace RFC.Strategy
         // normalize map to this number
         public const double NORM_TO = 100.0;
         // higher num -> better resolution
-        public const int LAT_NUM = 40;
+        public const int LAT_NUM = 60;
         // in degrees
         public const double BOUNCE_ANGLE = 20.0;
         // how far away from the line of sight should we ignore other robots?
-        public const double IGN_THRESH = .2;
+        public const double IGN_THRESH = .15;
         Team team;
 
         private static readonly double LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
@@ -186,25 +186,36 @@ namespace RFC.Strategy
 
                     
                     // see if position has good line of sight with ball
-                    double distSum = 1;
+                    double distSum = 1.0;
+                    double tooClose = 1.0;
                     foreach (RobotInfo rob in theirTeam)
                     {
 
-                        double dist = (rob.Position - pos).perpendicularComponent(vecToBall).magnitude();
-                        if (dist < IGN_THRESH && ((vecToBall - rob.Position).magnitude() < (vecToBall - pos).magnitude()))
+                        Vector2 dist = (rob.Position - pos);
+                        double perpdist = dist.perpendicularComponent(vecToBall).magnitude();
+                        if (perpdist < IGN_THRESH && ((vecToBall - rob.Position).magnitude() < (vecToBall - pos).magnitude()))
                         {
-                            distSum -= 1 * Math.Exp(-dist);
+                            distSum -= 1 * Math.Exp(-perpdist);
                         }
+
+                        // also checking if too close
+                        if (dist.magnitude() < Constants.Basic.ROBOT_RADIUS * 3)
+                            tooClose = 0.0;
+
                     }
                     if (distSum < 0)
                     {
                         distSum = 0;
                     }
-                    
+
+                    // account for distance to ball
+                    double distScore = Math.Atan2(1,Math.Max(Constants.Basic.ROBOT_RADIUS*3,vecToBall.magnitude()));
 
                     // calculate bounce score
                     // make .5(1+cos)
                     double currentBounceAngle = 180 * Math.Acos(vecToBall.cosineAngleWith(vecToGoal)) / Math.PI;
+                    if (double.IsNaN(currentBounceAngle))
+                        currentBounceAngle = 0;
                     double bounceScore = 90 - Math.Abs(currentBounceAngle - 90);
                     double worstBounceScore = 90 - Math.Abs(BOUNCE_ANGLE - 90);
                     // if bounce score is worse than what robot can handle then position is pretty crappy
@@ -226,7 +237,9 @@ namespace RFC.Strategy
                         j = LAT_NUM - 1;
                     }
                     
-                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
+                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose);
+
+                    //Console.WriteLine("result: " + normalize(shotMap[i, j] * bounceScore * distSum * distScore));
                     //ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
                     //map[i, j] = normalize(shotMap[i, j] * bounceScore * shot.arc);
                     //msngr.vdb(new Vector2(x,y), Utilities.ColorUtils.numToColor(map[i,j],0,20));
