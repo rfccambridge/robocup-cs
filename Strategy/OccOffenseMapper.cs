@@ -311,7 +311,7 @@ namespace RFC.Strategy
         public List<QuantifiedPosition> getLocalMaxima(double[,] map)
         {
             List<QuantifiedPosition> maxima = new List<QuantifiedPosition>();
-            msngr.vdbClear();
+            //msngr.vdbClear();
             for (int i = 1; i < map.GetLength(0) - 1; i++)
             {
                 for (int j = 1; j < map.GetLength(1) - 1; j++)
@@ -333,7 +333,7 @@ namespace RFC.Strategy
                     if (map[i, j] <= map[i + 1, j + 1])
                         continue;
                     maxima.Add(new QuantifiedPosition(new RobotInfo(indToVec(i, j), 0, 0), map[i, j]));
-                    msngr.vdb(indToVec(i, j), Color.White);
+                    //msngr.vdb(indToVec(i, j), Color.White);
 
                 }
             }
