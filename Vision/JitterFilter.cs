@@ -21,21 +21,22 @@ namespace Vision
      * 
      * Receive next AveragingPredictor state
      * for each robot in the state:
-     *     if observed position (this robot sighting) near reasonable place:
+     *     calculate expected region from last official sighting
+     *     if robot in expected region:
      *         update the robot with this sighting
      *     else: (handle transient sightings)
-     *         if this has happened > 2 times in a row:
-     *             stop tracking this official robot
+     *         if this has happened 3 times in a row:
+     *             drop this robot from the official list
      *         else:
-     *             update the official robot with pos/vel position
+     *             update the official robot with extrapolated position
      *         
-     *         if a transient compares favorably with this sighting:
-     *             update the transient sighting
-     *             if this has happened > 2 times in a row:
-     *                 if transient does not match official robot:
-     *                     move this transient to the official list
-     *         else: (new transient)
-     *             add a new transient sighting
+     *         if there is a transient for this robot: (update transient count)
+     *             calculate expected region from last transient
+     *             if sighting in expected region:
+     *                 if this has triggered 3 times in a row:
+     *                     promote this transient to the official list
+     *         
+     *         update or set transient anew
      * 
      * Do one run of this also to account for the ball. Remember the ball travels much faster.
      * 
@@ -88,24 +89,46 @@ namespace Vision
                 // robot processing!
 
                 // get the last official sighting for this robot by team/ID
-                RobotInfo lastOfficial = official[robot.Team][robot.ID];
-                // TODO handle key not found cases; currently will kill code
+                if (!official.ContainsKey(robot.Team))
+                {
+                    official.Add(robot.Team, new Dictionary<int, RobotInfo>());
+                }
 
-                // produce positions/velocities
-                // TODO is there any way for me to get observation times? for more precise calculation
-                double dt = (double)1/60;
-                Vector2 projPos = lastOfficial.Position + lastOfficial.Velocity * dt; // project position
-                double radius = 2; // radius from expected position at which robot can be found?
-                                   // is more technically 1/2 maximum acceleration times time difference squared
+                RobotInfo lastOfficial;
+                Vector2 projPos = new Vector2();
+                double radius = 0;
+                double dt = 0;
+                if (!official[robot.Team].ContainsKey(robot.ID))
+                {
+                    lastOfficial = null;
+                }
+                else
+                {
+                    lastOfficial = official[robot.Team][robot.ID];
+                    // produce positions/velocities
+                    // TODO is there any way for me to get observation times? for more precise calculation
+                    dt = (double)1 / 60;
+                    projPos = lastOfficial.Position + lastOfficial.Velocity * dt; // project position
+                    radius = 2; // radius from expected position at which robot can be found?
+                    // is more technically 1/2 maximum acceleration times time difference squared
+                }
 
-                if ((robot.Position - projPos).magnitude() < radius) // close enough to official sighting
+                if (lastOfficial != null && (robot.Position - projPos).magnitude() < radius) // robot not null AND close enough to official sighting
                 {
                     official[robot.Team][robot.ID] = robot; // update official sighting with current robot info
                     officialCountup[robot.Team][robot.ID] = 0;
                 }
-                else
+                else // missed sighting
                 {
                     // stop tracking if too many missed sightings; otherwise update linearly
+                    if (!officialCountup.ContainsKey(robot.Team))
+                    {
+                        officialCountup.Add(robot.Team, new Dictionary<int, int>());
+                    }
+                    if (!officialCountup[robot.Team].ContainsKey(robot.ID))
+                    {
+                        officialCountup[robot.Team][robot.ID] = 0;
+                    }
                     if (++officialCountup[robot.Team][robot.ID] > 3)
                     {
                         // stopping tracking (NOTE: will produce effects when key not found handling implemented)
@@ -120,33 +143,45 @@ namespace Vision
                     }
 
                     // handle this sighting as a transient sighting
-                    if (transient[robot.Team][robot.ID] != null)
+                    if (!transient.ContainsKey(robot.Team))
+                    {
+                        transient.Add(robot.Team, new Dictionary<int, RobotInfo>());
+                    }
+                    if (transient[robot.Team].ContainsKey(robot.ID) && transient[robot.Team][robot.ID] != null)
                     {
                         // update existing transient
 
-                        // transient promotion if appropriate
-                        if (transientCountup[robot.Team][robot.ID] >= 3)
+                        // is this sighting close enough to existing transient?
+                        // transient sighting consistency check!
+                        RobotInfo lastTransient = transient[robot.Team][robot.ID];
+                        Vector2 projTransient = lastTransient.Position + lastTransient.Velocity * dt; // project position
+                        if ((robot.Position - projTransient).magnitude() < radius) // close enough
                         {
-                            // promote to official
-                            // TODO: only if official tracking has already been discarded?
-                            official[robot.Team][robot.ID] = robot;
+                            // transient promotion if appropriate
+                            if (!transientCountup.ContainsKey(robot.Team))
+                            {
+                                transientCountup.Add(robot.Team, new Dictionary<int, int>());
+                            }
+                            if (!transientCountup[robot.Team].ContainsKey(robot.ID))
+                            {
+                                transientCountup[robot.Team][robot.ID] = 0;
+                            }
+
+                            transientCountup[robot.Team][robot.ID]++;
+
+                            if (transientCountup[robot.Team][robot.ID] >= 3)
+                            {
+                                // promote to official
+                                // TODO: only if official tracking has already been discarded?
+                                official[robot.Team][robot.ID] = robot;
+                                transient[robot.Team].Remove(robot.ID);
+                                transientCountup[robot.Team][robot.ID] = 0;
+                            }
                         }
                         else
                         {
-                            // is this sighting close enough to existing transient?
-                            // transient sighting consistency check!
-                            RobotInfo lastTransient = transient[robot.Team][robot.ID];
-                            Vector2 projTransient = lastTransient.Position + lastTransient.Velocity * dt; // project position
-                            if ((robot.Position - projTransient).magnitude() < radius) // close enough
-                            {
-                                
-                                transientCountup[robot.Team][robot.ID]++;
-                            }
-                            else
-                            {
-                                // reset countup
-                                transientCountup[robot.Team][robot.ID] = 0;
-                            }
+                            // reset countup
+                            transientCountup[robot.Team][robot.ID] = 0;
                         }
                     }
 
