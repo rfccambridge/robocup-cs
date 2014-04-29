@@ -8,7 +8,7 @@ using RFC.Utilities;
 using RFC.Geometry;
 using RFC.Messaging;
 
-namespace Vision
+namespace RFC.Vision
 {
     /**
      * A simple short-duration jitter filter to blur our eyes from seeing 
@@ -50,7 +50,7 @@ namespace Vision
      * it might be better to attach this or build it onto AveragingPredictor in 
      * such a way that it updates synchronously (reducing message volume and handling)
      */
-    class JitterFilter
+    public class JitterFilter
     {
         // dictionaries associating robot IDs with last observations
         // last observation per robot per team
@@ -68,11 +68,17 @@ namespace Vision
             // and is transferred to official observations as appropriate/confirmed.
             official = new Dictionary<Team, Dictionary<int, RobotInfo>>();
             transient = new Dictionary<Team, Dictionary<int, RobotInfo>>();
+            officialCountup = new Dictionary<Team, Dictionary<int, int>>();
+            transientCountup = new Dictionary<Team, Dictionary<int, int>>();
 
             // obtain message transmission equipment
             messenger = ServiceManager.getServiceManager();
 
-            new QueuedMessageHandler<FieldVisionMessage>(Update, new Object());
+        }
+
+        private List<RobotInfo> getRobots(Team team)
+        {
+            return official[team].Values.ToList();
         }
 
         public void Update(FieldVisionMessage msg)
@@ -80,7 +86,7 @@ namespace Vision
             // TODO: UPDATE THE BALL
 
 
-
+            // TODO also update the robots that weren't in this message
             // UPDATE THE ROBOTS
             List<RobotInfo> robots = msg.GetRobots();
 
@@ -96,8 +102,8 @@ namespace Vision
 
                 RobotInfo lastOfficial;
                 Vector2 projPos = new Vector2();
-                double radius = 0;
-                double dt = 0;
+                double radius = 2; // radius from expected position at which robot can be found?
+                double dt = (double)1 / 60;
                 if (!official[robot.Team].ContainsKey(robot.ID))
                 {
                     lastOfficial = null;
@@ -107,9 +113,7 @@ namespace Vision
                     lastOfficial = official[robot.Team][robot.ID];
                     // produce positions/velocities
                     // TODO is there any way for me to get observation times? for more precise calculation
-                    dt = (double)1 / 60;
                     projPos = lastOfficial.Position + lastOfficial.Velocity * dt; // project position
-                    radius = 2; // radius from expected position at which robot can be found?
                     // is more technically 1/2 maximum acceleration times time difference squared
                 }
 
@@ -134,7 +138,7 @@ namespace Vision
                         // stopping tracking (NOTE: will produce effects when key not found handling implemented)
                         official[robot.Team].Remove(robot.ID);
                     }
-                    else
+                    else if (lastOfficial != null)
                     {
                         // updating "official" sighting with a simple linear projection
                         official[robot.Team][robot.ID] = new RobotInfo(lastOfficial.Position + lastOfficial.Velocity * dt,
@@ -150,6 +154,15 @@ namespace Vision
                     if (transient[robot.Team].ContainsKey(robot.ID) && transient[robot.Team][robot.ID] != null)
                     {
                         // update existing transient
+                        // check if transient count exists
+                        if (!transientCountup.ContainsKey(robot.Team))
+                        {
+                            transientCountup.Add(robot.Team, new Dictionary<int, int>());
+                        }
+                        if (!transientCountup[robot.Team].ContainsKey(robot.ID))
+                        {
+                            transientCountup[robot.Team][robot.ID] = 0;
+                        }
 
                         // is this sighting close enough to existing transient?
                         // transient sighting consistency check!
@@ -157,18 +170,10 @@ namespace Vision
                         Vector2 projTransient = lastTransient.Position + lastTransient.Velocity * dt; // project position
                         if ((robot.Position - projTransient).magnitude() < radius) // close enough
                         {
-                            // transient promotion if appropriate
-                            if (!transientCountup.ContainsKey(robot.Team))
-                            {
-                                transientCountup.Add(robot.Team, new Dictionary<int, int>());
-                            }
-                            if (!transientCountup[robot.Team].ContainsKey(robot.ID))
-                            {
-                                transientCountup[robot.Team][robot.ID] = 0;
-                            }
-
+                            Console.WriteLine("transient behaving in a reasonable manner");
                             transientCountup[robot.Team][robot.ID]++;
 
+                            // transient promotion if appropriate
                             if (transientCountup[robot.Team][robot.ID] >= 3)
                             {
                                 // promote to official
@@ -189,6 +194,21 @@ namespace Vision
                     transient[robot.Team][robot.ID] = robot;
                 }
             }
+
+
+            BallInfo ball = msg.Ball;
+
+            RobotVisionMessage robots_msg = new RobotVisionMessage(getRobots(Team.Blue), getRobots(Team.Yellow));
+            List<RobotInfo> our_robots = getRobots(Team.Yellow);
+            Console.WriteLine("begin robot output:");
+            foreach (RobotInfo bot in our_robots)
+            {
+                Console.WriteLine(bot.Position);
+            }
+            FieldVisionMessage all_msg = new FieldVisionMessage(getRobots(Team.Blue), getRobots(Team.Yellow), ball);
+
+            messenger.SendMessage<RobotVisionMessage>(robots_msg);
+            messenger.SendMessage<FieldVisionMessage>(all_msg);
         }
     }
 }
