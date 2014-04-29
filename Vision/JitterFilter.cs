@@ -61,6 +61,8 @@ namespace RFC.Vision
 
         private ServiceManager messenger;
 
+        private const int FRAMECOUNT = 5;
+
         public JitterFilter()
         {
             // Initialize empty lists of official/transient observations.
@@ -102,7 +104,7 @@ namespace RFC.Vision
 
                 RobotInfo lastOfficial;
                 Vector2 projPos = new Vector2();
-                double radius = 2; // radius from expected position at which robot can be found?
+                double radius = .5; // radius from expected position at which robot can be found?
                 double dt = (double)1 / 60;
                 if (!official[robot.Team].ContainsKey(robot.ID))
                 {
@@ -117,23 +119,35 @@ namespace RFC.Vision
                     // is more technically 1/2 maximum acceleration times time difference squared
                 }
 
+                // check if counts exist
+                if (!officialCountup.ContainsKey(robot.Team))
+                {
+                    officialCountup.Add(robot.Team, new Dictionary<int, int>());
+                }
+                if (!officialCountup[robot.Team].ContainsKey(robot.ID))
+                {
+                    officialCountup[robot.Team][robot.ID] = 0;
+                }
+
+                if (!transientCountup.ContainsKey(robot.Team))
+                {
+                    transientCountup.Add(robot.Team, new Dictionary<int, int>());
+                }
+                if (!transientCountup[robot.Team].ContainsKey(robot.ID))
+                {
+                    transientCountup[robot.Team][robot.ID] = 0;
+                }
+
                 if (lastOfficial != null && (robot.Position - projPos).magnitude() < radius) // robot not null AND close enough to official sighting
                 {
                     official[robot.Team][robot.ID] = robot; // update official sighting with current robot info
                     officialCountup[robot.Team][robot.ID] = 0;
+                    transientCountup[robot.Team][robot.ID] = 0;
                 }
                 else // missed sighting
                 {
                     // stop tracking if too many missed sightings; otherwise update linearly
-                    if (!officialCountup.ContainsKey(robot.Team))
-                    {
-                        officialCountup.Add(robot.Team, new Dictionary<int, int>());
-                    }
-                    if (!officialCountup[robot.Team].ContainsKey(robot.ID))
-                    {
-                        officialCountup[robot.Team][robot.ID] = 0;
-                    }
-                    if (++officialCountup[robot.Team][robot.ID] > 3)
+                    if (++officialCountup[robot.Team][robot.ID] > FRAMECOUNT)
                     {
                         // stopping tracking (NOTE: will produce effects when key not found handling implemented)
                         official[robot.Team].Remove(robot.ID);
@@ -154,15 +168,6 @@ namespace RFC.Vision
                     if (transient[robot.Team].ContainsKey(robot.ID) && transient[robot.Team][robot.ID] != null)
                     {
                         // update existing transient
-                        // check if transient count exists
-                        if (!transientCountup.ContainsKey(robot.Team))
-                        {
-                            transientCountup.Add(robot.Team, new Dictionary<int, int>());
-                        }
-                        if (!transientCountup[robot.Team].ContainsKey(robot.ID))
-                        {
-                            transientCountup[robot.Team][robot.ID] = 0;
-                        }
 
                         // is this sighting close enough to existing transient?
                         // transient sighting consistency check!
@@ -172,9 +177,11 @@ namespace RFC.Vision
                         {
                             Console.WriteLine("transient behaving in a reasonable manner");
                             transientCountup[robot.Team][robot.ID]++;
+                            Console.WriteLine(robot.ID);
+                            Console.WriteLine(transientCountup[robot.Team][robot.ID]);
 
                             // transient promotion if appropriate
-                            if (transientCountup[robot.Team][robot.ID] >= 3)
+                            if (transientCountup[robot.Team][robot.ID] >= FRAMECOUNT)
                             {
                                 // promote to official
                                 // TODO: only if official tracking has already been discarded?
@@ -199,12 +206,6 @@ namespace RFC.Vision
             BallInfo ball = msg.Ball;
 
             RobotVisionMessage robots_msg = new RobotVisionMessage(getRobots(Team.Blue), getRobots(Team.Yellow));
-            List<RobotInfo> our_robots = getRobots(Team.Yellow);
-            Console.WriteLine("begin robot output:");
-            foreach (RobotInfo bot in our_robots)
-            {
-                Console.WriteLine(bot.Position);
-            }
             FieldVisionMessage all_msg = new FieldVisionMessage(getRobots(Team.Blue), getRobots(Team.Yellow), ball);
 
             messenger.SendMessage<RobotVisionMessage>(robots_msg);
