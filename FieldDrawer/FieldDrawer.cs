@@ -205,6 +205,7 @@ namespace RFC.FieldDrawer
             msngr.RegisterListener<VisualDebugMessage>(HandleVisualDebugMessage, new object());
             msngr.RegisterListener<RobotPathMessage>(HandlePathMessage, new object());
             msngr.RegisterListener<RobotDestinationMessage>(HandleDestinationMessage, new object());
+            msngr.RegisterListener<RefboxStateMessage>(HandleRefboxStateMessage, new object());
         }
 
         public void Init(int w, int h)
@@ -297,6 +298,11 @@ namespace RFC.FieldDrawer
                     DrawArrow(msg.Destination.Team, msg.Destination.ID, ArrowType.Destination, msg.Destination.Position);
                 }
             }
+        }
+
+        public void HandleRefboxStateMessage(RefboxStateMessage msg)
+        {
+            UpdateRefBoxCmd(msg.PlayType.ToString());
         }
 
         public void Resize(int w, int h)
