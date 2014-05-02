@@ -63,6 +63,7 @@
     <Compile Include="SetupTest.cs" />
     <Compile Include="SetupTest1.cs" />
     <Compile Include="Shot1.cs" />
+    <Compile Include="StateChecker.cs" />
     <Compile Include="Threat.cs" />
     <Compile Include="WaitBehavior.cs" />
   </ItemGroup>
