@@ -90,8 +90,12 @@ namespace RFC.RefBox
                     score.GoalsBlue = packet.goals_blue;
                     score.GoalsYellow = packet.goals_yellow;
 
-                    RefboxStateMessage message = new RefboxStateMessage(score, GetPlayType(packet.cmd, lastCommand));
-                    ServiceManager.getServiceManager().SendMessage(message);
+                    if (packet.cmd != lastCommand)
+                    {
+                        RefboxStateMessage message = new RefboxStateMessage(score, GetPlayType(packet.cmd, lastCommand));
+                        ServiceManager.getServiceManager().SendMessage(message);
+                    }
+                    
                 }
                 else
                 {
@@ -122,9 +126,15 @@ namespace RFC.RefBox
                     if (((RefBoxMessageType)lastCommand == RefBoxMessageType.PENALTY_BLUE && team == Team.Blue) ||
                         ((RefBoxMessageType)lastCommand == RefBoxMessageType.PENALTY_YELLOW && team == Team.Yellow))
                         return PlayType.PenaltyKick_Ours;
+                    else if (((RefBoxMessageType)lastCommand == RefBoxMessageType.PENALTY_BLUE && team == Team.Yellow) ||
+                        ((RefBoxMessageType)lastCommand == RefBoxMessageType.PENALTY_YELLOW && team == Team.Blue))
+                        return PlayType.PenaltyKick_Theirs;
                     else if (((RefBoxMessageType)lastCommand == RefBoxMessageType.KICKOFF_BLUE && team == Team.Blue) ||
                         ((RefBoxMessageType)lastCommand == RefBoxMessageType.KICKOFF_YELLOW && team == Team.Yellow))
                         return PlayType.KickOff_Ours;
+                    else if (((RefBoxMessageType)lastCommand == RefBoxMessageType.KICKOFF_BLUE && team == Team.Yellow) ||
+                        ((RefBoxMessageType)lastCommand == RefBoxMessageType.KICKOFF_YELLOW && team == Team.Blue))
+                        return PlayType.KickOff_Theirs;
                     else
                         Console.WriteLine("ready state not expected, previous command: " + lastCommand);
                     break;

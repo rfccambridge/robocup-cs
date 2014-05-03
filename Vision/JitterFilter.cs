@@ -175,10 +175,7 @@ namespace RFC.Vision
                         Vector2 projTransient = lastTransient.Position + lastTransient.Velocity * dt; // project position
                         if ((robot.Position - projTransient).magnitude() < radius) // close enough
                         {
-                            Console.WriteLine("transient behaving in a reasonable manner");
                             transientCountup[robot.Team][robot.ID]++;
-                            Console.WriteLine(robot.ID);
-                            Console.WriteLine(transientCountup[robot.Team][robot.ID]);
 
                             // transient promotion if appropriate
                             if (transientCountup[robot.Team][robot.ID] >= FRAMECOUNT)

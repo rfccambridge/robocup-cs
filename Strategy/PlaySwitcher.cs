@@ -9,7 +9,7 @@ using RFC.Geometry;
 
 namespace RFC.Strategy
 {
-    class PlaySwitcher
+    public class PlaySwitcher
     {
         Vector2 position;
         const double thresholdForBallMove = .03;
@@ -54,6 +54,7 @@ namespace RFC.Strategy
         {
             play = msg.PlayType;
             position = ServiceManager.getServiceManager().GetLastMessage<BallVisionMessage>().Ball.Position;
+            Console.WriteLine("switched play to " + play.ToString());
         }
         
         public void handle_vision(FieldVisionMessage msg)
@@ -61,6 +62,7 @@ namespace RFC.Strategy
             if((play == PlayType.Direct_Ours || play == PlayType.Direct_Theirs || play == PlayType.Indirect_Ours || play == PlayType.Indirect_Theirs || play == PlayType.KickOff_Ours || play == PlayType.KickOff_Theirs) && ballIsMoved(msg.Ball.Position))
             {
                 play = PlayType.NormalPlay;
+                Console.WriteLine("switched to normal play");
             }
 
             switch(play)

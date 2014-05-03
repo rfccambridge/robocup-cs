@@ -66,14 +66,16 @@ namespace ControlForm
                 
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
+                new KickPlanner();
 
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
                 //new OffTester(team, goalieNumber);
-                new SetupTest(team, goalieNumber);
+                //new SetupTest(team, goalieNumber);
                 //new GoalieTest(team, goalieNumber);
                 //new SetupTest1(team, goalieNumber);
-                new KickPlanner();
+                new PlaySwitcher(team, goalieNumber);
+                
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 
                 if (simulator)

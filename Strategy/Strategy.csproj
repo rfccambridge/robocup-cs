@@ -46,6 +46,7 @@
     <Compile Include="BounceTest.cs" />
     <Compile Include="DefenseStrategy.cs" />
     <Compile Include="DestinationMatcher.cs" />
+    <Compile Include="DribbleTest.cs" />
     <Compile Include="Goalie.cs" />
     <Compile Include="GoalieTest.cs" />
     <Compile Include="HowOffensive.cs" />

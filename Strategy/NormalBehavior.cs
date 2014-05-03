@@ -22,6 +22,7 @@ namespace RFC.Strategy
         public void Play(FieldVisionMessage msg)
         {
             // our main strategy
+            msngr.SendMessage(new KickMessage(msg.GetRobot(team, 1), Constants.FieldPts.THEIR_GOAL));
         }
     }
 }
