@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RFC.Messaging;
 using RFC.Core;
+using RFC.Geometry;
 
 namespace RFC.Strategy
 {
@@ -22,7 +23,8 @@ namespace RFC.Strategy
         public void Play(FieldVisionMessage msg)
         {
             // our main strategy
-            msngr.SendMessage(new KickMessage(msg.GetRobot(team, 1), Constants.FieldPts.THEIR_GOAL));
+            msngr.SendMessage(new KickMessage(msg.GetRobot(team,1), Constants.FieldPts.THEIR_GOAL));
+            //msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(new Vector2(), 0, 1),false,false));
         }
     }
 }

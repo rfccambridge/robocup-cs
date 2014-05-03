@@ -14,10 +14,11 @@ namespace RFC.PathPlanning
         // to actually kicking
         const double heading_threshold = .10;
         const double dist_threshold = .05;
+        const double kick_dist = .15;
         ServiceManager msngr;
 
         // how far back to stand. slightly more than radius
-        double kick_dist = Constants.Basic.ROBOT_RADIUS * 1.5;
+        
         double follow_through_dist = Constants.Basic.ROBOT_RADIUS * .5;
 
         public KickPlanner()
@@ -29,26 +30,33 @@ namespace RFC.PathPlanning
 
         public void Handle(KickMessage kick)
         {
+            
             BallVisionMessage bvm = msngr.GetLastMessage<BallVisionMessage>();
             if (bvm == null)
                 return;
 
             BallInfo ball = bvm.Ball;
             RobotInfo robot = kick.Source;
-
+            
             // calculating ideal place for the robot to be
             Vector2 diff = kick.Target - ball.Position;
+            diff = new Vector2(0, 1);
             double angle = diff.cartesianAngle();
             Vector2 offset = diff.normalizeToLength(kick_dist);
+            
+            
+            
             Vector2 position = ball.Position - offset;
             Vector2 followThroughOffset = diff.normalizeToLength(follow_through_dist);
             Vector2 followThroughPosition = ball.Position + followThroughOffset;
-
+            
             RobotInfo ideal = new RobotInfo(position, angle, robot.ID);
+            //ideal = new RobotInfo(new Vector2(), 0, robot.ID);
             RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle, robot.ID);
             msngr.db("dest: " + ideal.Position);
             msngr.db("dist: " + robot.Position.distance(ideal.Position));
             msngr.db("ang: " + Math.Abs(angle - robot.Orientation));
+
             // checking if we're close enough to start the actual kick
             if ((Math.Abs(angle - robot.Orientation) < heading_threshold) && (robot.Position.distance(ideal.Position) < dist_threshold))
             {

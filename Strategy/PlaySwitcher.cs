@@ -59,6 +59,7 @@ namespace RFC.Strategy
         
         public void handle_vision(FieldVisionMessage msg)
         {
+            System.Threading.Thread.Sleep(50); // this is a complete hack, but things get unstable without it
             if((play == PlayType.Direct_Ours || play == PlayType.Direct_Theirs || play == PlayType.Indirect_Ours || play == PlayType.Indirect_Theirs || play == PlayType.KickOff_Ours || play == PlayType.KickOff_Theirs) && ballIsMoved(msg.Ball.Position))
             {
                 play = PlayType.NormalPlay;
