@@ -18,6 +18,7 @@ namespace RFC.Strategy
         ServiceManager msngr;
         int goalieID;
         Goalie goalieBehavior;
+        List<RobotInfo> midFieldPositions; //for MidFieldPlayOnly: list of positions including shadowBall
 
         public DefenseStrategy(Team myTeam, int goalie_id)
         {
@@ -25,10 +26,17 @@ namespace RFC.Strategy
             otherPassRisk = 1;
             assessThreats = new AssessThreats(myTeam, 1);
             msngr = ServiceManager.getServiceManager();
-            goalieID = goalie_id; //need to fetch
+            goalieID = goalie_id; 
             goalieBehavior = new Goalie(myTeam, goalie_id);
+            midFieldPositions = new List<RobotInfo>();
         }
 
+        public List<RobotInfo> GetShadowPositions(int n)
+        {
+            List<Threat> totalThreats = assessThreats.getThreats(msngr.GetLastMessage<FieldVisionMessage>());
+            return GetShadowPositions(totalThreats, n);
+        }
+        
         public List<RobotInfo> GetShadowPositions(List<Threat> threats, int n)
         {
             List<RobotInfo> results = new List<RobotInfo>();
@@ -40,60 +48,45 @@ namespace RFC.Strategy
             }
             return results;
         }
-
-        public List<RobotInfo> GetShadowPositions(int n)
+                
+        public void DefenseCommand(FieldVisionMessage msg, int sparePlayers)
         {
-            List<Threat> totalThreats = assessThreats.getThreats(msngr.GetLastMessage<FieldVisionMessage>());
-            return GetShadowPositions(totalThreats, n);
-        }
-
-        public void DefenseCommand(FieldVisionMessage msg)
-        {
-            List<Threat> totalThreats = assessThreats.getThreats(msg);
-            /*foreach (Threat threat in totalThreats)
-            {
-                Console.WriteLine("Threat has position " + threat.position);
-            }*/
-
-            List<RobotInfo> topThreats = new List<RobotInfo>();
+            List<Threat> totalThreats = assessThreats.getThreats(msg); //List of priotized Threats
+          
+            List<RobotInfo> topThreats = new List<RobotInfo>();//need to truncate and recast totalThreats as RobotInfo for DestinationMatcher
 
             // n - 1 threats, because leave one out for goalie
             List<RobotInfo> fieldPlayers = msg.GetRobots(myTeam);
+            //truncated and recast totalThreats
             for (int i = 0; i <fieldPlayers.Count-1; i++)
             {
                 topThreats.Add(new RobotInfo(totalThreats[i].position, 0, 0));
-                //Console.WriteLine("Just added " + topThreats[i].Position + " to topThreats");
+            
             }
-            
-            //Console.WriteLine("length of topThreats is " + topThreats.Count);
-
-            
+        
             RobotInfo goalie = msg.GetRobot(myTeam, goalieID);
 
             // Remove goalie from fieldPlayers
-            
             for (int i = 0; i < fieldPlayers.Count; i++)
             {
-                Console.WriteLine("fieldPlayer " + i + "has ID" + fieldPlayers[i].ID);
                 if (fieldPlayers[i].ID == goalieID)
                 {
-                    //Console.WriteLine("goalieID is " + goalieID);
-                    //Console.WriteLine("Will remove player with ID " + fieldPlayers[i].ID);
                     fieldPlayers.RemoveAt(i);
                     break;
                 }
             }
-
-
             // assigning positions for field players
             List<RobotInfo> destinations = new List<RobotInfo>();
+            int ballIndex=0;
             for (int i = 0; i < fieldPlayers.Count; i++)
             {
                 // want to go right for the ball, not shadow it like a player
                 if (topThreats[i].Position == msg.Ball.Position)
                 {
+                    ballIndex = i;
                     destinations.Add(new RobotInfo(topThreats[i].Position, 0, 0));
                 }
+                // for robotThreats
                 else
                 {
                     //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
@@ -101,17 +94,25 @@ namespace RFC.Strategy
                     difference=difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
                     destinations.Add(new RobotInfo(topThreats[i].Position + difference, 0, 0));
                 }
-                //Console.WriteLine("Index " + i + " of destinations is " + destinations[i].Position);
-
             }
-            //msngr.vdbClear();
-            foreach (RobotInfo rob in topThreats)
+            //adds positions behind ball for midFieldPlay
+                Vector2 ballToTopGoalPost = msg.Ball.Position - Constants.FieldPts.OUR_GOAL_TOP;
+                Vector2 ballToBottomGoalPost = msg.Ball.Position - Constants.FieldPts.OUR_GOAL_BOTTOM;
+                double angleGoal = Math.Cos(ballToTopGoalPost.cosineAngleWith(ballToBottomGoalPost));
+                double incrementAngle = angleGoal / (sparePlayers + 1);
+            for (int i = 1; i < sparePlayers+1; i++)
             {
-                //msngr.vdb(rob);
-                //Console.WriteLine("position of a topThreat is " + rob.Position);
+                double positionAngle = ballToTopGoalPost.cartesianAngle() + incrementAngle * i;
+                Vector2 unNormalizedDirection = new Vector2(positionAngle);
+                Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(Constants.Basic.ROBOT_RADIUS * 4);
+                Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
+                destinations.Insert(1,new RobotInfo(robotPosition, 0, 0)); //adds positions behind ball after ball in List
+                destinations.RemoveAt(destinations.Count - 1); //removes bottom priority Threats
             }
-            
+            midFieldPositions = destinations;//for MidFieldPlay only
                       
+            //msngr.vdbClear();
+                   
             int[] assignments = DestinationMatcher.GetAssignments(fieldPlayers, destinations);
             int n = fieldPlayers.Count();
             ServiceManager msngr = ServiceManager.getServiceManager();
