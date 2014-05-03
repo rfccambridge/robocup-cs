@@ -215,10 +215,6 @@ namespace RFC.Strategy
 
 
             //offenseMap.drawMap(passMap);
-            
-            
-
-            // TODO: can (and probably should) merge if statements
 
             // defining ball carrier
             RobotInfo ballCarrier = null;
@@ -333,7 +329,9 @@ namespace RFC.Strategy
             if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN && DateTime.Now.Millisecond - playStartTime >= SHOT_TIMEOUT)
             {
                 state = State.Normal;
+                return;
             }
+            reset();
         }
 
         public void bounceShotPlay(FieldVisionMessage fieldVision)
@@ -343,6 +341,12 @@ namespace RFC.Strategy
             {
                 state = State.Normal;
             }
+            BounceKicker bk = new BounceKicker(team);
+            if (shootingRobot != null && bouncingRobot != null)
+            {
+                bk.arrange_kick(fieldVision, shootingRobot.ID, bouncingRobot.ID);
+            }
+            reset();
         }
 
         public void reset()
