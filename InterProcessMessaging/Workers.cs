@@ -113,6 +113,7 @@ namespace RFC.InterProcessMessaging
 
         public void Close()
         {
+            thread.Abort();
             stream.Close();
             client.Close();
             client.Client.Close();

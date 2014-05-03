@@ -205,6 +205,7 @@ namespace RFC.FieldDrawer
             msngr.RegisterListener<VisualDebugMessage>(HandleVisualDebugMessage, new object());
             msngr.RegisterListener<RobotPathMessage>(HandlePathMessage, new object());
             msngr.RegisterListener<RobotDestinationMessage>(HandleDestinationMessage, new object());
+            msngr.RegisterListener<RefboxStateMessage>(HandleRefboxStateMessage, new object());
         }
 
         public void Init(int w, int h)
@@ -297,6 +298,11 @@ namespace RFC.FieldDrawer
                     DrawArrow(msg.Destination.Team, msg.Destination.ID, ArrowType.Destination, msg.Destination.Position);
                 }
             }
+        }
+
+        public void HandleRefboxStateMessage(RefboxStateMessage msg)
+        {
+            UpdateRefBoxCmd(msg.PlayType.ToString());
         }
 
         public void Resize(int w, int h)
@@ -569,15 +575,19 @@ namespace RFC.FieldDrawer
 
         public int AddMarker(Vector2 location, Color color, Object obj)
         {
-            lock (_collectingStateLock)
+            lock (_stateLock)
             {
-                if (!_collectingState)
-                    throw new ApplicationException("Not collecting state!");
-                int handle = _bufferedState.NextMarkerHandle;
-                _bufferedState.Markers.Add(handle, new Marker(location, color, obj));
-                unchecked { _bufferedState.NextMarkerHandle++; }
-                return handle;
+                lock (_collectingStateLock)
+                {
+                    if (!_collectingState)
+                        throw new ApplicationException("Not collecting state!");
+                    int handle = _bufferedState.NextMarkerHandle;
+                    _bufferedState.Markers.Add(handle, new Marker(location, color, obj));
+                    unchecked { _bufferedState.NextMarkerHandle++; }
+                    return handle;
+                }
             }
+            
         }
         public void RemoveMarker(int handle)
         {

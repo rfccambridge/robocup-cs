@@ -22,21 +22,25 @@ namespace RFC.Strategy
         public void DirectOurs(FieldVisionMessage msg)
         {
             //TODO
+            // call offense
         }
 
         public void DirectTheirs(FieldVisionMessage msg)
         {
             //TODO
+            // call midfield wall
         }
 
         public void IndirectOurs(FieldVisionMessage msg)
         {
             //TODO
+            // call offense
         }
 
         public void IndirectTheirs(FieldVisionMessage msg)
         {
             //TODO
+            // call midfield wall
         }
     }
 }

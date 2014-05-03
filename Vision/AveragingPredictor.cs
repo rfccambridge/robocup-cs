@@ -27,6 +27,9 @@ namespace RFC.Vision
 
         private object listenerLock = new object();
 
+        private JitterFilter filter;
+        Random r;
+
 
         public bool Flipped { get; set; }
 
@@ -44,6 +47,9 @@ namespace RFC.Vision
             messenger = ServiceManager.getServiceManager();
             // register handler to receive messages
             new QueuedMessageHandler<VisionMessage>(Update, listenerLock);
+
+            filter = new JitterFilter();
+            r = new Random();
         }
 
         /// <summary>
@@ -76,13 +82,12 @@ namespace RFC.Vision
             {
                 ball = new BallInfo(new Vector2()); // todo: mark that this is null
             }
+
             RobotVisionMessage robots_msg = new RobotVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
             FieldVisionMessage all_msg = new FieldVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow), Flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
 
             // sending message containing new data
-            messenger.SendMessage<FieldVisionMessage>(all_msg);
-            
-            messenger.SendMessage<RobotVisionMessage>(robots_msg);
+           filter.Update(all_msg);
 
                 
         }

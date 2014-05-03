@@ -52,6 +52,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="KickInBehavior.cs" />
     <Compile Include="KickOffBehavior.cs" />
+    <Compile Include="MidfieldPlay.cs" />
     <Compile Include="MovementTest.cs" />
     <Compile Include="NormalBehavior.cs" />
     <Compile Include="OccOffenseMapper.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="SetupTest.cs" />
     <Compile Include="SetupTest1.cs" />
     <Compile Include="Shot1.cs" />
+    <Compile Include="StateChecker.cs" />
     <Compile Include="Threat.cs" />
     <Compile Include="WaitBehavior.cs" />
   </ItemGroup>

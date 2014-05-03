@@ -2,6 +2,7 @@
 using RFC.Geometry;
 using RFC.Messaging;
 using RFC.Strategy;
+using RFC.PathPlanning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace Strategy
+namespace RFC.Strategy
 {
+    public class QuantifiedPosition : IComparable<QuantifiedPosition>
+    {
+        public RobotInfo position;
+        public double potential;
+
+        public QuantifiedPosition(RobotInfo bouncer, double potential)
+        {
+            this.position = bouncer;
+            this.potential = potential;
+        }
+
+        // sortable
+        public int CompareTo(QuantifiedPosition other)
+        {
+            return potential.CompareTo(other.potential);
+        }
+    }
+
     public class OffTester
     {
         public enum State { Normal, Shot, BounceShot };
@@ -22,8 +41,9 @@ namespace Strategy
         private bool stopped = false;
         private bool firstRun = true;
         private OccOffenseMapper offenseMap;
+        private ServiceManager msngr;
 
-        private Vector2[] zoneList;
+        private Vector2[,] zoneList;
         // the radius in meters of a robot's zone
         private const double ZONE_RAD = 0.5;
 
@@ -46,21 +66,44 @@ namespace Strategy
         private RobotInfo bouncingRobot = null;
 
         private short numOcc = 0;
-
         private int teamSize = 0;
+        private int goalie_id;
+        bool frame;
 
-        public OffTester(Team team)
+        // square root of number of zones
+        public static int ZONE_NUM = 3;
+
+        
+
+        public OffTester(Team team, int goalie_id)
         {
             this.team = team;
-            this.state = 0;
+            this.state = State.Normal;
             if (team == Team.Blue)
                 this.oTeam = Team.Yellow;
             else
                 this.oTeam = Team.Blue;
 
+            this.goalie_id = goalie_id;
+            frame = false;
+
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
-            ServiceManager.getServiceManager().RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+            this.msngr = ServiceManager.getServiceManager();
+            msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+
+            // moved here from "if first" ifstatement
+            zoneList = new Vector2[ZONE_NUM, ZONE_NUM];
+            for (int xi = 0; xi < ZONE_NUM; xi++)
+            {
+                for (int yi = 0; yi < ZONE_NUM; yi++)
+                {
+                    zoneList[xi, yi] = OccOffenseMapper.getZone(xi, yi, ZONE_NUM);
+                }
+
+            }
+            offenseMap = new OccOffenseMapper(team);
+
             /*
             Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(0, 0))[1]);
             Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(1, 0))[1]);
@@ -71,7 +114,7 @@ namespace Strategy
             */
         }
 
-        private RobotInfo goodBounceShot(List<RobotInfo> ourTeam, RobotInfo ballCarrier, double[,] map)
+        private QuantifiedPosition goodBounceShot(List<RobotInfo> ourTeam, RobotInfo ballCarrier, double[,] map)
         {
             if (ballCarrier == null) return null;
             RobotInfo bestRob = null;
@@ -88,86 +131,98 @@ namespace Strategy
                     }
                 }
             }
-            return (bestVal < BSHOT_THRESH) ? null : bestRob;
+            return new QuantifiedPosition(bestRob, bestVal);
         }
 
         private void pickUpBall(RobotInfo rob, BallInfo ball)
         {
             RobotInfo destination = new RobotInfo(ball.Position, 0, rob.ID);
             RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
-            ServiceManager.getServiceManager().SendMessage(destinationMessage);
+            msngr.SendMessage(destinationMessage);
         }
 
-        private Vector2[] getBestPos(double[,] map)
+
+        private QuantifiedPosition getBestPos(double[,] map)
         {
-            Vector2[] bestPos = new Vector2[teamSize];
-            int i = 0;
-            foreach (Vector2 zoneCent in zoneList) {
-                double max = 0.0;
-                int maxJ = 0;
-                int maxK = 0;
-                int[] indSt = OccOffenseMapper.vecToInd(zoneCent - new Vector2(ZONE_RAD, ZONE_RAD));
-                int[] indEnd = OccOffenseMapper.vecToInd(zoneCent + new Vector2(ZONE_RAD, ZONE_RAD));
-                for (int j = indSt[0]; j < indEnd[0]; j++)
+            double best = 0.0;
+            int best_x = 0;
+            int best_y = 0;
+
+            // looping over zone
+            for (int xi = 0; xi < map.GetLength(0); xi++)
+            {
+                for (int yi = 0; yi < map.GetLength(1); yi++)
                 {
-                    for (int k = indSt[1]; k < indEnd[1]; k++)
+                    if (map[xi, yi] < best)
                     {
-                        if (j >= 0 && j < map.GetLength(0) && k >= 0 && k < map.GetLength(1) && map[j, k] > max)
-                        {
-                            max = map[j, k];
-                            maxJ = j;
-                            maxK = k;
-                        }
+                        best = map[xi, yi];
+                        best_x = xi;
+                        best_y = yi;
                     }
                 }
-                Vector2 destVect = OccOffenseMapper.indToVec(maxJ, maxK);
-                bestPos[i] = destVect;
-                i++;
             }
-            return bestPos;
-            // debugging
-            /*
-                Console.WriteLine("RobotID: " + rob.ID + "\nzoneCent: " + zoneCent + "\nGoing to: (" + destVect.X + ", " + destVect.Y + ")\n");
-                Console.Write("Map: ");
-                OccOffenseMapper.printDoubleMatrix(map);
-            */
+
+            RobotInfo optimal_position = new RobotInfo(OccOffenseMapper.indToVec(best_x, best_y), 0, -1);
+            return new QuantifiedPosition(optimal_position, best);
         }
+
+        // get best position within zone xi,yi
+        private QuantifiedPosition getBestPosInZone(double[,] map, int zx, int zy)
+        {
+            // finding bounds to look in
+            int min_xi = zx * map.GetLength(0) / ZONE_NUM;
+            int max_xi = (zx + 1) * map.GetLength(0) / ZONE_NUM;
+            int min_yi = zy * map.GetLength(1) / ZONE_NUM;
+            int max_yi = (zy + 1) * map.GetLength(0) / ZONE_NUM;
+            double best = 0.0;
+            int best_x = 0;
+            int best_y = 0;
+
+            // looping over zone
+            for (int xi = min_xi; xi < max_xi; xi++)
+            {
+                for (int yi = min_yi; yi < max_yi; yi++)
+                {
+                    if (map[xi,yi] > best)
+                    {
+                        best = map[xi,yi];
+                        best_x = xi;
+                        best_y = yi;
+                    }
+                }
+            }
+
+            RobotInfo optimal_bouncer = new RobotInfo(OccOffenseMapper.indToVec(best_x,best_y), 0, -1);
+            msngr.vdb(optimal_bouncer, Color.White);
+            //Console.WriteLine("zx: " + zx + " zy: " + zy + " best_X: " + best_x + " best_y: " + best_y + " vec: " + optimal_bouncer.Position);
+            return new QuantifiedPosition(optimal_bouncer, best);
+        }
+
+        
 
         private void normalPlay(FieldVisionMessage fieldVision)
         {
             List<RobotInfo> ourTeam = fieldVision.GetRobots(team);
             List<RobotInfo> theirTeam = fieldVision.GetRobots(oTeam);
             BallInfo ball = fieldVision.Ball;
+            teamSize = ourTeam.Count;
 
-            if (firstRun)
-            {
-                zoneList = new Vector2[ourTeam.Count];
-                for (int i = 0; i < ourTeam.Count; i++)
-                {
-                    zoneList[i] = OccOffenseMapper.getZone(i);
-                }
-                offenseMap = new OccOffenseMapper(team);
-                teamSize = ourTeam.Count;
-                firstRun = false;
-            }
+            int n_passers = teamSize - 2; // not the goalie, not the ball carrier 
+
             offenseMap.update(ourTeam, theirTeam, ball, fieldVision);
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
             double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision);
 
-            /*
-            ServiceManager.getServiceManager().vdbClear();
-            for (int i = 0; i < passMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < passMap.GetLength(1); j++)
-                {
-                    Console.WriteLine(dribMap[i, j]);
-                    ServiceManager.getServiceManager().vdb(OccOffenseMapper.indToVec(i,j), RFC.Utilities.ColorUtils.numToColor(dribMap[i,j], 0, 0.5));
-                }
-            }
-            */
+
+            //offenseMap.drawMap(passMap);
+            
+            
 
             // TODO: can (and probably should) merge if statements
+
+            // defining ball carrier
             RobotInfo ballCarrier = null;
+            int ballCarrier_id = -1;
             double rbd = BALL_HANDLE_MIN;
             RobotInfo closestToBall = null;
             double minToBall = 100.0;
@@ -178,6 +233,7 @@ namespace Strategy
                 {
                     ballCarrier = rob;
                     rbd = dist;
+                    ballCarrier_id = rob.ID;
                 }
                 if (dist < minToBall)
                 {
@@ -185,59 +241,85 @@ namespace Strategy
                     closestToBall = rob;
                 }
             }
+
+
             // used for other play functions
             shootingRobot = ballCarrier;
-            Vector2[] bestDrib = getBestPos(dribMap);
-            Vector2[] bestPass = getBestPos(passMap);
+            QuantifiedPosition bestDrib = getBestPos(dribMap);
 
-            for (int i = 0; i < ourTeam.Count; i++)
+            // what should the robot with the ball do ? -------------------------------------------------
+            QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
+            ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team);
+            
+            
+            if (ballCarrier == null)
             {
-                int[] inds = OccOffenseMapper.vecToInd(ourTeam.ElementAt(i).Position);
-                RobotInfo bpr = goodBounceShot(ourTeam, ballCarrier, passMap);
-                // take a shot
-                if (ballCarrier != null && ballCarrier.ID == ourTeam.ElementAt(i).ID && inds[0] >= 0 && inds[0] < dribMap.GetLength(0)
-                    && inds[1] >= 0 && inds[1] < dribMap.GetLength(1) && dribMap[inds[0], inds[1]] > SHOT_THRESH)
-                {
-                    state = State.Shot;
-                    playStartTime = DateTime.Now.Millisecond;
-                }
-                // do a bounce pass
-                else if (bpr != null)
-                {
-                    // used for other play functions
-                    bouncingRobot = bpr;
+                // go get the ball
+                DribblePlanner.GetPossession(closestToBall, fieldVision);
+                ballCarrier_id = closestToBall.ID;
+            }
+            else if (shootingRobot != null && shot_op.arc > SHOT_THRESH)
+            {
+                // shoot on goal
+                state = State.Shot;
+                playStartTime = DateTime.Now.Millisecond;
+            }
+            else if (shootingRobot != null && bounce_op.potential > BSHOT_THRESH)
+            {
+                // take a bounce shot
+                bouncingRobot = bounce_op.position; 
+                state = State.BounceShot;
+                playStartTime = DateTime.Now.Millisecond;
+            }
+            else if (false ) // put conditions to see if we should get rid of the ball ASAP
+            {
+                // just get rid of the ball
+                // TODO
+            }
+            else
+            {
+                // else just dribble the ball somewhere
+                RobotInfo destination = bestDrib.position;
+                double orientation = (Constants.FieldPts.THEIR_GOAL - ball.Position).cartesianAngle();
+                destination.Orientation = orientation;
+                destination.ID = ballCarrier.ID;
+                RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
+                msngr.SendMessage(destinationMessage);
+            }
+            
 
-                    state = State.BounceShot;
-                    playStartTime = DateTime.Now.Millisecond;
-                }
-                // go for ball
-                else if (ballCarrier == null && closestToBall.ID == ourTeam.ElementAt(i).ID)
+            // what should other robots do? -----------------------------------------------------------
+            
+            List<RobotInfo> passers = new List<RobotInfo>();
+            foreach (RobotInfo rob in ourTeam)
+            {
+                if (rob.ID != goalie_id && rob.ID != ballCarrier_id)
                 {
-                    pickUpBall(closestToBall, ball);
-                }
-                // dribble
-                else if (ballCarrier != null && ballCarrier.ID == ourTeam.ElementAt(i).ID)
-                {
-                    Vector2 destVect = bestDrib[0];
-                    double orientation = (Constants.FieldPts.THEIR_GOAL - ballCarrier.Position).cartesianAngle();
-                    RobotInfo destination = new RobotInfo(destVect, orientation, ballCarrier.ID);
-                    RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
-                    ServiceManager.getServiceManager().SendMessage(destinationMessage);
-                }
-                // get open
-                else if (ourTeam.ElementAt(i) != null)
-                {
-                    if (numOcc > bestPass.GetLength(0)) continue;
-                    Vector2 destVect = bestPass[numOcc];
-                    numOcc++;
-                    RobotInfo rob = ourTeam.ElementAt(i);
-                    double orientation = (ball.Position - rob.Position).cartesianAngle()
-                            + 0.5 * Math.Acos((Constants.FieldPts.THEIR_GOAL - rob.Position).cosineAngleWith(ball.Position - rob.Position));
-                    RobotInfo destination = new RobotInfo(destVect, orientation, rob.ID);
-                    RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
-                    ServiceManager.getServiceManager().SendMessage(destinationMessage);
+                    passers.Add(rob);
                 }
             }
+
+            //offenseMap.drawMap(passMap);
+
+            
+            // trying non max supression
+            List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
+            maxima.Sort();
+            maxima.Reverse();
+
+            List<RobotInfo> passingDestinations = new List<RobotInfo>();
+            for (int i = 0; i < passers.Count; i++)
+            {
+                RobotInfo current = maxima[i].position;
+                Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - current.Position;
+                Vector2 vector2 = ball.Position - current.Position;
+                current.Orientation = (vector1.cartesianAngle() + vector2.cartesianAngle()) / 2.0;
+                passingDestinations.Add(current);
+            }
+
+            DestinationMatcher.SendByDistance(passers, passingDestinations);
+            
+            System.Threading.Thread.Sleep(100);
         }
 
         public void setState(State s)

@@ -2,11 +2,13 @@
 using RFC.Geometry;
 using RFC.Messaging;
 using RFC.Strategy;
+using RFC.PathPlanning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace RFC.Strategy
 {
@@ -15,14 +17,14 @@ namespace RFC.Strategy
         // normalize map to this number
         public const double NORM_TO = 100.0;
         // higher num -> better resolution
-        public const int LAT_NUM = 40;
+        public const int LAT_NUM = 60;
         // in degrees
         public const double BOUNCE_ANGLE = 20.0;
         // how far away from the line of sight should we ignore other robots?
-        public const double IGN_THRESH = .2;
+        public const double IGN_THRESH = .15;
         Team team;
 
-        private static readonly double LAT_HSTART = (Constants.Field.XMAX - Constants.Field.XMIN) / 2.0 + Constants.Field.XMIN;
+        private static readonly double LAT_HSTART = Constants.Field.XMIN/2;
         private static readonly double LAT_VSTART = Constants.Field.YMIN;
 
         private static readonly double LAT_HEND = Constants.Field.XMAX;
@@ -34,9 +36,6 @@ namespace RFC.Strategy
         private ServiceManager msngr;
 
         private double[,] shotMap = new double[LAT_NUM, LAT_NUM];
-
-        // square root of number of zones
-        public static int ZONE_NUM = 3;
 
         public OccOffenseMapper(Team team)
         {
@@ -67,7 +66,8 @@ namespace RFC.Strategy
             }
         }
 
-        public static Vector2 getZone(int id)
+        // zones are indexed(x,y)
+        public static Vector2 getZone(int xi, int yi, int zone_num)
         {
             /*
             // id zero indexed
@@ -98,10 +98,10 @@ namespace RFC.Strategy
             }
             return new Vector2(x, y);
             */
-            double offsetX = (LAT_HEND - LAT_HSTART) / ZONE_NUM / 2.0;
-            double x = LAT_HSTART + offsetX + (LAT_HEND - LAT_HSTART) / 3 * (id % 3);
-            double offsetY = (LAT_VEND - LAT_VSTART) / ZONE_NUM / 2.0;
-            double y = LAT_VSTART + offsetY + (LAT_VEND - LAT_VSTART) / 3 * (id % 3);
+            double offsetX = (LAT_HEND - LAT_HSTART) / zone_num / 2.0;
+            double x = LAT_HSTART + offsetX + (LAT_HEND - LAT_HSTART) / zone_num * xi;
+            double offsetY = (LAT_VEND - LAT_VSTART) / zone_num / 2.0;
+            double y = LAT_VSTART + offsetY + (LAT_VEND - LAT_VSTART) / zone_num * yi;
             return new Vector2(x, y);
         }
 
@@ -188,26 +188,40 @@ namespace RFC.Strategy
 
                     
                     // see if position has good line of sight with ball
-                    double distSum = 1;
+                    double distSum = 1.0;
+                    double tooClose = 1.0;
+                    
                     foreach (RobotInfo rob in theirTeam)
                     {
 
-                        double dist = (rob.Position - pos).perpendicularComponent(vecToBall).magnitude();
-                        if (dist < IGN_THRESH && ((vecToBall - rob.Position).magnitude() < (vecToBall - pos).magnitude()))
+                        Vector2 dist = (rob.Position - pos);
+                        double perpdist = dist.perpendicularComponent(vecToBall).magnitude();
+                        if (perpdist < IGN_THRESH && (ball.Position - rob.Position).cosineAngleWith(vecToBall) > 0 && Vector2.dotproduct(pos,ball.Position,rob.Position) > Vector2.dotproduct(rob.Position,ball.Position, rob.Position))
                         {
-                            distSum -= 1 * Math.Exp(-dist);
+                            distSum -= 1 * Math.Exp(-perpdist);
                         }
+
+                        // also checking if too close
+                        if (dist.magnitude() < Constants.Basic.ROBOT_RADIUS * 4)
+                            tooClose = 0.0;
+
                     }
                     if (distSum < 0)
                     {
                         distSum = 0;
                     }
                     
+                    // account for distance to ball
+                    double distScore = Math.Atan2(1,vecToBall.magnitude());
+                    if (Constants.Basic.ROBOT_RADIUS * 4 > vecToBall.magnitude())
+                        distScore = 0;
 
                     // calculate bounce score
                     // make .5(1+cos)
                     double currentBounceAngle = 180 * Math.Acos(vecToBall.cosineAngleWith(vecToGoal)) / Math.PI;
-                    double bounceScore = 90 - Math.Abs(currentBounceAngle - 90);
+                    if (double.IsNaN(currentBounceAngle))
+                        currentBounceAngle = 0;
+                    double bounceScore = 180 - currentBounceAngle;
                     double worstBounceScore = 90 - Math.Abs(BOUNCE_ANGLE - 90);
                     // if bounce score is worse than what robot can handle then position is pretty crappy
                     if (bounceScore < worstBounceScore)
@@ -227,14 +241,103 @@ namespace RFC.Strategy
                     {
                         j = LAT_NUM - 1;
                     }
+
+                    double isValid = 0;
+                    if (Avoider.isValid(pos))
+                        isValid = 1;
                     
-                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum);
+                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose * isValid);
+
+                    
+
+                    //Console.WriteLine("result: " + normalize(shotMap[i, j] * bounceScore * distSum * distScore));
                     //ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
                     //map[i, j] = normalize(shotMap[i, j] * bounceScore * shot.arc);
                     //msngr.vdb(new Vector2(x,y), Utilities.ColorUtils.numToColor(map[i,j],0,20));
                 }
             }
             return map;
+        }
+
+        // used for debugging drawn maps
+        public void drawMap(double[,] map)
+        {
+            double max = map.Cast<double>().Max();
+            double min = map.Cast<double>().Min();
+
+            msngr.vdbClear();
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    //Console.WriteLine("min: " + min + " max: " + max + " map: " + map[i, j]);
+                    msngr.vdb(OccOffenseMapper.indToVec(i, j), RFC.Utilities.ColorUtils.numToColor(map[i, j], min, max));
+                }
+            }
+        }
+
+        // Nonmax suppression
+        public double[,] nonMaxSupression(double[,] map)
+        {
+            double[,] result = new double[map.GetLength(0),map.GetLength(1)];
+
+            for (int i = 1; i < map.GetLength(0) - 1; i++)
+            {
+                for (int j = 1; j < map.GetLength(1) -1; j++)
+                {
+                    if (map[i, j] < map[i - 1, j])
+                        break;
+                    if (map[i, j] < map[i + 1, j])
+                        break;
+                    if (map[i, j] < map[i - 1, j - 1])
+                        break;
+                    if (map[i, j] < map[i - 0, j - 1])
+                        break;
+                    if (map[i, j] < map[i + 1, j - 1])
+                        break;
+                    if (map[i, j] < map[i - 1, j + 1])
+                        break;
+                    if (map[i, j] < map[i - 0, j + 1])
+                        break;
+                    if (map[i, j] < map[i + 1, j + 1])
+                        break;
+                    result[i, j] = map[i, j];
+                }
+            }
+            return result;
+        }
+
+        // get list from Nonmax supression
+        public List<QuantifiedPosition> getLocalMaxima(double[,] map)
+        {
+            List<QuantifiedPosition> maxima = new List<QuantifiedPosition>();
+            //msngr.vdbClear();
+            for (int i = 1; i < map.GetLength(0) - 1; i++)
+            {
+                for (int j = 1; j < map.GetLength(1) - 1; j++)
+                {
+                    if (map[i, j] <= map[i - 1, j])
+                        continue;
+                    if (map[i, j] <= map[i + 1, j])
+                        continue;
+                    if (map[i, j] <= map[i - 1, j - 1])
+                        continue;
+                    if (map[i, j] <= map[i - 0, j - 1])
+                        continue;
+                    if (map[i, j] <= map[i + 1, j - 1])
+                        continue;
+                    if (map[i, j] <= map[i - 1, j + 1])
+                        continue;
+                    if (map[i, j] <= map[i - 0, j + 1])
+                        continue;
+                    if (map[i, j] <= map[i + 1, j + 1])
+                        continue;
+                    maxima.Add(new QuantifiedPosition(new RobotInfo(indToVec(i, j), 0, 0), map[i, j]));
+                    //msngr.vdb(indToVec(i, j), Color.White);
+
+                }
+            }
+            return maxima;
         }
     }
 }
