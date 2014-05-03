@@ -49,7 +49,7 @@ namespace RFC.Strategy
             return results;
         }
                 
-        public void DefenseCommand(FieldVisionMessage msg, int sparePlayers)
+        public void DefenseCommand(FieldVisionMessage msg, int sparePlayers, bool blitz)
         {
             List<Threat> totalThreats = assessThreats.getThreats(msg); //List of priotized Threats
           
@@ -96,26 +96,41 @@ namespace RFC.Strategy
                 }
             }
             //adds positions behind ball for midFieldPlay
-                Vector2 ballToTopGoalPost = msg.Ball.Position - Constants.FieldPts.OUR_GOAL_TOP;
-                Vector2 ballToBottomGoalPost = msg.Ball.Position - Constants.FieldPts.OUR_GOAL_BOTTOM;
-                double angleGoal = Math.Cos(ballToTopGoalPost.cosineAngleWith(ballToBottomGoalPost));
-                double incrementAngle = angleGoal / (sparePlayers + 1);
-            for (int i = 1; i < sparePlayers+1; i++)
+            Vector2 goalToBall = Constants.FieldPts.OUR_GOAL - msg.Ball.Position;
+            //double angleGoal = Math.Cos(ballToTopGoalPost.cosineAngleWith(ballToBottomGoalPost));
+            double incrementAngle = .6;//angleGoal / (sparePlayers + 1);
+            double centerAngle = goalToBall.cartesianAngle();
+            ServiceManager msngr = ServiceManager.getServiceManager();
+
+            // sometimes just make wall without charging ball
+            /*
+            if (!blitz)
             {
-                double positionAngle = ballToTopGoalPost.cartesianAngle() + incrementAngle * i;
+                // removing ball
+                destinations.RemoveAt(0);
+                //adding one at end to be removed
+                destinations.Add(new RobotInfo(new Vector2(), 0,0));
+            }*/
+            
+            for (int i = 0; i < sparePlayers; i++)
+            {
+                double positionAngle = centerAngle + incrementAngle * (i - (sparePlayers-1.0)/2.0);
+                Console.WriteLine(positionAngle);
                 Vector2 unNormalizedDirection = new Vector2(positionAngle);
                 Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(Constants.Basic.ROBOT_RADIUS * 4);
                 Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
                 destinations.Insert(1,new RobotInfo(robotPosition, 0, 0)); //adds positions behind ball after ball in List
                 destinations.RemoveAt(destinations.Count - 1); //removes bottom priority Threats
+                msngr.vdb(robotPosition);
+                
             }
             midFieldPositions = destinations;//for MidFieldPlay only
                       
-            //msngr.vdbClear();
+            
                    
             int[] assignments = DestinationMatcher.GetAssignments(fieldPlayers, destinations);
             int n = fieldPlayers.Count();
-            ServiceManager msngr = ServiceManager.getServiceManager();
+            
 
             if (fieldPlayers.Count != destinations.Count)
                 throw new Exception("different numbers of robots and destinations: " + fieldPlayers.Count + ", " + destinations.Count);

@@ -40,11 +40,8 @@ namespace RFC.PathPlanning
             
             // calculating ideal place for the robot to be
             Vector2 diff = kick.Target - ball.Position;
-            diff = new Vector2(0, 1);
             double angle = diff.cartesianAngle();
             Vector2 offset = diff.normalizeToLength(kick_dist);
-            
-            
             
             Vector2 position = ball.Position - offset;
             Vector2 followThroughOffset = diff.normalizeToLength(follow_through_dist);

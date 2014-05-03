@@ -92,7 +92,7 @@ namespace RFC.Strategy
 
             if (ours.Count > 3)
             {
-                positionHelper.DefenseCommand(message, ours.Count - 3);
+                positionHelper.DefenseCommand(message, ours.Count - 3, true);
             }
             /*{   
                 List<RobotInfo> results = new List<RobotInfo>();
