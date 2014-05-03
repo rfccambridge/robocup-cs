@@ -33,7 +33,7 @@ namespace RFC.Strategy
             RobotInfo kicker = msg.GetRobot(team, kicker_id);
             List<RobotInfo> rest = msg.GetRobots(team);
 
-            ShotOpportunity shot = Shot1.evaluate(msg, team);
+            ShotOpportunity shot = Shot1.evaluate(msg, team, msg.Ball.Position);
             if (shot.target != null)
             {
                 //msngr.vdbClear();
