@@ -39,12 +39,23 @@ namespace RFC.Strategy
 
         // Finds the best place to aim when taking a shot and judges how good
         // a shot it is
-        public static ShotOpportunity evaluate(FieldVisionMessage fvm, Team team)
+        public static ShotOpportunity evaluate(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
         {
-            Vector2 pos = fvm.Ball.Position;
-            return evaluatePosition(fvm, pos, team);
+            return evaluateGoal(fvm, team, hypo_ball);
         }
-        public static ShotOpportunity evaluatePosition(FieldVisionMessage fvm, Vector2 from_position, Team team)
+
+        public static ShotOpportunity evaluateGoal(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
+        {
+            return evaluateGeneral(fvm, team, hypo_ball, Constants.FieldPts.THEIR_GOAL_TOP, Constants.FieldPts.THEIR_GOAL_BOTTOM);
+        }
+
+        public static ShotOpportunity evaluateField(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
+        {
+            return evaluateGeneral(fvm, team, hypo_ball, Constants.FieldPts.TOP_RIGHT, Constants.FieldPts.BOTTOM_RIGHT);
+        }
+
+        
+        public static ShotOpportunity evaluateGeneral(FieldVisionMessage fvm, Team team, Vector2 shot_position, Vector2 top, Vector2 bottom)
         {
             List<RobotInfo> locations = fvm.GetRobots(Team.Blue);
 
@@ -53,7 +64,7 @@ namespace RFC.Strategy
             for (int i = 0; i < locations.Count(); i++)
             {
                 RobotInfo robot = locations[i];
-                Vector2 difference = robot.Position - from_position;
+                Vector2 difference = robot.Position - shot_position;
                 double sweep = Math.Asin((Constants.Basic.ROBOT_RADIUS + Constants.Basic.BALL_RADIUS) / difference.magnitude());
                 double angle = difference.cartesianAngle();
                 intervals.Add(new edge(angle - sweep, false));
@@ -61,8 +72,8 @@ namespace RFC.Strategy
             }
 
             // adding in edges of goal
-            Vector2 goal1 = Constants.FieldPts.THEIR_GOAL_BOTTOM - from_position;
-            Vector2 goal2 = Constants.FieldPts.THEIR_GOAL_TOP - from_position;
+            Vector2 goal1 = bottom - shot_position;
+            Vector2 goal2 = top - shot_position;
             double angle1 = goal1.cartesianAngle();
             double angle2 = goal2.cartesianAngle();
             intervals.Add(new edge(angle1, true));
@@ -115,9 +126,10 @@ namespace RFC.Strategy
             double arc = open_arc[index];
 
             // finding intersection of shot with goal line
-            double dx = Constants.FieldPts.THEIR_GOAL.X - from_position.X;
+            double dx = Constants.FieldPts.THEIR_GOAL.X - shot_position.X;
 
-            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, from_position.Y + dx * Math.Tan(shot_angle));
+            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, shot_position.Y + dx * Math.Tan(shot_angle));
+
             return new ShotOpportunity(shot_vec, arc);
         }
 

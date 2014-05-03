@@ -158,7 +158,7 @@ namespace RFC.Strategy
                     // subtract (so that number of robots doesn't factor in)
                     // shotMap[i, j] = normalize(goalAngle * distSum);
                     
-                    ShotOpportunity shot = Shot1.evaluatePosition(fmsg, pos, team);
+                    ShotOpportunity shot = Shot1.evaluate(fmsg, team, pos);
                     shotMap[i, j] = shot.arc;
                 }
             }

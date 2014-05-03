@@ -239,7 +239,7 @@ namespace RFC.Simulator
             double freq = Constants.Time.SIM_ENGINE_FREQUENCY;
             double period = 1.0 / freq * 1000; // in ms
 
-            runLoop.SetPeriod(1.0 / Constants.Time.SIM_ENGINE_FREQUENCY);
+            runLoop.SetPeriod(1.0 / Constants.Time.SIM_ENGINE_FREQUENCY /10);
             runLoop.Start();
         }
 
@@ -510,7 +510,7 @@ namespace RFC.Simulator
 
             Vector2 robotFaceDir = new Vector2(robot.Orientation);
             Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * robotFaceDir;
-            if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
+            if (kickerPosition.distanceSq(ball.Position) < 10 * KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
             {
                 Vector2 newVel = robotFaceDir * getKickSpeed(kickerStrength);
                 LastTouched = robot.Team;

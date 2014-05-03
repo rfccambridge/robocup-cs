@@ -68,7 +68,7 @@ namespace ControlForm
                 new VelocityDriver();
                 new KickPlanner();
 
-                //new AlexTest(team, goalieNumber);
+                new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
                 //new OffTester(team, goalieNumber);
                 //new SetupTest(team, goalieNumber);

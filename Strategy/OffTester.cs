@@ -249,7 +249,7 @@ namespace RFC.Strategy
 
             // what should the robot with the ball do ? -------------------------------------------------
             QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
-            ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team);
+            ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team, fieldVision.Ball.Position);
             
             
             if (ballCarrier == null)
