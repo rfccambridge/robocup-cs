@@ -23,7 +23,7 @@ namespace RFC.Strategy
 		}
 		public void Handle(FieldVisionMessage msg)
         {
-            defenseStrategy.DefenseCommand(msg);
+            defenseStrategy.DefenseCommand(msg,0);
 
 		}
 		

@@ -15,13 +15,13 @@ namespace RFC.Strategy
         int goalie_id;
         ServiceManager msngr;
         Goalie goalieBehave;
-        AssessThreats assessThreats;
+        DefenseStrategy positionHelper;
 
         public MidfieldPlay(Team t, int g)
         {
             team = t;
             goalie_id = g;
-            assessThreats = new AssessThreats (t, 1);
+            positionHelper = new DefenseStrategy(t,g);
         }
 
         public void WallMidfield(FieldVisionMessage message)
@@ -89,20 +89,21 @@ namespace RFC.Strategy
 
                 }
             }
-        
-            /*if (ours.Count > 3)
-            {   
-                public List<RobotInfo> GetShadowPositions(List<Threat> threats, int n)
-                {
-                    List<RobotInfo> results = new List<RobotInfo>();
-                    foreach (Threat threat in threats)
+
+            if (ours.Count > 3)
+            {
+                positionHelper.DefenseCommand(message, ours.Count - 3);
+            }
+            /*{   
+                List<RobotInfo> results = new List<RobotInfo>();
+                foreach (Threat threat in threats)
                 {
                     Vector2 difference = Constants.FieldPts.OUR_GOAL - threat.position;
                     difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
                     results.Add(new RobotInfo(threat.position + difference, 0, 0));
                 }
-                return results;
-                }
+                
+            }
 
                 public List<RobotInfo> GetShadowPositions(int n)
                 {
@@ -111,9 +112,10 @@ namespace RFC.Strategy
 
                     return GetShadowPositions(totalThreats, n);
                 }
+                destinations.AddRange(results);
                 DestinationMatcher.SendByDistance(ours, destinations);
-            /// DestinationMatcher.SendByDistance(team, destinations);
-        */
+            DestinationMatcher.SendByDistance(team, destinations);*/
+        
 
 
         }

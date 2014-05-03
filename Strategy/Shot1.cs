@@ -12,6 +12,7 @@ namespace RFC.Strategy
     {
         public Vector2 target;
         public double arc;
+
         public ShotOpportunity(Vector2 t, double a)
         {
             this.target = t;

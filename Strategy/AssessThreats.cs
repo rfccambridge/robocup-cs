@@ -44,7 +44,7 @@ namespace RFC.Strategy
             this.otherPassRisk = otherPassRisk;
 		}
 
-        public List<Threat> getThreats(FieldVisionMessage msg)
+        public List<Threat> getThreats(FieldVisionMessage msg) //returns list of threats in decreasing order of risk severity
         {/*creates list of Threats, then prioritizes them*/
             List<RobotInfo> getRobots = msg.GetRobots(otherTeam);
             double ballRisk = ballRiskRating(msg.Ball, getRobots);
