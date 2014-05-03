@@ -57,7 +57,7 @@ namespace RFC.Strategy
         
         public static ShotOpportunity evaluateGeneral(FieldVisionMessage fvm, Team team, Vector2 shot_position, Vector2 top, Vector2 bottom)
         {
-            List<RobotInfo> locations = fvm.GetRobots();
+            List<RobotInfo> locations = fvm.GetRobots(Team.Blue);
 
             // finding beginning and end of all occlusions from other robots as edges
             List<edge> intervals = new List<edge>();
