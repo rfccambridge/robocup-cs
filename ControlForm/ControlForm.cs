@@ -49,6 +49,8 @@ namespace ControlForm
             fd.Show();
         }
 
+        SetupTest bounce;
+
         public void Run()
         {
             if (!running)
@@ -63,12 +65,12 @@ namespace ControlForm
                 int goalieNumber = (int)GoalieNumberChooser.Value;
 
                 new LogHandler();
-                
+
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
                 new KickPlanner();
 
-                new AlexTest(team, goalieNumber);
+                //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
                 //new OffTester(team, goalieNumber);
                 //new SetupTest(team, goalieNumber);

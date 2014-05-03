@@ -21,12 +21,13 @@ namespace RFC.Strategy
         }
 
         Team team;
-        double critical_radius = .1;
+        double critical_radius = .3;
         Progress progress;
 
         public BounceKicker (Team team)
         {
             this.team = team;
+            this.progress = Progress.Far;
         }
 
         public void reset(Vector2 bounce_loc)
@@ -59,7 +60,7 @@ namespace RFC.Strategy
                     if (kick.Position.distance(msg.Ball.Position) < critical_radius)
                     {
                         this.progress = Progress.Near;
-                    }
+                    } 
                     break;
                 case Progress.Near:
                     KickMessage msg2 = new KickMessage(msg.GetRobot(team, kicker), msg.GetRobot(team, bouncer).Position);
@@ -80,12 +81,13 @@ namespace RFC.Strategy
                     }
                     break;
                 case Progress.Kicked:
-                    KickMessage msg3 = new KickMessage(msg.GetRobot(team, kicker), msg.GetRobot(team, bouncer).Position);
+                    //KickMessage msg3 = new KickMessage(msg.GetRobot(team, kicker), msg.GetRobot(team, bouncer).Position);
                     msngr = ServiceManager.getServiceManager();
-                    msngr.SendMessage(msg3);
-                    Vector2 vector5 = Constants.FieldPts.THEIR_GOAL - bounce.Position;
+                    //msngr.SendMessage(msg3);
+                    Vector2 vector5 = Shot1.evaluate(msg, team, msg.Ball.Position).target - bounce.Position;
                     Vector2 vector6 = msg.Ball.Position - bounce.Position;
                     bounce.Orientation = (vector5.cartesianAngle() + vector6.cartesianAngle()) / 2.0;
+                    bounce.Position = msg.Ball.Position + (bounce.Position - msg.Ball.Position).projectionLength(msg.Ball.Velocity)*msg.Ball.Velocity; 
                     RobotDestinationMessage dest_msg3 = new RobotDestinationMessage(bounce, false, false, true);
                     msngr.SendMessage<RobotDestinationMessage>(dest_msg3);
 
@@ -101,6 +103,14 @@ namespace RFC.Strategy
                     }
                     break;
                 case Progress.Bouncing:
+                    msngr = ServiceManager.getServiceManager();
+                    Vector2 vector7 = Shot1.evaluate(msg, team, msg.Ball.Position).target - bounce.Position;
+                    Vector2 vector8 = msg.Ball.Position - bounce.Position;
+                    bounce.Orientation = (vector7.cartesianAngle() + vector8.cartesianAngle()) / 2.0;
+                    bounce.Position = msg.Ball.Position + (bounce.Position - msg.Ball.Position).projectionLength(msg.Ball.Velocity)*msg.Ball.Velocity; 
+                    RobotDestinationMessage dest_msg4 = new RobotDestinationMessage(bounce, false, false, true);
+                    msngr.SendMessage<RobotDestinationMessage>(dest_msg4);
+
                     if (bounce.Position.distance(msg.Ball.Position) > 1.5 * critical_radius)
                     {
                         this.progress = Progress.Bounced;
