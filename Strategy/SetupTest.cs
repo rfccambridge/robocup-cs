@@ -39,7 +39,7 @@ namespace RFC.Strategy
         public void Handle(FieldVisionMessage fieldVision)
         {
             bk.arrange_kick(fieldVision, 1, 2);
-            
+            //bk.reset(fieldVision.GetRobot(team, 2).Position);
         }
 
         public void stopMessageHandler(StopMessage message)

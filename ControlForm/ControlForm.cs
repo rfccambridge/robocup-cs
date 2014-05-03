@@ -49,6 +49,8 @@ namespace ControlForm
             fd.Show();
         }
 
+        SetupTest bounce;
+
         public void Run()
         {
             if (!running)
@@ -63,14 +65,14 @@ namespace ControlForm
                 int goalieNumber = (int)GoalieNumberChooser.Value;
 
                 new LogHandler();
-                
+
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
 
-                new AlexTest(team, goalieNumber);
+                //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
                 //new Strategy.OffTester(team);
-                new SetupTest(team);
+                bounce = new SetupTest(team);
                 //new GoalieTest(team, goalieNumber);
                 new KickPlanner();
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
