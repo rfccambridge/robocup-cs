@@ -55,7 +55,7 @@ namespace RFC.Strategy
         }
 
         
-        public static ShotOpportunity evaluateGeneral(FieldVisionMessage fvm, Vector2 from_position, Team team, Vector2 top, Vector2 bottom)
+        public static ShotOpportunity evaluateGeneral(FieldVisionMessage fvm, Team team, Vector2 shot_position, Vector2 top, Vector2 bottom)
         {
             List<RobotInfo> locations = fvm.GetRobots();
 
@@ -64,7 +64,7 @@ namespace RFC.Strategy
             for (int i = 0; i < locations.Count(); i++)
             {
                 RobotInfo robot = locations[i];
-                Vector2 difference = robot.Position - hypo_ball;
+                Vector2 difference = robot.Position - shot_position;
                 double sweep = Math.Asin((Constants.Basic.ROBOT_RADIUS + Constants.Basic.BALL_RADIUS) / difference.magnitude());
                 double angle = difference.cartesianAngle();
                 intervals.Add(new edge(angle - sweep, false));
@@ -72,33 +72,12 @@ namespace RFC.Strategy
             }
 
             // adding in edges of goal
-<<<<<<< HEAD
-            if (goal_shot)
-            {
-                Vector2 goal1 = Constants.FieldPts.THEIR_GOAL_BOTTOM - hypo_ball;
-                Vector2 goal2 = Constants.FieldPts.THEIR_GOAL_TOP - hypo_ball;
-                double angle1 = goal1.cartesianAngle();
-                double angle2 = goal2.cartesianAngle();
-                intervals.Add(new edge(angle1, true));
-                intervals.Add(new edge(angle2, false));
-            }
-            else
-            {
-                Vector2 goal1 = Constants.FieldPts.BOTTOM_RIGHT - hypo_ball;
-                Vector2 goal2 = Constants.FieldPts.TOP_RIGHT - hypo_ball;
-                double angle1 = goal1.cartesianAngle();
-                double angle2 = goal2.cartesianAngle();
-                intervals.Add(new edge(angle1, true));
-                intervals.Add(new edge(angle2, false));
-            }
-=======
-            Vector2 goal1 = Constants.FieldPts.THEIR_GOAL_BOTTOM - from_position;
-            Vector2 goal2 = Constants.FieldPts.THEIR_GOAL_TOP - from_position;
+            Vector2 goal1 = bottom - shot_position;
+            Vector2 goal2 = top - shot_position;
             double angle1 = goal1.cartesianAngle();
             double angle2 = goal2.cartesianAngle();
             intervals.Add(new edge(angle1, true));
             intervals.Add(new edge(angle2, false));
->>>>>>> 0854047ac93883ab7ed5133d11a2a808296f7274
 
             // sorting edges so we can sweep over it
             List<edge> Sort = intervals.OrderBy(o => o.d).ToList();
@@ -147,15 +126,10 @@ namespace RFC.Strategy
             double arc = open_arc[index];
 
             // finding intersection of shot with goal line
-<<<<<<< HEAD
-            double dx = Constants.FieldPts.THEIR_GOAL.X - hypo_ball.X;
+            double dx = Constants.FieldPts.THEIR_GOAL.X - shot_position.X;
 
-            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, hypo_ball.Y + dx * Math.Tan(shot_angle));
-=======
-            double dx = Constants.FieldPts.THEIR_GOAL.X - from_position.X;
+            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, shot_position.Y + dx * Math.Tan(shot_angle));
 
-            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, from_position.Y + dx * Math.Tan(shot_angle));
->>>>>>> 0854047ac93883ab7ed5133d11a2a808296f7274
             return new ShotOpportunity(shot_vec, arc);
         }
 
