@@ -506,7 +506,7 @@ namespace RFC.Simulator
         private bool tryKick(RobotInfo robot, int kickerStrength)
         {
             const double CENTER_TO_KICKER_DIST = 0.07;
-            const double KICKER_ACTIVITY_RADIUS = 0.04;
+            const double KICKER_ACTIVITY_RADIUS = 0.08;
 
             Vector2 robotFaceDir = new Vector2(robot.Orientation);
             Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * robotFaceDir;

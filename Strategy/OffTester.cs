@@ -39,7 +39,6 @@ namespace RFC.Strategy
         private Team oTeam;
 
         private bool stopped = false;
-        private bool firstRun = true;
         private OccOffenseMapper offenseMap;
         private ServiceManager msngr;
 
@@ -55,11 +54,11 @@ namespace RFC.Strategy
         private const double BSHOT_THRESH = 20;
 
         // how long should a play continue before it times out (in milliseconds)?
-        private const int SHOT_TIMEOUT = 5000;
-        private const int BSHOT_TIMEOUT = 5000;
+        private const int SHOT_TIMEOUT = 2000;
+        private const int BSHOT_TIMEOUT = 10000;
 
         // when did the current play start executing?
-        private int playStartTime;
+        private DateTime playStartTime;
 
         // last known ball carrier before a special function has executed
         private RobotInfo shootingRobot = null;
@@ -258,14 +257,14 @@ namespace RFC.Strategy
             {
                 // shoot on goal
                 state = State.Shot;
-                playStartTime = DateTime.Now.Millisecond;
+                playStartTime = DateTime.Now;
             }
             else if (shootingRobot != null && bounce_op.potential > BSHOT_THRESH)
             {
                 // take a bounce shot
                 bouncingRobot = bounce_op.position; 
                 state = State.BounceShot;
-                playStartTime = DateTime.Now.Millisecond;
+                playStartTime = DateTime.Now;
             }
             else if (false ) // put conditions to see if we should get rid of the ball ASAP
             {
@@ -326,27 +325,26 @@ namespace RFC.Strategy
         public void shotPlay(FieldVisionMessage fieldVision)
         {
             // TODO: hopefully we don't play through midnight, otherwise I don't think this will work...
-            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN && DateTime.Now.Millisecond - playStartTime >= SHOT_TIMEOUT)
+            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN && (int)(DateTime.Now - playStartTime).TotalMilliseconds >= SHOT_TIMEOUT)
             {
                 state = State.Normal;
                 return;
             }
-            reset();
         }
 
         public void bounceShotPlay(FieldVisionMessage fieldVision)
         {
             // TODO: hopefully we don't play through midnight, otherwise I don't think this will work...
-            if (DateTime.Now.Millisecond - playStartTime >= BSHOT_TIMEOUT)
+            if ((int)(DateTime.Now - playStartTime).TotalMilliseconds >= BSHOT_TIMEOUT)
             {
                 state = State.Normal;
             }
             BounceKicker bk = new BounceKicker(team);
+            //Console.WriteLine("bk");
             if (shootingRobot != null && bouncingRobot != null)
             {
                 bk.arrange_kick(fieldVision, shootingRobot.ID, bouncingRobot.ID);
             }
-            reset();
         }
 
         public void reset()
@@ -361,7 +359,6 @@ namespace RFC.Strategy
             switch (state)
             {
                 case State.Normal:
-                    playStartTime = 0;
                     normalPlay(fieldVision);
                     break;
                 case State.Shot:
@@ -374,6 +371,7 @@ namespace RFC.Strategy
                     this.reset();
                     break;
             }
+            System.Threading.Thread.Sleep(300);
         }
 
         public void stopMessageHandler(StopMessage message)
