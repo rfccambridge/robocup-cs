@@ -39,7 +39,6 @@ namespace RFC.Strategy
         private Team oTeam;
 
         private bool stopped = false;
-        private bool firstRun = true;
         private OccOffenseMapper offenseMap;
         private ServiceManager msngr;
 
@@ -55,11 +54,12 @@ namespace RFC.Strategy
         private const double BSHOT_THRESH = 20;
 
         // how long should a play continue before it times out (in milliseconds)?
-        private const int SHOT_TIMEOUT = 5000;
-        private const int BSHOT_TIMEOUT = 5000;
+        private const int SHOT_TIMEOUT = 2000;
+        private const int BSHOT_TIMEOUT = 10000;
+        private const int NORMAL_TIMEOUT = 5000; // then start decreasing thresholds
 
         // when did the current play start executing?
-        private int playStartTime;
+        private DateTime playStartTime;
 
         // last known ball carrier before a special function has executed
         private RobotInfo shootingRobot = null;
@@ -86,7 +86,7 @@ namespace RFC.Strategy
 
             this.goalie_id = goalie_id;
             frame = false;
-
+            this.playStartTime = DateTime.Now;
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             this.msngr = ServiceManager.getServiceManager();
@@ -198,6 +198,24 @@ namespace RFC.Strategy
             return new QuantifiedPosition(optimal_bouncer, best);
         }
 
+        private double adjust_thresh(double thresh)
+        {
+            int time = (int)(DateTime.Now - playStartTime).TotalMilliseconds;
+            if (time >= 2 * NORMAL_TIMEOUT)
+            {
+                // way over, return 0
+                return -1;
+            }
+            else if (time >= NORMAL_TIMEOUT)
+            {
+                // just over, start decreasing
+                double ratio = time * 1.0 / NORMAL_TIMEOUT;
+                ratio = 2 - ratio;
+                return thresh * ratio;
+            }
+            else
+                return thresh;
+        }
         
 
         private void normalPlay(FieldVisionMessage fieldVision)
@@ -246,28 +264,30 @@ namespace RFC.Strategy
             // what should the robot with the ball do ? -------------------------------------------------
             QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
             ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team, fieldVision.Ball.Position);
-
+            Console.WriteLine("thresh: " + adjust_thresh(SHOT_THRESH));
             if (ballCarrier == null)
             {
                 // go get the ball
                 DribblePlanner.GetPossession(closestToBall, fieldVision);
                 ballCarrier_id = closestToBall.ID;
+                playStartTime = DateTime.Now;
             }
-            else if (shootingRobot != null && shot_op.arc > SHOT_THRESH)
+            else if (shootingRobot != null && shot_op.arc > adjust_thresh(SHOT_THRESH))
             {
                 // shoot on goal
                 state = State.Shot;
                 Console.WriteLine("swtiching to shot");
-                playStartTime = DateTime.Now.Millisecond;
+                playStartTime = DateTime.Now;
             }
-            else if (shootingRobot != null && bounce_op.potential > BSHOT_THRESH)
+                /*
+            else if (shootingRobot != null && bounce_op.potential > adjust_thresh(BSHOT_THRESH))
             {
                 // take a bounce shot
                 bouncingRobot = bounce_op.position; 
                 state = State.BounceShot;
                 Console.WriteLine("swtiching to bounce shot");
-                playStartTime = DateTime.Now.Millisecond;
-            }
+                playStartTime = DateTime.Now;
+            }*/
             else if (false ) // put conditions to see if we should get rid of the ball ASAP
             {
                 // just get rid of the ball
@@ -276,12 +296,15 @@ namespace RFC.Strategy
             else
             {
                 // else just dribble the ball somewhere
+                //TODO good dribbling
+                /*
                 RobotInfo destination = bestDrib.position;
                 double orientation = (Constants.FieldPts.THEIR_GOAL - ball.Position).cartesianAngle();
                 destination.Orientation = orientation;
                 destination.ID = ballCarrier.ID;
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
                 msngr.SendMessage(destinationMessage);
+                 * */
             }
 
 
@@ -326,9 +349,11 @@ namespace RFC.Strategy
 
         public void shotPlay(FieldVisionMessage fieldVision)
         {
-            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN || DateTime.Now.Millisecond - playStartTime >= SHOT_TIMEOUT)
+            // escaping back to normal play
+            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN || (int)(DateTime.Now - playStartTime).TotalMilliseconds >= SHOT_TIMEOUT)
             {
                 state = State.Normal;
+                this.playStartTime = DateTime.Now;
                 return;
             }
             RobotInfo shooter = fieldVision.GetClosest(team);
@@ -338,22 +363,24 @@ namespace RFC.Strategy
 
         public void bounceShotPlay(FieldVisionMessage fieldVision)
         {
-            // TODO: hopefully we don't play through midnight, otherwise I don't think this will work...
-            if (DateTime.Now.Millisecond - playStartTime >= BSHOT_TIMEOUT)
+            // escape back to normal play
+            if ((int)(DateTime.Now - playStartTime).TotalMilliseconds >= BSHOT_TIMEOUT)
             {
                 state = State.Normal;
+                this.playStartTime = DateTime.Now;
             }
+
             BounceKicker bk = new BounceKicker(team);
             if (shootingRobot != null && bouncingRobot != null)
             {
                 bk.arrange_kick(fieldVision, shootingRobot.ID, bouncingRobot.ID);
             }
-            reset();
         }
 
         public void reset()
         {
             state = State.Normal;
+            this.playStartTime = DateTime.Now;
         }
 
         public void Handle(FieldVisionMessage fieldVision)
@@ -365,7 +392,6 @@ namespace RFC.Strategy
             switch (state)
             {
                 case State.Normal:
-                    playStartTime = 0;
                     normalPlay(fieldVision);
                     break;
                 case State.Shot:
@@ -378,6 +404,7 @@ namespace RFC.Strategy
                     this.reset();
                     break;
             }
+            System.Threading.Thread.Sleep(300);
         }
 
         public void stopMessageHandler(StopMessage message)
