@@ -110,7 +110,21 @@ namespace RFC.Strategy
             {
                 if (destinations[assignments[i]].Position == msg.Ball.Position)
                 {
-                    KickMessage km = new KickMessage(fieldPlayers[i], Constants.FieldPts.THEIR_GOAL);
+                    // if we can, shoot on goal
+                    ShotOpportunity shot = Shot1.evaluateGoal(msg, myTeam, msg.Ball.Position);
+                    Vector2 target;
+                    if (shot.arc > 0)
+                    {
+                        target = shot.target;
+                    }
+                    // if the goal is not open, just shoot for the back wall
+                    else
+                    {
+                        ShotOpportunity shot2 = Shot1.evaluateGeneral(msg, myTeam, msg.Ball.Position, Constants.FieldPts.BOTTOM_RIGHT, Constants.FieldPts.TOP_RIGHT);
+                        target = shot2.target;
+                    }
+
+                    KickMessage km = new KickMessage(fieldPlayers[i], target);
                     msngr.SendMessage(km);
                 }
                 else

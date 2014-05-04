@@ -62,5 +62,27 @@ namespace RFC.Messaging
 
             return new RobotInfo(robot);
 		}
+
+        public RobotInfo GetClosest(Team team)
+        {
+            if (Ball == null)
+            { return null; }
+            else
+            {
+                RobotInfo closestToBall = null;
+                double minToBall = 100.0;
+                foreach (RobotInfo rob in robots[team])
+                {
+                    double dist = rob.Position.distance(Ball.Position);
+
+                    if (dist < minToBall)
+                    {
+                        minToBall = dist;
+                        closestToBall = rob;
+                    }
+                }
+                return new RobotInfo(closestToBall);
+            }
+        }
     }
 }
