@@ -63,7 +63,10 @@ namespace RFC.Strategy
                     } 
                     break;
                 case Progress.Near:
-                    KickMessage msg2 = new KickMessage(msg.GetRobot(team, kicker), msg.GetRobot(team, bouncer).Position);
+                    Vector2 radVec = new Vector2(bounce.Orientation);
+                    radVec = radVec.normalizeToLength(Constants.Basic.ROBOT_FRONT_RADIUS);
+                    Vector2 bouncerSolVec = bounce.Position + radVec;
+                    KickMessage msg2 = new KickMessage(msg.GetRobot(team, kicker), bouncerSolVec);
                     msngr = ServiceManager.getServiceManager();
                     msngr.SendMessage(msg2);
                     Vector2 vector3 = Constants.FieldPts.THEIR_GOAL - bounce.Position;
