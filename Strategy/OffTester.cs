@@ -40,6 +40,7 @@ namespace RFC.Strategy
 
         private bool stopped = false;
         private OccOffenseMapper offenseMap;
+        private BounceKicker bounceKicker;
         private ServiceManager msngr;
 
         private Vector2[,] zoneList;
@@ -103,15 +104,8 @@ namespace RFC.Strategy
 
             }
             offenseMap = new OccOffenseMapper(team);
+            bounceKicker = new BounceKicker(team);
 
-            /*
-            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(0, 0))[1]);
-            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(1, 0))[1]);
-            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(0, 1))[1]);
-            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(1, 1))[1]);
-            Console.WriteLine(OccOffenseMapper.vecToInd(OccOffenseMapper.indToVec(3, 2))[1]);
-            Console.WriteLine(OccOffenseMapper.vecToInd(new Vector2()));
-            */
         }
 
         private QuantifiedPosition goodBounceShot(List<RobotInfo> ourTeam, RobotInfo ballCarrier, double[,] map)
@@ -264,7 +258,6 @@ namespace RFC.Strategy
             // what should the robot with the ball do ? -------------------------------------------------
             QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
             ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team, fieldVision.Ball.Position);
-            Console.WriteLine("thresh: " + adjust_thresh(SHOT_THRESH));
             if (ballCarrier == null)
             {
                 // go get the ball
@@ -279,15 +272,15 @@ namespace RFC.Strategy
                 Console.WriteLine("swtiching to shot");
                 playStartTime = DateTime.Now;
             }
-                /*
             else if (shootingRobot != null && bounce_op.potential > adjust_thresh(BSHOT_THRESH))
             {
                 // take a bounce shot
                 bouncingRobot = bounce_op.position; 
                 state = State.BounceShot;
+                bounceKicker.reset(bounce_op.position.Position);
                 Console.WriteLine("swtiching to bounce shot");
                 playStartTime = DateTime.Now;
-            }*/
+            }
             else if (false ) // put conditions to see if we should get rid of the ball ASAP
             {
                 // just get rid of the ball
@@ -370,10 +363,9 @@ namespace RFC.Strategy
                 this.playStartTime = DateTime.Now;
             }
 
-            BounceKicker bk = new BounceKicker(team);
             if (shootingRobot != null && bouncingRobot != null)
             {
-                bk.arrange_kick(fieldVision, shootingRobot.ID, bouncingRobot.ID);
+                bounceKicker.arrange_kick(fieldVision, shootingRobot.ID, bouncingRobot.ID);
             }
         }
 

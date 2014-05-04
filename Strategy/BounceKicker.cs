@@ -21,128 +21,95 @@ namespace RFC.Strategy
         }
 
         Team team;
-        double critical_radius = .3;
         Progress progress;
+        ServiceManager msngr;
+        double critical_radius = .3;
+        Vector2 bounce_loc;
 
         public BounceKicker (Team team)
         {
             this.team = team;
             this.progress = Progress.Far;
+
+            msngr = ServiceManager.getServiceManager();
         }
 
         public void reset(Vector2 bounce_loc)
         {
             this.progress = Progress.Far;
+            this.bounce_loc = bounce_loc;
         }
 
         
 
-        public void arrange_kick(FieldVisionMessage msg, int kicker, int bouncer)
+        public void arrange_kick(FieldVisionMessage msg, int kicker_id, int bouncer_id)
         {
-            RobotInfo kick = msg.GetRobot(team,kicker);
-            RobotInfo bounce = msg.GetRobot(team, bouncer);
+            RobotInfo kicker = msg.GetRobot(team, kicker_id);
+            RobotInfo bounce = msg.GetRobot(team, bouncer_id);
+
+            // common commands
+            RobotCommand charge_cmd = new RobotCommand(bouncer_id, RobotCommand.Command.START_CHARGING);
+            msngr.SendMessage<CommandMessage>(new CommandMessage(charge_cmd));
+            RobotCommand bb_cmd = new RobotCommand(bouncer_id, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+            msngr.SendMessage<CommandMessage>(new CommandMessage(bb_cmd));
+
+            // common vectors
+            Vector2 toGoal = Shot1.evaluate(msg, team, msg.Ball.Position).target - bounce_loc;
+            Vector2 toBall = msg.Ball.Position - bounce_loc;
+            bounce.Orientation = (2*toGoal.cartesianAngle() + toBall.cartesianAngle())/3;
+
+            Vector2 radVec = new Vector2(bounce.Orientation);
+            radVec = radVec.normalizeToLength(Constants.Basic.ROBOT_FRONT_RADIUS);
+            bounce.Position = bounce_loc - radVec;
             switch(progress)
             {
                 case Progress.Far:
-                    KickMessage msg1 = new KickMessage(msg.GetRobot(team, kicker), msg.GetRobot(team, bouncer).Position);
-                    ServiceManager msngr = ServiceManager.getServiceManager();
+                    KickMessage msg1 = new KickMessage(kicker, bounce_loc);
                     msngr.SendMessage(msg1);
-                    Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - bounce.Position;
-                    Vector2 vector2 = msg.Ball.Position - bounce.Position;
-                    bounce.Orientation = (vector1.cartesianAngle() + vector2.cartesianAngle()) / 2.0;
-                    RobotDestinationMessage dest_msg1 = new RobotDestinationMessage(bounce, false, false, true);
-                    msngr.SendMessage<RobotDestinationMessage>(dest_msg1);
-
-                    RobotCommand cmd1 = new RobotCommand(bouncer, RobotCommand.Command.START_CHARGING);
-                    msngr.SendMessage<CommandMessage>(new CommandMessage(cmd1));
-
+                  
                     //changing state from far to near
-                    if (kick.Position.distance(msg.Ball.Position) < critical_radius)
+                    if (kicker.Position.distance(msg.Ball.Position) < critical_radius)
                     {
                         this.progress = Progress.Near;
                     } 
                     break;
+
                 case Progress.Near:
-                    Vector2 radVec = new Vector2(bounce.Orientation);
-                    radVec = radVec.normalizeToLength(Constants.Basic.ROBOT_FRONT_RADIUS);
-                    Vector2 bouncerSolVec = bounce.Position + radVec;
-                    KickMessage msg2 = new KickMessage(msg.GetRobot(team, kicker), bouncerSolVec);
-                    msngr = ServiceManager.getServiceManager();
+                    KickMessage msg2 = new KickMessage(kicker, bounce_loc);
                     msngr.SendMessage(msg2);
-                    Vector2 vector3 = Constants.FieldPts.THEIR_GOAL - bounce.Position;
-                    Vector2 vector4 = msg.Ball.Position - bounce.Position;
-                    bounce.Orientation = (vector3.cartesianAngle() + vector4.cartesianAngle()) / 2.0;
-                    RobotDestinationMessage dest_msg2 = new RobotDestinationMessage(bounce, false, false, true);
-                    msngr.SendMessage<RobotDestinationMessage>(dest_msg2);
 
-                    RobotCommand cmd2 = new RobotCommand(bouncer, RobotCommand.Command.START_CHARGING);
-                    msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
-
-                    if (kick.Position.distance(msg.Ball.Position) > 1.5 * critical_radius)
+                    // changing states
+                    if (kicker.Position.distance(msg.Ball.Position) > 1.5 * critical_radius)
                     {
                         this.progress = Progress.Kicked;
                     }
                     break;
                 case Progress.Kicked:
-                    //KickMessage msg3 = new KickMessage(msg.GetRobot(team, kicker), msg.GetRobot(team, bouncer).Position);
-                    msngr = ServiceManager.getServiceManager();
-                    //msngr.SendMessage(msg3);
-                    Vector2 vector5 = Shot1.evaluate(msg, team, msg.Ball.Position).target - bounce.Position;
-                    Vector2 vector6 = msg.Ball.Position - bounce.Position;
-                    bounce.Orientation = (vector5.cartesianAngle() + vector6.cartesianAngle()) / 2.0;
-                    bounce.Position = msg.Ball.Position + (bounce.Position - msg.Ball.Position).projectionLength(msg.Ball.Velocity)*msg.Ball.Velocity; 
-                    RobotDestinationMessage dest_msg3 = new RobotDestinationMessage(bounce, false, false, true);
-                    msngr.SendMessage<RobotDestinationMessage>(dest_msg3);
+                    bounce.Position = msg.Ball.Position + (bounce.Position - msg.Ball.Position).projectionLength(msg.Ball.Velocity)*msg.Ball.Velocity;
 
-                    RobotCommand cmd3 = new RobotCommand(bouncer, RobotCommand.Command.START_CHARGING);
-                    msngr.SendMessage<CommandMessage>(new CommandMessage(cmd3));
-
-                    RobotCommand cmd4 = new RobotCommand(bouncer, RobotCommand.Command.FULL_BREAKBEAM_KICK);
-                    msngr.SendMessage<CommandMessage>(new CommandMessage(cmd4));
-                    
+                    // changing states
                     if (bounce.Position.distance(msg.Ball.Position) < critical_radius)
                     {
                         this.progress = Progress.Bouncing;
                     }
                     break;
-                case Progress.Bouncing:
-                    msngr = ServiceManager.getServiceManager();
-                    Vector2 vector7 = Shot1.evaluate(msg, team, msg.Ball.Position).target - bounce.Position;
-                    Vector2 vector8 = msg.Ball.Position - bounce.Position;
-                    bounce.Orientation = (vector7.cartesianAngle() + vector8.cartesianAngle()) / 2.0;
-                    bounce.Position = msg.Ball.Position + (bounce.Position - msg.Ball.Position).projectionLength(msg.Ball.Velocity)*msg.Ball.Velocity; 
-                    RobotDestinationMessage dest_msg4 = new RobotDestinationMessage(bounce, false, false, true);
-                    msngr.SendMessage<RobotDestinationMessage>(dest_msg4);
 
+                case Progress.Bouncing:
+                    bounce.Position = msg.Ball.Position + (bounce.Position - msg.Ball.Position).projectionLength(msg.Ball.Velocity)*msg.Ball.Velocity; 
+
+                    // changing states
                     if (bounce.Position.distance(msg.Ball.Position) > 1.5 * critical_radius)
                     {
                         this.progress = Progress.Bounced;
                     }
                     break;
+
                 case Progress.Bounced:
                     break;
             }
 
-            
-            //KickMessage msg2 = new KickMessage(msg.GetRobot(team, kicker), msg.GetRobot(team, bouncer).Position);
-            //ServiceManager msngr = ServiceManager.getServiceManager();
-            //msngr.SendMessage(msg2);
-            //Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - bounce.Position;
-            //Vector2 vector2 = msg.Ball.Position - bounce.Position;
-            //bounce.Orientation = (vector1.cartesianAngle() + vector2.cartesianAngle()) / 2.0;
-            //RobotDestinationMessage dest_msg = new RobotDestinationMessage(bounce, false, false, true);
-            //msngr.SendMessage<RobotDestinationMessage>(dest_msg);
-            
-            //move bouncer to intercept ball
-
-
-            
-            //start charger and turning on break beam sensor
-            //RobotCommand cmd1 = new RobotCommand(bouncer, RobotCommand.Command.START_CHARGING);
-            //msngr.SendMessage<CommandMessage>(new CommandMessage(cmd1));
-
-            //RobotCommand cmd2 = new RobotCommand(bouncer, RobotCommand.Command.FULL_BREAKBEAM_KICK);
-            //msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
+            RobotDestinationMessage dest_bnc = new RobotDestinationMessage(bounce, false, false, true);
+            msngr.SendMessage<RobotDestinationMessage>(dest_bnc);
         }
     }
 }

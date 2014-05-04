@@ -28,6 +28,8 @@ namespace RFC.Strategy
             testing = new KickOffBehavior(team, 0);
             object lockObject = new object();
             bk = new BounceKicker(team);
+            Vector2 bounce_loc = new Vector2(-1,.5);
+            bk.reset(bounce_loc);
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
@@ -38,7 +40,7 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage fieldVision)
         {
-            bk.arrange_kick(fieldVision, 1, 0);
+            bk.arrange_kick(fieldVision, 1, 2);
             System.Threading.Thread.Sleep(100);
             
         }

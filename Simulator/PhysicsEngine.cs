@@ -262,7 +262,7 @@ namespace RFC.Simulator
         /// </summary>
         private void step(double dt)
         {
-            dt = dt / 5;
+            dt = dt /5;
             lock (updateLock)
             {
                 //Grab constants for this iteration
@@ -506,15 +506,18 @@ namespace RFC.Simulator
         private bool tryKick(RobotInfo robot, int kickerStrength)
         {
             const double CENTER_TO_KICKER_DIST = 0.07;
-            const double KICKER_ACTIVITY_RADIUS = 0.04;
+            const double KICKER_ACTIVITY_RADIUS = 0.04; //.04
 
             Vector2 robotFaceDir = new Vector2(robot.Orientation);
             Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * robotFaceDir;
-            if (kickerPosition.distanceSq(ball.Position) < 10 * KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
+            if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
             {
+                Vector2 relative_veloc = ball.Velocity - robot.Velocity;
+                Vector2 reflection = -relative_veloc.reflectOver(robotFaceDir);
+
                 Vector2 newVel = robotFaceDir * getKickSpeed(kickerStrength);
                 LastTouched = robot.Team;
-                UpdateBall(new BallInfo(ball.Position, newVel));
+                UpdateBall(new BallInfo(ball.Position, newVel + reflection));
                 Console.WriteLine("Kick ! " + kickerStrength);
                 return true;
             }
