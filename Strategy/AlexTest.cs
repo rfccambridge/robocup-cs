@@ -24,7 +24,7 @@ namespace RFC.Strategy
 		public void Handle(FieldVisionMessage msg)
         {
             System.Threading.Thread.Sleep(100);
-            defenseStrategy.DefenseCommand(msg,4, false);
+            defenseStrategy.DefenseCommand(msg,1, true);
 
 		}
 		

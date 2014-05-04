@@ -49,91 +49,61 @@ namespace RFC.Strategy
             return results;
         }
                 
-        public void DefenseCommand(FieldVisionMessage msg, int sparePlayers, bool blitz)
+        public void DefenseCommand(FieldVisionMessage msg, int playersOnBall, bool blitz)
         {
+            // assigning position for goalie
+            RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
+            goalie_dest.ID = goalieID;
+            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, true));
+
             List<Threat> totalThreats = assessThreats.getThreats(msg); //List of priotized Threats
-          
             List<RobotInfo> topThreats = new List<RobotInfo>();//need to truncate and recast totalThreats as RobotInfo for DestinationMatcher
 
             // n - 1 threats, because leave one out for goalie
-            List<RobotInfo> fieldPlayers = msg.GetRobots(myTeam);
-            //truncated and recast totalThreats
-            for (int i = 0; i <fieldPlayers.Count-1; i++)
-            {
-                topThreats.Add(new RobotInfo(totalThreats[i].position, 0, 0));
-            
-            }
-        
-            RobotInfo goalie = msg.GetRobot(myTeam, goalieID);
+            List<RobotInfo> fieldPlayers = msg.GetRobotsExcept(myTeam,goalieID);
 
-            // Remove goalie from fieldPlayers
-            for (int i = 0; i < fieldPlayers.Count; i++)
-            {
-                if (fieldPlayers[i].ID == goalieID)
-                {
-                    fieldPlayers.RemoveAt(i);
-                    break;
-                }
-            }
-            // assigning positions for field players
+            // adding positions for man to man defense
             List<RobotInfo> destinations = new List<RobotInfo>();
-            int ballIndex=0;
-            for (int i = 0; i < fieldPlayers.Count; i++)
+            for (int i = 0; destinations.Count() < fieldPlayers.Count - playersOnBall; i++)
             {
-                // want to go right for the ball, not shadow it like a player
-                if (topThreats[i].Position == msg.Ball.Position)
-                {
-                    ballIndex = i;
-                    destinations.Add(new RobotInfo(topThreats[i].Position, 0, 0));
-                }
-                // for robotThreats
-                else
+                // man to man
+                if (totalThreats[i].position != msg.Ball.Position)
                 {
                     //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
-                    Vector2 difference = Constants.FieldPts.OUR_GOAL-topThreats[i].Position;
+                    Vector2 difference = Constants.FieldPts.OUR_GOAL - totalThreats[i].position;
                     difference=difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
-                    destinations.Add(new RobotInfo(topThreats[i].Position + difference, 0, 0));
+                    destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, 0));
                 }
             }
-            //adds positions behind ball for midFieldPlay
-            Vector2 goalToBall = Constants.FieldPts.OUR_GOAL - msg.Ball.Position;
-            //double angleGoal = Math.Cos(ballToTopGoalPost.cosineAngleWith(ballToBottomGoalPost));
-            double incrementAngle = .6;//angleGoal / (sparePlayers + 1);
-            double centerAngle = goalToBall.cartesianAngle();
-            ServiceManager msngr = ServiceManager.getServiceManager();
 
-            // sometimes just make wall without charging ball
-            /*
-            if (!blitz)
+            // dealing with ball, either by blitz or by wall
+            if (blitz && playersOnBall > 0)
             {
-                // removing ball
-                destinations.RemoveAt(0);
-                //adding one at end to be removed
-                destinations.Add(new RobotInfo(new Vector2(), 0,0));
-            }*/
-            
-            for (int i = 0; i < sparePlayers; i++)
+                destinations.Add(new RobotInfo(msg.Ball.Position, 0,0));
+                playersOnBall -= 1;
+            }
+
+            // rest of the robots on ball make a wall
+            Vector2 goalToBall = Constants.FieldPts.OUR_GOAL - msg.Ball.Position;
+            double incrementAngle = .6;
+            double centerAngle = goalToBall.cartesianAngle();
+
+            for (int i = 0; i < playersOnBall; i++)
             {
-                double positionAngle = centerAngle + incrementAngle * (i - (sparePlayers-1.0)/2.0);
+                double positionAngle = centerAngle + incrementAngle * (i - (playersOnBall - 1.0) / 2.0);
                 Console.WriteLine(positionAngle);
                 Vector2 unNormalizedDirection = new Vector2(positionAngle);
                 Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(Constants.Basic.ROBOT_RADIUS * 4);
                 Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
-                destinations.Insert(1,new RobotInfo(robotPosition, 0, 0)); //adds positions behind ball after ball in List
-                destinations.RemoveAt(destinations.Count - 1); //removes bottom priority Threats
-                msngr.vdb(robotPosition);
-                
+                destinations.Add(new RobotInfo(robotPosition, 0, 0)); //adds positions behind ball after ball in List
+                msngr.vdb(robotPosition);  
             }
             midFieldPositions = destinations;//for MidFieldPlay only
-                      
             
                    
             int[] assignments = DestinationMatcher.GetAssignments(fieldPlayers, destinations);
             int n = fieldPlayers.Count();
             
-
-            if (fieldPlayers.Count != destinations.Count)
-                throw new Exception("different numbers of robots and destinations: " + fieldPlayers.Count + ", " + destinations.Count);
 
             // sending dest messages for each one
             for (int i = 0; i <n; i++)
@@ -151,14 +121,6 @@ namespace RFC.Strategy
                     msngr.SendMessage(new RobotDestinationMessage(dest, true, false, true));
                 }
             }
-        
-
-            // assigning position for goalie
-            RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
-            goalie_dest.ID = goalieID;
-            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, true));
-            //Console.WriteLine(new RobotDestinationMessage(goalie_dest, false, true, true));
-
 
         }
     }
