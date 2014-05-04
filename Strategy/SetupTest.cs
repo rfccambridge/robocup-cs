@@ -22,7 +22,7 @@ namespace RFC.Strategy
         bool first = true;
         BounceKicker bk;
 
-        public SetupTest(Team team)
+        public SetupTest(Team team, int goalie_id)
         {
             this.team = team;
             testing = new KickOffBehavior(team, 0);
@@ -38,8 +38,9 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage fieldVision)
         {
-            bk.arrange_kick(fieldVision, 1, 2);
-            //bk.reset(fieldVision.GetRobot(team, 2).Position);
+            bk.arrange_kick(fieldVision, 1, 0);
+            System.Threading.Thread.Sleep(100);
+            
         }
 
         public void stopMessageHandler(StopMessage message)

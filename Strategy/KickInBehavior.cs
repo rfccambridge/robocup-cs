@@ -12,11 +12,13 @@ namespace RFC.Strategy
     {
         Team team;
         ServiceManager msngr;
+        DefenseStrategy defense;
 
         public KickInBehavior(Team team, int goalie_id)
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();
+            this.defense = new DefenseStrategy(team, goalie_id);
         }
 
         public void DirectOurs(FieldVisionMessage msg)
@@ -28,7 +30,7 @@ namespace RFC.Strategy
         public void DirectTheirs(FieldVisionMessage msg)
         {
             //TODO
-            // call midfield wall
+            defense.DefenseCommand(msg, 3, false);
         }
 
         public void IndirectOurs(FieldVisionMessage msg)
@@ -40,7 +42,7 @@ namespace RFC.Strategy
         public void IndirectTheirs(FieldVisionMessage msg)
         {
             //TODO
-            // call midfield wall
+            defense.DefenseCommand(msg, 3, false);
         }
     }
 }

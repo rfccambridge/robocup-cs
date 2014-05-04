@@ -42,17 +42,7 @@ namespace RFC.Strategy
         // need to stay 500mm away from ball
         public void Stop(FieldVisionMessage msg)
         {
-            List<RobotInfo> fieldPlayers = msg.GetRobotsExcept(team, goalie_id);
-
-            List<RobotInfo> avoidingDestinations = defense.GetShadowPositions(fieldPlayers.Count);
-            
-            avoidingDestinations = avoidingDestinations.GetRange(0,fieldPlayers.Count);
-            DestinationMatcher.SendByDistance(fieldPlayers, avoidingDestinations);
-
-            // assigning position for goalie
-            RobotInfo goalie_dest = goalieStrategy.getGoalie(msg);
-            goalie_dest.ID = goalie_id;
-            msngr.SendMessage(new RobotDestinationMessage(goalie_dest, false, true, true));
+            defense.DefenseCommand(msg, 3, false);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace RFC.Strategy
         
         public static ShotOpportunity evaluateGeneral(FieldVisionMessage fvm, Team team, Vector2 shot_position, Vector2 top, Vector2 bottom)
         {
-            List<RobotInfo> locations = fvm.GetRobots(Team.Blue);
+            List<RobotInfo> locations = fvm.GetRobots();
 
             // finding beginning and end of all occlusions from other robots as edges
             List<edge> intervals = new List<edge>();
@@ -77,8 +77,8 @@ namespace RFC.Strategy
             Vector2 goal2 = top - shot_position;
             double angle1 = goal1.cartesianAngle();
             double angle2 = goal2.cartesianAngle();
-            intervals.Add(new edge(angle1, true));
-            intervals.Add(new edge(angle2, false));
+            intervals.Add(new edge(angle1, angle1 < angle2));
+            intervals.Add(new edge(angle2, angle1 > angle2));
 
             // sorting edges so we can sweep over it
             List<edge> Sort = intervals.OrderBy(o => o.d).ToList();
@@ -122,7 +122,7 @@ namespace RFC.Strategy
             }
 
             // returning the angle in the middle and how wide an angle we have
-            if (index == -1) return new ShotOpportunity(null, 0);
+            if (index == -1) return new ShotOpportunity((top + bottom)/2, 0);
             double shot_angle = ((statuses[2 * index + 1].d + statuses[index * 2].d) / 2.0);
             double arc = open_arc[index];
 
