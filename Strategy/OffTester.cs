@@ -51,7 +51,7 @@ namespace RFC.Strategy
         private const double BALL_HANDLE_MIN = 0.2;
 
         // the lower the number, the more likely to make a shot
-        private const double SHOT_THRESH = 10;
+        private const double SHOT_THRESH = .1;
         private const double BSHOT_THRESH = 20;
 
         // how long should a play continue before it times out (in milliseconds)?
@@ -246,8 +246,7 @@ namespace RFC.Strategy
             // what should the robot with the ball do ? -------------------------------------------------
             QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
             ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team, fieldVision.Ball.Position);
-            
-            
+
             if (ballCarrier == null)
             {
                 // go get the ball
@@ -258,6 +257,7 @@ namespace RFC.Strategy
             {
                 // shoot on goal
                 state = State.Shot;
+                Console.WriteLine("swtiching to shot");
                 playStartTime = DateTime.Now.Millisecond;
             }
             else if (shootingRobot != null && bounce_op.potential > BSHOT_THRESH)
@@ -265,6 +265,7 @@ namespace RFC.Strategy
                 // take a bounce shot
                 bouncingRobot = bounce_op.position; 
                 state = State.BounceShot;
+                Console.WriteLine("swtiching to bounce shot");
                 playStartTime = DateTime.Now.Millisecond;
             }
             else if (false ) // put conditions to see if we should get rid of the ball ASAP
@@ -282,7 +283,7 @@ namespace RFC.Strategy
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
                 msngr.SendMessage(destinationMessage);
             }
-            
+
 
             // what should other robots do? -----------------------------------------------------------
             
@@ -325,13 +326,14 @@ namespace RFC.Strategy
 
         public void shotPlay(FieldVisionMessage fieldVision)
         {
-            // TODO: hopefully we don't play through midnight, otherwise I don't think this will work...
-            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN && DateTime.Now.Millisecond - playStartTime >= SHOT_TIMEOUT)
+            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN || DateTime.Now.Millisecond - playStartTime >= SHOT_TIMEOUT)
             {
                 state = State.Normal;
                 return;
             }
-            reset();
+            RobotInfo shooter = fieldVision.GetClosest(team);
+            ShotOpportunity shot = Shot1.evaluateGoal(fieldVision, team, fieldVision.Ball.Position);
+            msngr.SendMessage(new KickMessage(shooter, shot.target));
         }
 
         public void bounceShotPlay(FieldVisionMessage fieldVision)
@@ -357,7 +359,9 @@ namespace RFC.Strategy
         public void Handle(FieldVisionMessage fieldVision)
         {
             // TODO: if timeout, make sure isn't affected by stoppage of play
+            System.Threading.Thread.Sleep(100);
             if (stopped) return;
+            Console.WriteLine(state);
             switch (state)
             {
                 case State.Normal:
