@@ -70,13 +70,14 @@ namespace ControlForm
                 new VelocityDriver();
                 new KickPlanner();
 
-                new AlexTest(team, goalieNumber);
+                //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
-                //new OffTester(team, goalieNumber);
+                //new OffenseTester(team, goalieNumber);
                 //new SetupTest(team, goalieNumber);
                 //new GoalieTest(team, goalieNumber);
                 //new SetupTest1(team, goalieNumber);
-                //new PlaySwitcher(team, goalieNumber);
+                new PlaySwitcher(team, goalieNumber);
+                //new SetupTest(Team.Blue, 6);
                 
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 

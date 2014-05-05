@@ -30,7 +30,7 @@ namespace RFC.Strategy
         }
     }
 
-    public class OffTester
+    public class OffenseStrategy
     {
         public enum State { Normal, Shot, BounceShot };
         private State state;
@@ -42,6 +42,7 @@ namespace RFC.Strategy
         private OccOffenseMapper offenseMap;
         private BounceKicker bounceKicker;
         private ServiceManager msngr;
+        private Goalie goalie;
 
         private Vector2[,] zoneList;
         // the radius in meters of a robot's zone
@@ -76,7 +77,7 @@ namespace RFC.Strategy
 
         
 
-        public OffTester(Team team, int goalie_id)
+        public OffenseStrategy(Team team, int goalie_id)
         {
             this.team = team;
             this.state = State.Normal;
@@ -88,23 +89,31 @@ namespace RFC.Strategy
             this.goalie_id = goalie_id;
             frame = false;
             this.playStartTime = DateTime.Now;
-            object lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
-            this.msngr = ServiceManager.getServiceManager();
-            msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
 
-            // moved here from "if first" ifstatement
-            zoneList = new Vector2[ZONE_NUM, ZONE_NUM];
-            for (int xi = 0; xi < ZONE_NUM; xi++)
-            {
-                for (int yi = 0; yi < ZONE_NUM; yi++)
-                {
-                    zoneList[xi, yi] = OccOffenseMapper.getZone(xi, yi, ZONE_NUM);
-                }
-
-            }
             offenseMap = new OccOffenseMapper(team);
             bounceKicker = new BounceKicker(team);
+            goalie = new Goalie(team, goalie_id);
+            msngr = ServiceManager.getServiceManager();
+
+        }
+
+        public OffenseStrategy(Team team, int goalie_id, double xmin, double xmax)
+        {
+            this.team = team;
+            this.state = State.Normal;
+            if (team == Team.Blue)
+                this.oTeam = Team.Yellow;
+            else
+                this.oTeam = Team.Blue;
+
+            this.goalie_id = goalie_id;
+            frame = false;
+            this.playStartTime = DateTime.Now;
+
+            offenseMap = new OccOffenseMapper(team, xmin, xmax);
+            bounceKicker = new BounceKicker(team);
+            goalie = new Goalie(team, goalie_id);
+            msngr = ServiceManager.getServiceManager();
 
         }
 
@@ -117,7 +126,7 @@ namespace RFC.Strategy
             {
                 if (ballCarrier.ID != rob.ID)
                 {
-                    int[] inds = OccOffenseMapper.vecToInd(rob.Position);
+                    int[] inds = offenseMap.vecToInd(rob.Position);
                     if (inds[0] >= 0 && inds[0] < map.GetLength(0) && inds[1] >= 0 && inds[1] < map.GetLength(1) && map[inds[0], inds[1]] > bestVal)
                     {
                         bestRob = rob;
@@ -156,7 +165,7 @@ namespace RFC.Strategy
                 }
             }
 
-            RobotInfo optimal_position = new RobotInfo(OccOffenseMapper.indToVec(best_x, best_y), 0, -1);
+            RobotInfo optimal_position = new RobotInfo(offenseMap.indToVec(best_x, best_y), 0, -1);
             return new QuantifiedPosition(optimal_position, best);
         }
 
@@ -186,7 +195,7 @@ namespace RFC.Strategy
                 }
             }
 
-            RobotInfo optimal_bouncer = new RobotInfo(OccOffenseMapper.indToVec(best_x,best_y), 0, -1);
+            RobotInfo optimal_bouncer = new RobotInfo(offenseMap.indToVec(best_x, best_y), 0, -1);
             msngr.vdb(optimal_bouncer, Color.White);
             //Console.WriteLine("zx: " + zx + " zy: " + zy + " best_X: " + best_x + " best_y: " + best_y + " vec: " + optimal_bouncer.Position);
             return new QuantifiedPosition(optimal_bouncer, best);
@@ -214,7 +223,7 @@ namespace RFC.Strategy
 
         private void normalPlay(FieldVisionMessage fieldVision)
         {
-            List<RobotInfo> ourTeam = fieldVision.GetRobots(team);
+            List<RobotInfo> ourTeam = fieldVision.GetRobotsExcept(team,goalie_id);
             List<RobotInfo> theirTeam = fieldVision.GetRobots(oTeam);
             BallInfo ball = fieldVision.Ball;
             teamSize = ourTeam.Count;
@@ -321,18 +330,18 @@ namespace RFC.Strategy
             maxima.Reverse();
 
             List<RobotInfo> passingDestinations = new List<RobotInfo>();
-            for (int i = 0; i < passers.Count; i++)
+            for (int i = 0; i < Math.Min(passers.Count, maxima.Count); i++)
             {
                 RobotInfo current = maxima[i].position;
                 Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - current.Position;
                 Vector2 vector2 = ball.Position - current.Position;
-                current.Orientation = (vector1.cartesianAngle() + vector2.cartesianAngle()) / 2.0;
+                current.Orientation = BounceKicker.getBounceOrientation(vector1, vector2);
                 passingDestinations.Add(current);
             }
 
-            DestinationMatcher.SendByDistance(passers, passingDestinations);
+            // in case there are no maxima
+            DestinationMatcher.SendByDistance(passers.GetRange(0, passingDestinations.Count), passingDestinations);
             
-            System.Threading.Thread.Sleep(100);
         }
 
         public void setState(State s)
@@ -377,10 +386,10 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage fieldVision)
         {
-            // TODO: if timeout, make sure isn't affected by stoppage of play
-            System.Threading.Thread.Sleep(100);
             if (stopped) return;
             Console.WriteLine(state);
+            // handling goalie outside of state
+            msngr.SendMessage(new RobotDestinationMessage(goalie.getGoalie(fieldVision), false, true));
             switch (state)
             {
                 case State.Normal:
@@ -396,7 +405,6 @@ namespace RFC.Strategy
                     this.reset();
                     break;
             }
-            System.Threading.Thread.Sleep(300);
         }
 
         public void stopMessageHandler(StopMessage message)

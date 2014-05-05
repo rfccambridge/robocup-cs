@@ -15,12 +15,12 @@ namespace RFC.Strategy
         ServiceManager msngr;
         HowOffensive fieldRating;
         DefenseStrategy defenseBehavior;
-        OffTester offenseBehavior;
+        OffenseStrategy offenseBehavior;
         MidfieldPlay midfieldBehavior;
 
-        const double defense_threshold = 40;
-        const double offense_threshold = 50;
-        const double hysteresis = 5;
+        const double defense_threshold = .40;
+        const double offense_threshold = .50;
+        const double hysteresis = .05;
 
         private enum State
         {
@@ -39,7 +39,7 @@ namespace RFC.Strategy
             this.fieldRating = new HowOffensive(team);
 
             defenseBehavior = new DefenseStrategy(team, goalie_id);
-            offenseBehavior = new OffTester(team, goalie_id);
+            offenseBehavior = new OffenseStrategy(team, goalie_id);
             midfieldBehavior = new MidfieldPlay(team, goalie_id);
         }
 
@@ -50,10 +50,10 @@ namespace RFC.Strategy
             switch(state)
             {
                 case State.Offense:
-                    //offenseBehavior.Handle(msg);
+                    offenseBehavior.Handle(msg);
                     break;
                 case State.Midfield:
-                    //midfieldBehavior
+                    midfieldBehavior.doMidfield(msg);
                     break;
                 case State.Defense:
                     defenseBehavior.DefenseCommand(msg, 1, true);
@@ -64,6 +64,7 @@ namespace RFC.Strategy
         // switched state with some hysteresis
         private void state_switcher(double score)
         {
+            
             switch(state)
             {
                 case State.Offense:
@@ -74,17 +75,25 @@ namespace RFC.Strategy
                     break;
                 case State.Midfield:
                     if (score > offense_threshold + hysteresis)
+                    {
                         state = State.Offense;
+                        offenseBehavior.reset();
+                    }
+                        
                     else if (score < defense_threshold - hysteresis)
                         state = State.Defense;
                     break;
                 case State.Defense:
                     if (score > offense_threshold)
+                    {
                         state = State.Offense;
+                        offenseBehavior.reset();
+                    }
                     else if (score > defense_threshold + hysteresis)
                         state = State.Midfield;
                     break;
             }
+            Console.WriteLine(state);
         }
     }
 }

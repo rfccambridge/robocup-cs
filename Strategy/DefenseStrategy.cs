@@ -19,6 +19,7 @@ namespace RFC.Strategy
         int goalieID;
         Goalie goalieBehavior;
         List<RobotInfo> midFieldPositions; //for MidFieldPlayOnly: list of positions including shadowBall
+        const double default_radius = .35;
 
         public DefenseStrategy(Team myTeam, int goalie_id)
         {
@@ -49,7 +50,7 @@ namespace RFC.Strategy
             return results;
         }
                 
-        public void DefenseCommand(FieldVisionMessage msg, int playersOnBall, bool blitz)
+        public void DefenseCommand(FieldVisionMessage msg, int playersOnBall, bool blitz, double avoid_radius = default_radius)
         {
             // assigning position for goalie
             RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
@@ -93,7 +94,7 @@ namespace RFC.Strategy
                 double positionAngle = centerAngle + incrementAngle * (i - (playersOnBall - 1.0) / 2.0);
                 Console.WriteLine(positionAngle);
                 Vector2 unNormalizedDirection = new Vector2(positionAngle);
-                Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(Constants.Basic.ROBOT_RADIUS * 4);
+                Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
                 Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
                 destinations.Add(new RobotInfo(robotPosition, 0, 0)); //adds positions behind ball after ball in List
                 msngr.vdb(robotPosition);  

@@ -33,7 +33,7 @@ namespace RFC.Strategy
 
                 //Console.WriteLine("robot(" + robots[i].ID + ") " + robots[i].Position + " -> dests(" + assignments[i] + ") " + destinations[assignments[i]].Position);
 
-                msngr.SendMessage(new RobotDestinationMessage(dest, true, false, true));
+                msngr.SendMessage(new RobotDestinationMessage(dest, true, false));
             }
         }
 

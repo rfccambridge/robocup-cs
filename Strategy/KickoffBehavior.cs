@@ -17,6 +17,7 @@ namespace RFC.Strategy
         Team team;
         ServiceManager msngr;
         Goalie goalieBehave;
+        OffenseStrategy offenseBack;
         int GoalieID;
 
         public RobotInfo[] KickoffPositions(int n)
@@ -32,10 +33,10 @@ namespace RFC.Strategy
                 Vector2 position0 = new Vector2( -2*Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, 0);
 
-                Vector2 position1 = new Vector2( - Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 12);
+                Vector2 position1 = new Vector2( - 2*Constants.Basic.ROBOT_RADIUS, -3 * Constants.Field.HEIGHT / 12);
                 destinations[1] = new RobotInfo(position1, 0, 0);
 
-                Vector2 position2 = new Vector2( - Constants.Basic.ROBOT_RADIUS, 5 * Constants.Field.HEIGHT / 12);
+                Vector2 position2 = new Vector2( - 2*Constants.Basic.ROBOT_RADIUS, 3 * Constants.Field.HEIGHT / 12);
                 destinations[2] = new RobotInfo(position2, 0, 0);
 
                 for (int i = 1; i < n - 2; i++)
@@ -49,7 +50,7 @@ namespace RFC.Strategy
                 Vector2 position0 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, 0);
 
-                Vector2 position1 = new Vector2(-Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 12);
+                Vector2 position1 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, -3 * Constants.Field.HEIGHT / 12);
                 destinations[1] = new RobotInfo(position1, 0, 0);
 
             }
@@ -69,14 +70,12 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             this.GoalieID = GoalieID;
             this.goalieBehave = new Goalie(team, GoalieID);
+            this.offenseBack = new OffenseStrategy(team, GoalieID, Constants.Field.XMIN, -Constants.Basic.ROBOT_RADIUS);
         }
 
         public void Ours(FieldVisionMessage msg)
         {
-            //TODO
-            // center robot does initial kick 
-            // when DetectTouch(center robot) is true, transition to normal play
-            
+            offenseBack.Handle(msg);
             
         }
 

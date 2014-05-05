@@ -111,6 +111,11 @@ namespace RFC.Strategy
             RobotDestinationMessage dest_bnc = new RobotDestinationMessage(bounce, false, false, true);
             msngr.SendMessage<RobotDestinationMessage>(dest_bnc);
         }
+
+        public static double getBounceOrientation(Vector2 toBall, Vector2 toGoal)
+        {
+            return (2 * toGoal.cartesianAngle() + toBall.cartesianAngle()) / 3.0;
+        }
     }
 }
 

@@ -13,36 +13,35 @@ namespace RFC.Strategy
         Team team;
         ServiceManager msngr;
         DefenseStrategy defense;
+        OffenseStrategy offense;
+        const double avoid_radius = .6;
 
         public KickInBehavior(Team team, int goalie_id)
         {
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();
             this.defense = new DefenseStrategy(team, goalie_id);
+            this.offense = new OffenseStrategy(team, goalie_id);
         }
 
         public void DirectOurs(FieldVisionMessage msg)
         {
-            //TODO
-            // call offense
+            offense.Handle(msg);
         }
 
         public void DirectTheirs(FieldVisionMessage msg)
         {
-            //TODO
-            defense.DefenseCommand(msg, 3, false);
+            defense.DefenseCommand(msg, 3, false, avoid_radius);
         }
 
         public void IndirectOurs(FieldVisionMessage msg)
         {
-            //TODO
-            // call offense
+            offense.Handle(msg);
         }
 
         public void IndirectTheirs(FieldVisionMessage msg)
         {
-            //TODO
-            defense.DefenseCommand(msg, 3, false);
+            defense.DefenseCommand(msg, 3, false, avoid_radius);
         }
     }
 }

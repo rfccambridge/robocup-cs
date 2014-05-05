@@ -24,14 +24,14 @@ namespace RFC.Strategy
         public const double IGN_THRESH = .15;
         Team team;
 
-        private static readonly double LAT_HSTART = Constants.Field.XMIN/2;
+        private double LAT_HSTART;
         private static readonly double LAT_VSTART = Constants.Field.YMIN;
 
-        private static readonly double LAT_HEND = Constants.Field.XMAX;
+        private double LAT_HEND;
         private static readonly double LAT_VEND = Constants.Field.YMAX;
 
-        private static readonly double LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
-        private static readonly double LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
+        private double LAT_HSIZE;
+        private double LAT_VSIZE;
 
         private ServiceManager msngr;
 
@@ -41,15 +41,32 @@ namespace RFC.Strategy
         {
             this.team = team;
             msngr = ServiceManager.getServiceManager();
-            //update(ourTeam, theirTeam, ball);
+
+            // setting field size
+            this.LAT_HSTART = Constants.Field.XMIN / 2;
+            this.LAT_HEND = Constants.Field.XMAX;
+            LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
+            LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
         }
 
-        public static int[] vecToInd(Vector2 v)
+        public OccOffenseMapper(Team team, double xmin, double xmax)
+        {
+            this.team = team;
+            msngr = ServiceManager.getServiceManager();
+
+            // setting field size
+            this.LAT_HSTART = xmin;
+            this.LAT_HEND = xmax;
+            LAT_HSIZE = (LAT_HEND - LAT_HSTART) / LAT_NUM;
+            LAT_VSIZE = (LAT_VEND - LAT_VSTART) / LAT_NUM;
+        }
+
+        public int[] vecToInd(Vector2 v)
         {
             return new int[] {(int)Math.Round((v.X - LAT_HSTART) / LAT_HSIZE), (int)Math.Round((v.Y - LAT_VSTART) / LAT_VSIZE)};
         }
 
-        public static Vector2 indToVec(int i, int j)
+        public Vector2 indToVec(int i, int j)
         {
             return new Vector2(i * LAT_HSIZE + LAT_HSTART, j * LAT_VSIZE + LAT_VSTART);
         }
@@ -64,45 +81,6 @@ namespace RFC.Strategy
                 }
                 Console.Write(Environment.NewLine + Environment.NewLine);
             }
-        }
-
-        // zones are indexed(x,y)
-        public static Vector2 getZone(int xi, int yi, int zone_num)
-        {
-            /*
-            // id zero indexed
-            double x;
-            double y;
-            switch (id)
-            {
-                // top zone
-                case 0:
-                    x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
-                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
-                    break;
-                // bottom zone
-                case 1:
-                    x = 1.0 * (LAT_HEND - LAT_HSTART) / 2.0 + LAT_HSTART;
-                    y = 3.0 * (LAT_VEND - LAT_VSTART) / 4.0 + LAT_VSTART;
-                    break;
-                // center zone
-                case 2:
-                    x = 3.0 * (LAT_HEND - LAT_HSTART) / 4.0 + LAT_HSTART;
-                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 2.0 + LAT_VSTART;
-                    break;
-                // TODO: make far from other points
-                default:
-                    x = 7.0 * (LAT_HEND - LAT_HSTART) / 8.0 + LAT_HSTART;
-                    y = 1.0 * (LAT_VEND - LAT_VSTART) / 2.0 + LAT_VSTART;
-                    break;
-            }
-            return new Vector2(x, y);
-            */
-            double offsetX = (LAT_HEND - LAT_HSTART) / zone_num / 2.0;
-            double x = LAT_HSTART + offsetX + (LAT_HEND - LAT_HSTART) / zone_num * xi;
-            double offsetY = (LAT_VEND - LAT_VSTART) / zone_num / 2.0;
-            double y = LAT_VSTART + offsetY + (LAT_VEND - LAT_VSTART) / zone_num * yi;
-            return new Vector2(x, y);
         }
 
         private static double normalize(double score)
@@ -271,7 +249,7 @@ namespace RFC.Strategy
                 for (int j = 0; j < map.GetLength(1); j++)
                 {
                     //Console.WriteLine("min: " + min + " max: " + max + " map: " + map[i, j]);
-                    msngr.vdb(OccOffenseMapper.indToVec(i, j), RFC.Utilities.ColorUtils.numToColor(map[i, j], min, max));
+                    msngr.vdb(indToVec(i, j), RFC.Utilities.ColorUtils.numToColor(map[i, j], min, max));
                 }
             }
         }
