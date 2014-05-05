@@ -310,7 +310,7 @@ namespace RFC.Strategy
                         continue;
                     if (map[i, j] <= map[i + 1, j + 1])
                         continue;
-                    maxima.Add(new QuantifiedPosition(new RobotInfo(indToVec(i, j), 0, 0), map[i, j]));
+                    maxima.Add(new QuantifiedPosition(new RobotInfo(indToVec(i, j), 0, team, 0), map[i, j]));
                     //msngr.vdb(indToVec(i, j), Color.White);
 
                 }

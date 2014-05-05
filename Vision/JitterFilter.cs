@@ -157,7 +157,7 @@ namespace RFC.Vision
                         // updating "official" sighting with a simple linear projection
                         official[robot.Team][robot.ID] = new RobotInfo(lastOfficial.Position + lastOfficial.Velocity * dt,
                                                                        lastOfficial.Velocity, lastOfficial.AngularVelocity,
-                                                                       lastOfficial.Orientation, lastOfficial.ID);
+                                                                       lastOfficial.Orientation, lastOfficial.Team, lastOfficial.ID);
                     }
 
                     // handle this sighting as a transient sighting

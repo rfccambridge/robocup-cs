@@ -132,7 +132,6 @@ namespace RFC.PathPlanning
 
         public void handleRobotDestinationMessage(RobotDestinationMessage message)
         {
-            msngr.db("in smooth rrt1");
             if (message.Destination == null || double.IsNaN(message.Destination.Position.X) || double.IsNaN(message.Destination.Position.Y))
             {
                 msngr.db("invalid destination");
@@ -169,11 +168,8 @@ namespace RFC.PathPlanning
                 newPath = GetPath(destinationCopy, avoidBallDist, oldPath,
                     leftAvoid, rightAvoid);
                 // if path is empty, don't move, else make sure path contains desired state
-                msngr.db("empty? " + newPath.isEmpty());
-                msngr.db("orig len " + newPath.Waypoints.Count());
                 if (!newPath.isEmpty())
                 {
-                    msngr.db("new path is not empty");
                     newPath.Waypoints.Add(message.Destination);
                     newPath.setFinalState(message.Destination);
                 }

@@ -46,7 +46,7 @@ namespace RFC.Strategy
         public void Play(FieldVisionMessage msg)
         {
             state_switcher(fieldRating.Evaluate(msg));
-
+            Console.WriteLine("NormalBehavior: " + state);
             switch(state)
             {
                 case State.Offense:

@@ -901,8 +901,8 @@ namespace RFC.FieldDrawer
         private void BuildTestScene()
         {
             List<RobotInfo> robots = new List<RobotInfo>();
-            robots.Add(new RobotInfo(new Vector2(0, 0), Math.PI / 2, 2));
-            robots.Add(new RobotInfo(new Vector2(2, 1.2), Math.PI, 3));
+            robots.Add(new RobotInfo(new Vector2(0, 0), Math.PI / 2, Team.Yellow, 2));
+            robots.Add(new RobotInfo(new Vector2(2, 1.2), Math.PI, Team.Yellow, 3));
             BallInfo ball = new BallInfo(new Vector2(1, 2));
 
             Vector2 marker1loc = new Vector2(-0.5, 0.5);

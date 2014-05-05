@@ -30,6 +30,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="AngUtils.cs" />
     <Compile Include="ColorUtils.cs" />
     <Compile Include="CRCTool.cs" />
     <Compile Include="FunctionLoop.cs" />

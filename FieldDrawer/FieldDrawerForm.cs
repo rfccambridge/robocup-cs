@@ -157,7 +157,7 @@ namespace RFC.FieldDrawer
             // TODO: Add ability to set orientation (and id?)
             if (e.Data.GetDataPresent(typeof(Color)))
                 _fieldDrawer.DragDrop(new EventArgs<WaypointInfo>(new WaypointInfo(
-                                        new RobotInfo(null, 0, -1), _colors[_currentColorIdx])), 
+                                        new RobotInfo(null, 0, Team.Yellow, -1), _colors[_currentColorIdx])), 
                                         glField.PointToClient(new Point(e.X, e.Y)));
         }
 

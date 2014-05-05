@@ -100,11 +100,8 @@ namespace RFC.PathPlanning
                 else
                 {
                     speeds = new WheelSpeeds();
-                    msngr.db("new wheel speeds");
                 }
                 msngr.SendMessage(new CommandMessage(new RobotCommand(robot.ID, speeds)));
-                msngr.db(speeds.toString());
-                msngr.db("VelocityDriver period (ticks): " + sw.Elapsed.Ticks);
                 sw.Restart();
             }
         }
@@ -194,7 +191,6 @@ namespace RFC.PathPlanning
                 //End of the path? Then that's where we're going
                 if (idx == path.Waypoints.Count - 1)
                 {
-                    msngr.db("last");
                     nextWaypoint = path.Waypoints[idx];
                     nextWaypointIdx = idx;
                     break;
@@ -203,7 +199,6 @@ namespace RFC.PathPlanning
                 //Must be different from us
                 if (path.Waypoints[idx].Position.distanceSq(curInfo.Position) <= 1e-10)
                 {
-                    msngr.db("different");
                     continue;
                 }
 
@@ -212,20 +207,14 @@ namespace RFC.PathPlanning
                 double distSegmentSq = path.Waypoints[idx].Position.distanceSq(path.Waypoints[idx - 1].Position);
                 if (distAlongTimesDistSegment >= 0.75 * distSegmentSq)
                 {
-                    msngr.db(" far along");
                     continue;
                 }
 
-                msngr.db("default");
                 //Otherwise, we stop here
                 nextWaypoint = path.Waypoints[idx];
                 nextWaypointIdx = idx;
                 break;
             }
-
-            msngr.db("next waypoint" + nextWaypoint);
-            msngr.db("path[0]: " + path.Waypoints[0]);
-            msngr.db("path len " + path.Waypoints.Count());
 
 
             //Find the next significantly different point after that
@@ -240,7 +229,6 @@ namespace RFC.PathPlanning
             }
             if (nextWaypoint == null)
             {
-                msngr.db("no next waypoint");
                 return new WheelSpeeds();
             }
 

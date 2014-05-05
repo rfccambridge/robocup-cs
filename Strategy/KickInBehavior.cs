@@ -14,7 +14,7 @@ namespace RFC.Strategy
         ServiceManager msngr;
         DefenseStrategy defense;
         OffenseStrategy offense;
-        const double avoid_radius = .6;
+        double avoid_radius;
 
         public KickInBehavior(Team team, int goalie_id)
         {
@@ -22,6 +22,7 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             this.defense = new DefenseStrategy(team, goalie_id);
             this.offense = new OffenseStrategy(team, goalie_id);
+            this.avoid_radius = .5 + Constants.Basic.ROBOT_RADIUS;
         }
 
         public void DirectOurs(FieldVisionMessage msg)

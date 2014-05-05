@@ -139,7 +139,7 @@ namespace RFC.Strategy
 
         private void pickUpBall(RobotInfo rob, BallInfo ball)
         {
-            RobotInfo destination = new RobotInfo(ball.Position, 0, rob.ID);
+            RobotInfo destination = new RobotInfo(ball.Position, 0, rob.Team,rob.ID);
             RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
             msngr.SendMessage(destinationMessage);
         }
@@ -165,7 +165,7 @@ namespace RFC.Strategy
                 }
             }
 
-            RobotInfo optimal_position = new RobotInfo(offenseMap.indToVec(best_x, best_y), 0, -1);
+            RobotInfo optimal_position = new RobotInfo(offenseMap.indToVec(best_x, best_y), 0, team, -1);
             return new QuantifiedPosition(optimal_position, best);
         }
 
@@ -195,7 +195,7 @@ namespace RFC.Strategy
                 }
             }
 
-            RobotInfo optimal_bouncer = new RobotInfo(offenseMap.indToVec(best_x, best_y), 0, -1);
+            RobotInfo optimal_bouncer = new RobotInfo(offenseMap.indToVec(best_x, best_y), 0, team,-1);
             msngr.vdb(optimal_bouncer, Color.White);
             //Console.WriteLine("zx: " + zx + " zy: " + zy + " best_X: " + best_x + " best_y: " + best_y + " vec: " + optimal_bouncer.Position);
             return new QuantifiedPosition(optimal_bouncer, best);
@@ -354,6 +354,7 @@ namespace RFC.Strategy
             // escaping back to normal play
             if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN || (int)(DateTime.Now - playStartTime).TotalMilliseconds >= SHOT_TIMEOUT)
             {
+                Console.WriteLine("timed out of shotplay");
                 state = State.Normal;
                 this.playStartTime = DateTime.Now;
                 return;
@@ -369,6 +370,7 @@ namespace RFC.Strategy
             if ((int)(DateTime.Now - playStartTime).TotalMilliseconds >= BSHOT_TIMEOUT)
             {
                 state = State.Normal;
+                Console.WriteLine("timed out of bounce shot");
                 this.playStartTime = DateTime.Now;
             }
 
@@ -387,7 +389,7 @@ namespace RFC.Strategy
         public void Handle(FieldVisionMessage fieldVision)
         {
             if (stopped) return;
-            Console.WriteLine(state);
+            Console.WriteLine("Offense: " + state);
             // handling goalie outside of state
             msngr.SendMessage(new RobotDestinationMessage(goalie.getGoalie(fieldVision), false, true));
             switch (state)

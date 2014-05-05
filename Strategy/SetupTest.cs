@@ -30,7 +30,7 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage msg)
         {
-            msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(msg.Ball.Position, 0, 2), false, false));
+            msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(msg.Ball.Position, 0, team, 2), false, false));
             System.Threading.Thread.Sleep(100);
         }
 
