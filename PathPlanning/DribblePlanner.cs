@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RFC.Core;
 using RFC.Messaging;
+using RFC.Geometry;
 
 namespace RFC.PathPlanning
 {
@@ -11,9 +12,15 @@ namespace RFC.PathPlanning
     {
         public static void GetPossession(RobotInfo closest, FieldVisionMessage msg)
         {
-            double orientation = (msg.Ball.Position - closest.Position).cartesianAngle();
-            RobotInfo destination = new RobotInfo(msg.Ball.Position, orientation, closest.ID);
-            ServiceManager.getServiceManager().SendMessage(new RobotDestinationMessage(destination, false, false));
+            Vector2 diff = Constants.FieldPts.THEIR_GOAL - msg.Ball.Position;
+            double angle = diff.cartesianAngle();
+            Vector2 offset = diff.normalizeToLength(2*Constants.Basic.ROBOT_RADIUS);
+
+            Vector2 position = msg.Ball.Position - offset;
+
+            RobotInfo ideal = new RobotInfo(position, angle, closest.Team, closest.ID);
+
+            ServiceManager.getServiceManager().SendMessage(new RobotDestinationMessage(ideal, true, false));
         }
     }
 }

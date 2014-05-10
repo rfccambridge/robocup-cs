@@ -18,7 +18,7 @@ namespace RFC.Simulator
         const double BALL_FRICTION = .76; //The amount of speed lost per second by the ball
         const double BREAKBEAM_TIMEOUT = 10; //Seconds
         const double DELAY_ADJUSTMENT = 0.01; //Add this much to dt to additionally compensate for any slowness 
-
+        const double DRIBBLER_SPEED = .1;
         //TODO this is still the old 0-5 scale. Change this to the new 0-25 scale and remeasure kick speeds to retune
         static double[] KICK_SPEED = new double[RobotCommand.MAX_KICKER_STRENGTH / 5 + 1] { 0, 0, 1.81, 2.88, 3.33, 4.25 };
 
@@ -75,6 +75,7 @@ namespace RFC.Simulator
         private Dictionary<Team, Dictionary<int, WheelSpeeds>> speeds;
         private Dictionary<Team, Dictionary<int, int>> break_beam_frames;
         private Dictionary<Team, Dictionary<int, int>> kick_strengths;
+        private Dictionary<Team, Dictionary<int, bool>> dribblers_on;
 
         public PhysicsEngine()
         {
@@ -83,7 +84,7 @@ namespace RFC.Simulator
             speeds = new Dictionary<Team, Dictionary<int, WheelSpeeds>>();
             break_beam_frames = new Dictionary<Team, Dictionary<int, int>>();
             kick_strengths = new Dictionary<Team, Dictionary<int, int>>();
-
+            dribblers_on = new Dictionary<Team,Dictionary<int,bool>>();
             foreach (Team team in Enum.GetValues(typeof(Team)))
             {
                 robots[team] = new List<RobotInfo>();
@@ -91,6 +92,11 @@ namespace RFC.Simulator
                 speeds[team] = new Dictionary<int, WheelSpeeds>();
                 break_beam_frames[team] = new Dictionary<int, int>();
                 kick_strengths[team] = new Dictionary<int, int>();
+                dribblers_on[team] = new Dictionary<int,bool>();
+                for (int i = 0; i < 12; i++)
+                {
+                    dribblers_on[team][i] = false;
+                }
             }
 
             LoadConstants();
@@ -376,6 +382,27 @@ namespace RFC.Simulator
 
                             //Translate back to absolute velocity
                             newBallVelocity = relVel + r.Velocity;
+
+                            // handling the dribbler, as an additional force back towards the robot
+                            /*
+                            if (dribblers_on[r.Team][r.ID])
+                            {
+                                Console.WriteLine("dribbler on");
+                                const double CENTER_TO_DRIBBLER_DIST = 0.05;
+                                const double DRIBBLER_ACTIVITY_RADIUS = .03;
+
+                                Vector2 robotFaceDir = new Vector2(r.Orientation);
+                                Vector2 dribblerPosition = r.Position + CENTER_TO_DRIBBLER_DIST * robotFaceDir;
+                                if (dribblerPosition.distanceSq(ball.Position) < DRIBBLER_ACTIVITY_RADIUS * DRIBBLER_ACTIVITY_RADIUS)
+                                {
+                                    Console.WriteLine("in range");
+                                    // in range of dribbler
+                                    // exert slight force towards robot
+                                    Vector2 dribbler_force = (r.Position - ball.Position).normalizeToLength(1);
+                                    newBallVelocity += dribbler_force;
+                                    Console.WriteLine(dribbler_force);
+                                }
+                            }*/
                             break;
                         }
                     }
@@ -479,15 +506,18 @@ namespace RFC.Simulator
         private bool tryKick(RobotInfo robot, int kickerStrength)
         {
             const double CENTER_TO_KICKER_DIST = 0.07;
-            const double KICKER_ACTIVITY_RADIUS = 0.04;
+            const double KICKER_ACTIVITY_RADIUS = 0.04; //.04
 
             Vector2 robotFaceDir = new Vector2(robot.Orientation);
             Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * robotFaceDir;
-            if (kickerPosition.distanceSq(ball.Position) < 10 * KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
+            if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
             {
+                Vector2 relative_veloc = ball.Velocity - robot.Velocity;
+                Vector2 reflection = -relative_veloc.reflectOver(robotFaceDir);
+
                 Vector2 newVel = robotFaceDir * getKickSpeed(kickerStrength);
                 LastTouched = robot.Team;
-                UpdateBall(new BallInfo(ball.Position, newVel));
+                UpdateBall(new BallInfo(ball.Position, newVel + reflection));
                 Console.WriteLine("Kick ! " + kickerStrength);
                 return true;
             }
@@ -639,6 +669,14 @@ namespace RFC.Simulator
                     case RobotCommand.Command.MIN_BREAKBEAM_KICK:
                         break_beam_frames[team][command.ID] = (int)(BREAKBEAM_TIMEOUT / runLoop.GetPeriod());
                         kick_strengths[team][command.ID] = command.KickerStrength;
+                        break;
+
+                    case RobotCommand.Command.START_DRIBBLER:
+                        dribblers_on[team][command.ID] = true;
+                        Console.WriteLine("turned on dribbler");
+                        break;
+                    case RobotCommand.Command.STOP_DRIBBLER:
+                        dribblers_on[team][command.ID] = false;
                         break;
                 }
             }

@@ -28,7 +28,7 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage msg)
         {
-            behave.WallMidfield(msg);
+            //behave.WallMidfield(msg);
         }
 
 

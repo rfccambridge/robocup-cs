@@ -23,7 +23,8 @@ namespace RFC.Strategy
 		}
 		public void Handle(FieldVisionMessage msg)
         {
-            defenseStrategy.DefenseCommand(msg,0);
+            System.Threading.Thread.Sleep(100);
+            defenseStrategy.DefenseCommand(msg,4, false, .5);
 
 		}
 		

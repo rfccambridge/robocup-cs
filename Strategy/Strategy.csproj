@@ -47,6 +47,7 @@
     <Compile Include="ClearBall.cs" />
     <Compile Include="DefenseStrategy.cs" />
     <Compile Include="DestinationMatcher.cs" />
+    <Compile Include="DribbleTest.cs" />
     <Compile Include="Goalie.cs" />
     <Compile Include="GoalieTest.cs" />
     <Compile Include="HowOffensive.cs" />
@@ -57,7 +58,8 @@
     <Compile Include="MovementTest.cs" />
     <Compile Include="NormalBehavior.cs" />
     <Compile Include="OccOffenseMapper.cs" />
-    <Compile Include="OffTester.cs" />
+    <Compile Include="OffenseStrategy.cs" />
+    <Compile Include="OffenseTester.cs" />
     <Compile Include="PenaltyKickBehavior.cs" />
     <Compile Include="PlaySwitcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -89,7 +89,7 @@ namespace RFC.Strategy
             Vector2 pos = new Vector2(angle) * hold + goalpos;
             double orientation = (ballpos - pos).cartesianAngle();
 
-            return new RobotInfo(pos, orientation, ID);
+            return new RobotInfo(pos, orientation, team, ID);
         }
     }
 }

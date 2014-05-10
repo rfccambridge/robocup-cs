@@ -17,6 +17,7 @@ namespace RFC.Strategy
         Team team;
         ServiceManager msngr;
         Goalie goalieBehave;
+        OffenseStrategy offenseBack;
         int GoalieID;
 
         public RobotInfo[] KickoffPositions(int n)
@@ -30,33 +31,33 @@ namespace RFC.Strategy
 
 
                 Vector2 position0 = new Vector2( -2*Constants.Basic.ROBOT_RADIUS, 0);
-                destinations[0] = new RobotInfo(position0, 0, 0);
+                destinations[0] = new RobotInfo(position0, 0, team, 0);
 
-                Vector2 position1 = new Vector2( - Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 12);
-                destinations[1] = new RobotInfo(position1, 0, 0);
+                Vector2 position1 = new Vector2( - 2*Constants.Basic.ROBOT_RADIUS, -3 * Constants.Field.HEIGHT / 12);
+                destinations[1] = new RobotInfo(position1, 0, team, 0);
 
-                Vector2 position2 = new Vector2( - Constants.Basic.ROBOT_RADIUS, 5 * Constants.Field.HEIGHT / 12);
-                destinations[2] = new RobotInfo(position2, 0, 0);
+                Vector2 position2 = new Vector2( - 2*Constants.Basic.ROBOT_RADIUS, 3 * Constants.Field.HEIGHT / 12);
+                destinations[2] = new RobotInfo(position2, 0, team, 0);
 
                 for (int i = 1; i < n - 2; i++)
                 {
                     Vector2 position = new Vector2(Constants.Field.WIDTH / 6, Constants.Field.HEIGHT * i / (n - 2)) + Constants.FieldPts.BOTTOM_LEFT;
-                    destinations[i + 2] = new RobotInfo(position, 0, 0);
+                    destinations[i + 2] = new RobotInfo(position, 0, team, 0);
                 }
             }
             else if (n == 2)
             {
                 Vector2 position0 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, 0);
-                destinations[0] = new RobotInfo(position0, 0, 0);
+                destinations[0] = new RobotInfo(position0, 0, team, 0);
 
-                Vector2 position1 = new Vector2(-Constants.Basic.ROBOT_RADIUS, -5 * Constants.Field.HEIGHT / 12);
-                destinations[1] = new RobotInfo(position1, 0, 0);
+                Vector2 position1 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, -3 * Constants.Field.HEIGHT / 12);
+                destinations[1] = new RobotInfo(position1, 0, team, 0);
 
             }
             else if (n == 1)
             {
                 Vector2 position0 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, 0);
-                destinations[0] = new RobotInfo(position0, 0, 0);
+                destinations[0] = new RobotInfo(position0, 0, team, 0);
 
             }
             return destinations;
@@ -69,14 +70,12 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             this.GoalieID = GoalieID;
             this.goalieBehave = new Goalie(team, GoalieID);
+            this.offenseBack = new OffenseStrategy(team, GoalieID, Constants.Field.XMIN, -Constants.Basic.ROBOT_RADIUS);
         }
 
         public void Ours(FieldVisionMessage msg)
         {
-            //TODO
-            // center robot does initial kick 
-            // when DetectTouch(center robot) is true, transition to normal play
-            
+            offenseBack.Handle(msg);
             
         }
 
@@ -99,7 +98,7 @@ namespace RFC.Strategy
             // getting destinations we want to go to
          
             Vector2 positionGoalie = Constants.FieldPts.OUR_GOAL + new Vector2(Constants.Basic.ROBOT_RADIUS,0);
-                RobotInfo robot = new RobotInfo(positionGoalie,0,GoalieID);
+                RobotInfo robot = new RobotInfo(positionGoalie,0, team, GoalieID);
             RobotDestinationMessage msg2 = new RobotDestinationMessage(robot,true,true);
             msngr.SendMessage(msg2);
 

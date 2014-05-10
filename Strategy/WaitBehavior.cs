@@ -17,6 +17,8 @@ namespace RFC.Strategy
         int max_robot_id;
         DefenseStrategy defense;
         Goalie goalieStrategy;
+        int goalie_id;
+        double avoid_radius;
 
         public WaitBehavior(Team team, int goalie_id, int max_robots)
         {
@@ -25,15 +27,16 @@ namespace RFC.Strategy
             this.max_robot_id = max_robots;
             this.defense = new DefenseStrategy(team, goalie_id);
             this.goalieStrategy = new Goalie(team, goalie_id);
+            this.goalie_id = goalie_id;
+            this.avoid_radius = .5 + Constants.Basic.ROBOT_RADIUS;
         }
 
         // completely stop. set wheel speeds to zero whether we can see it or not
         public void Halt(FieldVisionMessage msg)
         {
-            WheelSpeeds speeds = new WheelSpeeds();
-            for (int id = 0; id < max_robot_id; id++)
+            foreach (RobotInfo rob in msg.GetRobots(team))
             {
-                msngr.SendMessage(new CommandMessage(new RobotCommand(id, speeds)));
+                msngr.SendMessage(new RobotDestinationMessage(rob, true, true, true));
             }
         }
 
@@ -41,24 +44,7 @@ namespace RFC.Strategy
         // need to stay 500mm away from ball
         public void Stop(FieldVisionMessage msg)
         {
-            List<RobotInfo> fieldPlayers = msg.GetRobots(team);
-            RobotInfo goalie = msg.GetRobot(team, goalieStrategy.ID);
-
-            // goalie is not a field player
-            fieldPlayers.Remove(goalie);
-
-            List<RobotInfo> avoidingDestinations = new List<RobotInfo>();
-            foreach (RobotInfo rob in defense.GetShadowPositions(msg.GetRobots().Count - 1))
-            {
-                avoidingDestinations.Add(Avoider.avoid(rob, msg.Ball.Position, .50));
-            }
-            
-            DestinationMatcher.SendByDistance(fieldPlayers, avoidingDestinations);
-
-            // assigning position for goalie
-            RobotInfo goalie_dest = goalieStrategy.getGoalie(msg);
-            goalie_dest.ID = goalieStrategy.ID;
-            msngr.SendMessage(new RobotDestinationMessage(goalie_dest, false, true, true));
+            defense.DefenseCommand(msg, 3, false, avoid_radius);
         }
     }
 }

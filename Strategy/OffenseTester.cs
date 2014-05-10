@@ -10,29 +10,28 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class SetupTest
+    public class OffenseTester
     {
         Team team;
         ServiceManager msngr;
-        KickOffBehavior ko;
+        OffenseStrategy offense;
         int goalie_id;
         object lockObject;
 
-        public SetupTest(Team team, int goalie)
+        public OffenseTester(Team team, int goalie)
         {
             this.team = team;
             this.goalie_id = goalie;
             this.msngr = ServiceManager.getServiceManager();
-            this.ko = new KickOffBehavior(team, goalie);
+            this.offense = new OffenseStrategy(team, goalie_id, Constants.Field.XMIN, 0);
             this.lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
         }
 
         public void Handle(FieldVisionMessage msg)
         {
-            msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(msg.Ball.Position, 0, team, 2), false, false));
+            offense.Handle(msg);
             System.Threading.Thread.Sleep(100);
         }
-
     }
 }

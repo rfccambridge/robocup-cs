@@ -157,7 +157,7 @@ namespace RFC.Vision
                         // updating "official" sighting with a simple linear projection
                         official[robot.Team][robot.ID] = new RobotInfo(lastOfficial.Position + lastOfficial.Velocity * dt,
                                                                        lastOfficial.Velocity, lastOfficial.AngularVelocity,
-                                                                       lastOfficial.Orientation, lastOfficial.ID);
+                                                                       lastOfficial.Orientation, lastOfficial.Team, lastOfficial.ID);
                     }
 
                     // handle this sighting as a transient sighting
@@ -175,10 +175,7 @@ namespace RFC.Vision
                         Vector2 projTransient = lastTransient.Position + lastTransient.Velocity * dt; // project position
                         if ((robot.Position - projTransient).magnitude() < radius) // close enough
                         {
-                            Console.WriteLine("transient behaving in a reasonable manner");
                             transientCountup[robot.Team][robot.ID]++;
-                            Console.WriteLine(robot.ID);
-                            Console.WriteLine(transientCountup[robot.Team][robot.ID]);
 
                             // transient promotion if appropriate
                             if (transientCountup[robot.Team][robot.ID] >= FRAMECOUNT)

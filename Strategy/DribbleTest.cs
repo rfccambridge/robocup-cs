@@ -10,20 +10,17 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class GoalieTest
+    public class DribbleTest
     {
 
         Team team;
         bool stopped = false;
-        bool first = true;
-        Goalie goalie;
         ServiceManager msngr;
-        
+        bool first = true;
 
-        public GoalieTest(Team team, int id)
+        public DribbleTest(Team team, int goalie_id)
         {
             this.team = team;
-            goalie = new Goalie(team, id);
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
@@ -31,17 +28,17 @@ namespace RFC.Strategy
 
             // static debug
 
-
-
-
         }
 
-        public void Handle(FieldVisionMessage fieldVision)
+        public void Handle(FieldVisionMessage msg)
         {
-            if (!first && fieldVision.GetRobots(team).Count() > 0)
+
+            if (!first && msg.GetRobots(team).Count() > 0)
             {
-                RobotInfo rob = goalie.getGoalie(fieldVision);
-                msngr.SendMessage(new RobotDestinationMessage(rob, false, true, true));
+                msngr.SendMessage(new CommandMessage(new RobotCommand(1, RobotCommand.Command.START_DRIBBLER)));
+                msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(new Vector2(1,0), 0, team, 1), false, false, true));
+                System.Threading.Thread.Sleep(100);
+
             }
             first = false;
 

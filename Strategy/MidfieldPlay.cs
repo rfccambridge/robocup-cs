@@ -21,7 +21,7 @@ namespace RFC.Strategy
         {
             team = t;
             goalie_id = g;
-            positionHelper = new DefenseStrategy(t,g);
+            positionHelper = new DefenseStrategy(t,g, DefenseStrategy.PlayType.MidField);
         }
 
         public void WallMidfield(FieldVisionMessage message)
@@ -94,6 +94,10 @@ namespace RFC.Strategy
             {
                 positionHelper.DefenseCommand(message, ours.Count - 3);
             }
+
+            destinations.AddRange(positionHelper.specialPlayPositions);
+
+            
             /*{   
                 List<RobotInfo> results = new List<RobotInfo>();
                 foreach (Threat threat in threats)
