@@ -25,7 +25,7 @@ namespace RFC.Strategy
             this.team = team;
             this.msngr = ServiceManager.getServiceManager();
             this.max_robot_id = max_robots;
-            this.defense = new DefenseStrategy(team, goalie_id);
+            this.defense = new DefenseStrategy(team, goalie_id,DefenseStrategy.PlayType.Defense);
             this.goalieStrategy = new Goalie(team, goalie_id);
             this.goalie_id = goalie_id;
             this.avoid_radius = .5 + Constants.Basic.ROBOT_RADIUS;

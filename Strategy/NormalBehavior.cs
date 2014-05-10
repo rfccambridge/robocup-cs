@@ -38,7 +38,7 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             this.fieldRating = new HowOffensive(team);
 
-            defenseBehavior = new DefenseStrategy(team, goalie_id);
+            defenseBehavior = new DefenseStrategy(team, goalie_id,DefenseStrategy.PlayType.Defense);
             offenseBehavior = new OffenseStrategy(team, goalie_id);
             midfieldBehavior = new MidfieldPlay(team, goalie_id);
         }
