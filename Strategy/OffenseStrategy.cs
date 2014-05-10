@@ -75,7 +75,9 @@ namespace RFC.Strategy
         // square root of number of zones
         public static int ZONE_NUM = 3;
 
-        
+        // constants used to make sure robots far away from shots going on
+        private double SHOOT_AVOID = Constants.Basic.ROBOT_RADIUS + 0.01;
+        private const double SHOOT_AVOID_DT = 0.5;
 
         public OffenseStrategy(Team team, int goalie_id)
         {
@@ -349,6 +351,18 @@ namespace RFC.Strategy
             state = s;
         }
 
+        private void getOutOfWay(RobotInfo ri, RobotInfo kicker, Vector2 toGoal)
+        {
+            Vector2 fromBallSource = (ri.Position + ri.Velocity * SHOOT_AVOID_DT) - kicker.Position;
+            Vector2 perpVec = fromBallSource.perpendicularComponent(toGoal);
+            if (perpVec.magnitude() < SHOOT_AVOID)
+            {
+                Vector2 dest = perpVec * (SHOOT_AVOID / perpVec.magnitude());
+                RobotInfo destRI = new RobotInfo(dest, ri.Orientation, team, ri.ID);
+                msngr.SendMessage(new RobotDestinationMessage(destRI, true, false));
+            }
+        }
+
         public void shotPlay(FieldVisionMessage fieldVision)
         {
             // escaping back to normal play
@@ -361,6 +375,15 @@ namespace RFC.Strategy
             }
             RobotInfo shooter = fieldVision.GetClosest(team);
             ShotOpportunity shot = Shot1.evaluateGoal(fieldVision, team, fieldVision.Ball.Position);
+
+            foreach (RobotInfo ri in fieldVision.GetRobots(team))
+            {
+                if (ri.ID != shooter.ID)
+                {
+                    getOutOfWay(ri, shooter, shot.target - shooter.Position);
+                }
+            }
+
             msngr.SendMessage(new KickMessage(shooter, shot.target));
         }
 
