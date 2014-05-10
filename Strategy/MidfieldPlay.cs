@@ -21,7 +21,7 @@ namespace RFC.Strategy
         {
             team = t;
             goalie_id = g;
-            positionHelper = new DefenseStrategy(t,g);
+            positionHelper = new DefenseStrategy(t,g, DefenseStrategy.PlayType.MidField);
             msngr = ServiceManager.getServiceManager();
         }
 

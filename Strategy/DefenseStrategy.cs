@@ -12,6 +12,13 @@ namespace RFC.Strategy
 {
     public class DefenseStrategy
     {
+        public enum PlayType
+        {
+            Defense,
+            MidField,
+            KickOff
+        }
+
         Team myTeam;
         AssessThreats assessThreats;
         double otherPassRisk;
@@ -19,9 +26,10 @@ namespace RFC.Strategy
         int goalieID;
         Goalie goalieBehavior;
         List<RobotInfo> midFieldPositions; //for MidFieldPlayOnly: list of positions including shadowBall
+        public PlayType playType;
         const double default_radius = .35;
 
-        public DefenseStrategy(Team myTeam, int goalie_id)
+        public DefenseStrategy(Team myTeam, int goalie_id, PlayType playType)
         {
             this.myTeam = myTeam;
             otherPassRisk = 1;
@@ -29,6 +37,7 @@ namespace RFC.Strategy
             msngr = ServiceManager.getServiceManager();
             goalieID = goalie_id; 
             goalieBehavior = new Goalie(myTeam, goalie_id);
+            this.playType = playType;
             midFieldPositions = new List<RobotInfo>();
         }
 
@@ -63,41 +72,54 @@ namespace RFC.Strategy
 
             // adding positions for man to man defense
             List<RobotInfo> destinations = new List<RobotInfo>();
-            for (int i = 0; destinations.Count() < fieldPlayers.Count - playersOnBall; i++)
-            {
-                // man to man
-                if (totalThreats[i].position != msg.Ball.Position)
+            // dealing with ball, either by blitz or by wall
+
+                if (blitz && playersOnBall > 0)
                 {
-                    //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
-                    Vector2 difference = Constants.FieldPts.OUR_GOAL - totalThreats[i].position;
-                    difference=difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
-                    destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, myTeam, 0));
+                    destinations.Add(new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
+                    playersOnBall -= 1;
+                }
+
+                // rest of the robots on ball make a wall
+                Vector2 goalToBall = Constants.FieldPts.OUR_GOAL - msg.Ball.Position;
+                double incrementAngle = .6;
+                double centerAngle = goalToBall.cartesianAngle();
+
+                for (int i = 0; i < playersOnBall; i++)
+                {
+                    double positionAngle = centerAngle + incrementAngle * (i - (playersOnBall - 1.0) / 2.0);
+                    Vector2 unNormalizedDirection = new Vector2(positionAngle);
+                    Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
+                    Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
+                    destinations.Add(new RobotInfo(robotPosition, 0, myTeam, 0)); //adds positions behind ball after ball in List
+                }
+
+                for (int i = 0; destinations.Count() < fieldPlayers.Count - playersOnBall; i++)
+                {
+                // man to man
+                    if (totalThreats[i].position != msg.Ball.Position)
+                    {
+                        //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
+                        Vector2 difference = Constants.FieldPts.OUR_GOAL - totalThreats[i].position;
+                        difference=difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
+                        destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, myTeam, 0));
+                    }
+                }              
+
+            //restricts players from going past halfline for kickoffs
+            if (playType==PlayType.KickOff)
+            {
+                for (int i = 1; i < destinations.Count; i++)
+                {
+                    if (destinations[i].Position.X > 0)
+                    {
+                        double tempStore = destinations[i].Position.Y;
+                        destinations[i] = new RobotInfo(new Vector2(0, tempStore),0,myTeam,0);
+                    }
                 }
             }
-
-            // dealing with ball, either by blitz or by wall
-            if (blitz && playersOnBall > 0)
-            {
-                destinations.Add(new RobotInfo(msg.Ball.Position, 0, myTeam,0));
-                playersOnBall -= 1;
-            }
-
-            // rest of the robots on ball make a wall
-            Vector2 goalToBall = Constants.FieldPts.OUR_GOAL - msg.Ball.Position;
-            double incrementAngle = .6;
-            double centerAngle = goalToBall.cartesianAngle();
-
-            for (int i = 0; i < playersOnBall; i++)
-            {
-                double positionAngle = centerAngle + incrementAngle * (i - (playersOnBall - 1.0) / 2.0);
-                Vector2 unNormalizedDirection = new Vector2(positionAngle);
-                Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
-                Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
-                destinations.Add(new RobotInfo(robotPosition, 0, myTeam, 0)); //adds positions behind ball after ball in List
-            }
-            midFieldPositions = destinations;//for MidFieldPlay only
-            
                    
+       
             int[] assignments = DestinationMatcher.GetAssignments(fieldPlayers, destinations);
             int n = fieldPlayers.Count();
             
@@ -124,6 +146,7 @@ namespace RFC.Strategy
                     KickMessage km = new KickMessage(fieldPlayers[i], target);
                     msngr.SendMessage(km);
                 }
+
                 else
                 {
                     RobotInfo dest = new RobotInfo(destinations[assignments[i]]);
