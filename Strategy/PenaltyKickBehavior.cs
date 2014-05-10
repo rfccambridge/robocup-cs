@@ -90,8 +90,7 @@ namespace RFC.Strategy
             RobotInfo goalie = msg.GetRobot(team, goalie_id);
             List<RobotInfo> rest = msg.GetRobots(team);
             // getting desired position
-            goalie = goalieBehave.getGoalie(msg);
-            msngr.SendMessage(new RobotDestinationMessage(goalie, false, true, true));
+            goalieBehave.getGoalie(msg);
             
             // making sure the rest of ours are behind the line
             

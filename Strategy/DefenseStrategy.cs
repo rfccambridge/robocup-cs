@@ -53,9 +53,7 @@ namespace RFC.Strategy
         public void DefenseCommand(FieldVisionMessage msg, int playersOnBall, bool blitz, double avoid_radius = default_radius)
         {
             // assigning position for goalie
-            RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
-            goalie_dest.ID = goalieID;
-            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, true));
+            goalieBehavior.getGoalie(msg);
 
             List<Threat> totalThreats = assessThreats.getThreats(msg); //List of priotized Threats
             List<RobotInfo> topThreats = new List<RobotInfo>();//need to truncate and recast totalThreats as RobotInfo for DestinationMatcher

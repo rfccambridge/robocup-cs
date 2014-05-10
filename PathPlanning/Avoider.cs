@@ -9,41 +9,44 @@ namespace RFC.PathPlanning
 {
     public static class Avoider
     {
+        private static double convergence_threshold = .01;
         static object lockobj = new object();
         // checks if this point is in bounds and outside of defense areas
         public static bool isValid(Vector2 target)
         {
-            lock(lockobj)
-            {
-                foreach (Geom g in Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA)
-                {
-                    if (g is Circle)
-                    {
-                        if (((Circle)g).contains(target))
-                            return false;
-                    }
-                    else if (g is Rectangle)
-                    {
-                        if (((Rectangle)g).contains(target))
-                            return false;
-                    }
-                }
-                foreach (Geom g in Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA)
-                {
-                    if (g is Circle)
-                    {
-                        if (((Circle)g).contains(target))
-                            return false;
-                    }
-                    else if (g is Rectangle)
-                    {
-                        if (((Rectangle)g).contains(target))
-                            return false;
-                    }
-                }
-                return true;
+            if (!in_bounds(target))
+                return false;
 
+            List<Geom> copy = new List<Geom>(Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA);
+            foreach (Geom g in copy)
+            {
+                if (g is Circle)
+                {
+                    if (((Circle)g).contains(target))
+                        return false;
+                }
+                else if (g is Rectangle)
+                {
+                    if (((Rectangle)g).contains(target))
+                        return false;
+                }
             }
+            copy = new List<Geom>(Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA);
+            foreach (Geom g in copy)
+            {
+                if (g is Circle)
+                {
+                    if (((Circle)g).contains(target))
+                        return false;
+                }
+                else if (g is Rectangle)
+                {
+                    if (((Rectangle)g).contains(target))
+                        return false;
+                }
+            }
+            return true;
+
             
         }
         // given a desired location, and a place to stay away from, calculate the closest
@@ -86,6 +89,23 @@ namespace RFC.PathPlanning
             return dest;
         }
 
+
+        // iteratively avoid both obstacles until result converges
+        // kind of a hack, but whatever
+        public static RobotInfo avoid(RobotInfo target, Vector2 obst1, double rad1, Vector2 obst2, double rad2)
+        {
+            RobotInfo lastResult = new RobotInfo(new Vector2(-10, -10), 0,target.Team,0);
+            RobotInfo result = new RobotInfo(target);
+
+            while (result.Position.distance(lastResult.Position) > convergence_threshold)
+            {
+                lastResult = new RobotInfo(result);
+                result = avoid(result, obst1, rad1);
+                result = avoid(result, obst2, rad2);
+            }
+
+            return result;
+        }
         private static bool in_bounds(RobotInfo rob)
         {
             return in_bounds(rob.Position);

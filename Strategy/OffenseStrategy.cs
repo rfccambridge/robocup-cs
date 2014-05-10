@@ -52,7 +52,7 @@ namespace RFC.Strategy
         private const double BALL_HANDLE_MIN = 0.2;
 
         // the lower the number, the more likely to make a shot
-        private const double SHOT_THRESH = .1;
+        private const double SHOT_THRESH = .05;
         private const double BSHOT_THRESH = 20;
 
         // how long should a play continue before it times out (in milliseconds)?
@@ -76,7 +76,8 @@ namespace RFC.Strategy
         public static int ZONE_NUM = 3;
 
         // constants used to make sure robots far away from shots going on
-        private double SHOOT_AVOID = Constants.Basic.ROBOT_RADIUS + 0.01;
+        private double SHOOT_AVOID = Constants.Basic.ROBOT_RADIUS + 0.1;
+        private double AVOID_RADIUS = 1.0;
         private const double SHOOT_AVOID_DT = 0.5;
 
         public OffenseStrategy(Team team, int goalie_id)
@@ -355,10 +356,13 @@ namespace RFC.Strategy
         {
             Vector2 fromBallSource = (ri.Position + ri.Velocity * SHOOT_AVOID_DT) - kicker.Position;
             Vector2 perpVec = fromBallSource.perpendicularComponent(toGoal);
+            Vector2 paraVec = fromBallSource.parallelComponent(toGoal);
             if (perpVec.magnitude() < SHOOT_AVOID)
             {
-                Vector2 dest = perpVec * (SHOOT_AVOID / perpVec.magnitude());
+                perpVec = perpVec.normalizeToLength(SHOOT_AVOID);
+                Vector2 dest = kicker.Position + perpVec + paraVec;
                 RobotInfo destRI = new RobotInfo(dest, ri.Orientation, team, ri.ID);
+                destRI = Avoider.avoid(destRI, kicker.Position, AVOID_RADIUS);
                 msngr.SendMessage(new RobotDestinationMessage(destRI, true, false));
             }
         }
@@ -414,7 +418,7 @@ namespace RFC.Strategy
             if (stopped) return;
             Console.WriteLine("Offense: " + state);
             // handling goalie outside of state
-            msngr.SendMessage(new RobotDestinationMessage(goalie.getGoalie(fieldVision), false, true));
+            goalie.getGoalie(fieldVision);
             switch (state)
             {
                 case State.Normal:

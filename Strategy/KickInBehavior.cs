@@ -15,6 +15,7 @@ namespace RFC.Strategy
         DefenseStrategy defense;
         OffenseStrategy offense;
         double avoid_radius;
+        int goalie_id;
 
         public KickInBehavior(Team team, int goalie_id)
         {
@@ -23,6 +24,7 @@ namespace RFC.Strategy
             this.defense = new DefenseStrategy(team, goalie_id);
             this.offense = new OffenseStrategy(team, goalie_id);
             this.avoid_radius = .5 + Constants.Basic.ROBOT_RADIUS;
+            this.goalie_id = goalie_id;
         }
 
         public void DirectOurs(FieldVisionMessage msg)
@@ -42,7 +44,8 @@ namespace RFC.Strategy
 
         public void IndirectTheirs(FieldVisionMessage msg)
         {
-            defense.DefenseCommand(msg, 3, false, avoid_radius);
+            int n = msg.GetRobotsExcept(team, goalie_id).Count;
+            defense.DefenseCommand(msg, Math.Min(3,n), false, avoid_radius);
         }
     }
 }

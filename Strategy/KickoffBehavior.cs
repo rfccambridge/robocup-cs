@@ -30,7 +30,7 @@ namespace RFC.Strategy
 
 
 
-                Vector2 position0 = new Vector2( -2*Constants.Basic.ROBOT_RADIUS, 0);
+                Vector2 position0 = new Vector2( -.5 -Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, team, 0);
 
                 Vector2 position1 = new Vector2( - 2*Constants.Basic.ROBOT_RADIUS, -3 * Constants.Field.HEIGHT / 12);
@@ -47,7 +47,7 @@ namespace RFC.Strategy
             }
             else if (n == 2)
             {
-                Vector2 position0 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, 0);
+                Vector2 position0 = new Vector2(-.5 - Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, team, 0);
 
                 Vector2 position1 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, -3 * Constants.Field.HEIGHT / 12);
@@ -56,7 +56,7 @@ namespace RFC.Strategy
             }
             else if (n == 1)
             {
-                Vector2 position0 = new Vector2(-2*Constants.Basic.ROBOT_RADIUS, 0);
+                Vector2 position0 = new Vector2(-.5 - Constants.Basic.ROBOT_RADIUS, 0);
                 destinations[0] = new RobotInfo(position0, 0, team, 0);
 
             }
@@ -118,18 +118,10 @@ namespace RFC.Strategy
             int n = ours.Count();
 
             // sending goalie
-            RobotInfo goalie = goalieBehave.getGoalie(msg);
-            msngr.SendMessage(new RobotDestinationMessage(goalie, false, true, true));
+            goalieBehave.getGoalie(msg);
 
             // getting destinations we want to go to
             List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
-
-
-            for (int i = 0; i < n; i++)
-            {
-                destinations[i] = RFC.PathPlanning.Avoider.avoid(destinations[i], msg.Ball.Position, .5 + Constants.Basic.ROBOT_RADIUS);
-                //also need to avoid other side of field
-            }
 
             DestinationMatcher.SendByDistance(ours, destinations);
 
