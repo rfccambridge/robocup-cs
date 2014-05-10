@@ -16,7 +16,7 @@ namespace RFC.Strategy
 		public AlexTest(Team myTeam, int goalie_id)
 		{
 			object lockObject = new object();
-            defenseStrategy = new DefenseStrategy(myTeam, goalie_id);
+            defenseStrategy = new DefenseStrategy(myTeam, goalie_id, DefenseStrategy.PlayType.Defense);
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
 			
 			
