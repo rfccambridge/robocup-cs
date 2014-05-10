@@ -7,6 +7,7 @@ using RFC.Core;
 using RFC.Geometry;
 using RFC.Strategy;
 using RFC.Utilities;
+using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
@@ -16,6 +17,7 @@ namespace RFC.Strategy
         {
             Defense,
             MidField,
+            KickIn,
             KickOff
         }
 
@@ -110,9 +112,19 @@ namespace RFC.Strategy
                 destinations.RemoveRange(fieldPlayers.Count, destinations.Count - fieldPlayers.Count);
            
 
-            //restricts players from going past halfline for kickoffs
+            
+            if (playType==PlayType.KickIn||playType==PlayType.KickOff)
+            {   //prevents players from getting within 50 cm of ball before being touched
+
+                for (int i = 0; i < destinations.Count; i++)
+                {
+                    destinations[i] = Avoider.avoid(destinations[i], msg.Ball.Position, .5);
+                                     
+                }
+            }
             if (playType==PlayType.KickOff)
             {
+                //restricts players from going past halfline for kickoffs
                 for (int i = 1; i < destinations.Count; i++)
                 {
                     if (destinations[i].Position.X > 0)

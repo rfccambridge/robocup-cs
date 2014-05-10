@@ -19,6 +19,7 @@ namespace RFC.Strategy
         Goalie goalieBehave;
         OffenseStrategy offenseBack;
         int GoalieID;
+        DefenseStrategy positionHelper;
 
         public RobotInfo[] KickoffPositions(int n)
         {
@@ -71,6 +72,7 @@ namespace RFC.Strategy
             this.GoalieID = GoalieID;
             this.goalieBehave = new Goalie(team, GoalieID);
             this.offenseBack = new OffenseStrategy(team, GoalieID, Constants.Field.XMIN, -Constants.Basic.ROBOT_RADIUS);
+            positionHelper = new DefenseStrategy(team, GoalieID, DefenseStrategy.PlayType.KickOff);
         }
 
         public void Ours(FieldVisionMessage msg)
@@ -121,10 +123,7 @@ namespace RFC.Strategy
             goalieBehave.getGoalie(msg);
 
             // getting destinations we want to go to
-            List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
-
-            DestinationMatcher.SendByDistance(ours, destinations);
-
+            positionHelper.DefenseCommand(msg, ours.Count, false);
         }
 
         public void TheirsSetup(FieldVisionMessage msg)
