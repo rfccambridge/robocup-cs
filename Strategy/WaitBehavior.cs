@@ -44,7 +44,9 @@ namespace RFC.Strategy
         // need to stay 500mm away from ball
         public void Stop(FieldVisionMessage msg)
         {
-            defense.DefenseCommand(msg, 3, false, avoid_radius);
+            int n = msg.GetRobotsExcept(team,goalie_id).Count;
+
+            defense.DefenseCommand(msg, Math.Min(3,n), false, avoid_radius);
         }
     }
 }

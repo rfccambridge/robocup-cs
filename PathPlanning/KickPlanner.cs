@@ -56,8 +56,10 @@ namespace RFC.PathPlanning
             if (AngUtils.compare(angle, robot.Orientation) < heading_threshold && (robot.Position.distance(ideal.Position) < dist_threshold))
             {
                 // we are close enough
-                RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
+                RobotCommand cmd2 = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
 
                 RobotDestinationMessage dest_msg = new RobotDestinationMessage(idealFollowThrough, false, false, true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);

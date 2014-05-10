@@ -52,7 +52,7 @@ namespace RFC.Strategy
         private const double BALL_HANDLE_MIN = 0.2;
 
         // the lower the number, the more likely to make a shot
-        private const double SHOT_THRESH = .1;
+        private const double SHOT_THRESH = .05;
         private const double BSHOT_THRESH = 20;
 
         // how long should a play continue before it times out (in milliseconds)?
@@ -391,7 +391,7 @@ namespace RFC.Strategy
             if (stopped) return;
             Console.WriteLine("Offense: " + state);
             // handling goalie outside of state
-            msngr.SendMessage(new RobotDestinationMessage(goalie.getGoalie(fieldVision), false, true));
+            goalie.getGoalie(fieldVision);
             switch (state)
             {
                 case State.Normal:
