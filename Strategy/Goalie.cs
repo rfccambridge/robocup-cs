@@ -14,11 +14,14 @@ namespace RFC.Strategy
         // goalie info
         Team team;
         public int ID {get; private set;}
+        ServiceManager msngr;
+        double clearThreshold = 1;
 
         public Goalie(Team team, int ID)
         {
             this.team = team;
             this.ID = ID;
+            this.msngr = ServiceManager.getServiceManager();
         }
 
         // computes ball guard regime (based on ball speed)
@@ -37,7 +40,7 @@ namespace RFC.Strategy
             }
         }
 
-        public RobotInfo getGoalie(FieldVisionMessage msg)
+        public void getGoalie(FieldVisionMessage msg)
         {
             BallInfo ball = msg.Ball;
 
@@ -53,6 +56,24 @@ namespace RFC.Strategy
             Vector2 ballpos = ball.Position;
             Vector2 ballvel = ball.Velocity;
             double hold = Constants.Field.GOAL_HEIGHT/2; // robot distance from goal
+
+            // if ball is close to goal, kick it out
+            Vector2 goalToBall = ballpos - goalpos;
+            Vector2 robotToBall = ballpos - msg.GetRobot(team, ID).Position;
+            if (goalToBall.magnitude() < clearThreshold)
+            {
+                RobotInfo followThrough = new RobotInfo(ballpos + robotToBall.normalizeToLength(.3), robotToBall.cartesianAngle(), team, ID);
+                // we are close enough
+                RobotCommand cmd = new RobotCommand(ID, RobotCommand.Command.START_CHARGING);
+                msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
+                RobotCommand cmd2 = new RobotCommand(ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
+
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, false, true);
+                msngr.SendMessage<RobotDestinationMessage>(dest_msg);
+                return;
+            }
+
 
             double shadowAngle = (ballpos - goalpos).cartesianAngle(); // robot angle along semicircle if shadowing ball
 
@@ -89,7 +110,9 @@ namespace RFC.Strategy
             Vector2 pos = new Vector2(angle) * hold + goalpos;
             double orientation = (ballpos - pos).cartesianAngle();
 
-            return new RobotInfo(pos, orientation, ID);
+            RobotInfo goalie_dest = new RobotInfo(pos, orientation, team, ID);
+
+            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true));
         }
     }
 }

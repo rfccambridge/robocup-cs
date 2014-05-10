@@ -18,7 +18,7 @@ namespace RFC.Strategy
         OffenseStrategy offenseBehavior;
         MidfieldPlay midfieldBehavior;
 
-        const double defense_threshold = .40;
+        const double defense_threshold = .20;
         const double offense_threshold = .50;
         const double hysteresis = .05;
 
@@ -46,7 +46,7 @@ namespace RFC.Strategy
         public void Play(FieldVisionMessage msg)
         {
             state_switcher(fieldRating.Evaluate(msg));
-
+            Console.WriteLine("NormalBehavior: " + state);
             switch(state)
             {
                 case State.Offense:

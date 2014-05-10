@@ -18,6 +18,7 @@ namespace RFC.Strategy
         DefenseStrategy defense;
         Goalie goalieStrategy;
         int goalie_id;
+        double avoid_radius;
 
         public WaitBehavior(Team team, int goalie_id, int max_robots)
         {
@@ -27,6 +28,7 @@ namespace RFC.Strategy
             this.defense = new DefenseStrategy(team, goalie_id);
             this.goalieStrategy = new Goalie(team, goalie_id);
             this.goalie_id = goalie_id;
+            this.avoid_radius = .5 + Constants.Basic.ROBOT_RADIUS;
         }
 
         // completely stop. set wheel speeds to zero whether we can see it or not
@@ -42,7 +44,9 @@ namespace RFC.Strategy
         // need to stay 500mm away from ball
         public void Stop(FieldVisionMessage msg)
         {
-            defense.DefenseCommand(msg, 3, false);
+            int n = msg.GetRobotsExcept(team,goalie_id).Count;
+
+            defense.DefenseCommand(msg, Math.Min(3,n), false, avoid_radius);
         }
     }
 }

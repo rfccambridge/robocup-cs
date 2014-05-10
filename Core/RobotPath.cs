@@ -156,7 +156,7 @@ namespace RFC.Core
                 {
                     orientation = (waypoints[i + 1] - waypoints[i]).cartesianAngle();
                 }
-                retlst.Add(new RobotInfo(waypoints[i], orientation, id));
+                retlst.Add(new RobotInfo(waypoints[i], orientation, _team, id));
             }
 
             return retlst;

@@ -40,9 +40,7 @@ namespace RFC.Strategy
         {
             if (!first && fieldVision.GetRobots(team).Count() > 0)
             {
-                RobotInfo rob = goalie.getGoalie(fieldVision);
-                msngr.db(""+rob.Position);
-                msngr.SendMessage(new RobotDestinationMessage(rob, false, true, true));
+                goalie.getGoalie(fieldVision);
             }
             first = false;
 

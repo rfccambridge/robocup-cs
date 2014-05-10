@@ -45,7 +45,7 @@ namespace RFC.Strategy
             {
                 Vector2 difference = Constants.FieldPts.OUR_GOAL - threat.position;
                 difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
-                results.Add(new RobotInfo(threat.position + difference, 0, 0));
+                results.Add(new RobotInfo(threat.position + difference, 0, myTeam, 0));
             }
             return results;
         }
@@ -53,9 +53,7 @@ namespace RFC.Strategy
         public void DefenseCommand(FieldVisionMessage msg, int playersOnBall, bool blitz, double avoid_radius = default_radius)
         {
             // assigning position for goalie
-            RobotInfo goalie_dest = goalieBehavior.getGoalie(msg);
-            goalie_dest.ID = goalieID;
-            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, true));
+            goalieBehavior.getGoalie(msg);
 
             List<Threat> totalThreats = assessThreats.getThreats(msg); //List of priotized Threats
             List<RobotInfo> topThreats = new List<RobotInfo>();//need to truncate and recast totalThreats as RobotInfo for DestinationMatcher
@@ -73,14 +71,14 @@ namespace RFC.Strategy
                     //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
                     Vector2 difference = Constants.FieldPts.OUR_GOAL - totalThreats[i].position;
                     difference=difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
-                    destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, 0));
+                    destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, myTeam, 0));
                 }
             }
 
             // dealing with ball, either by blitz or by wall
             if (blitz && playersOnBall > 0)
             {
-                destinations.Add(new RobotInfo(msg.Ball.Position, 0,0));
+                destinations.Add(new RobotInfo(msg.Ball.Position, 0, myTeam,0));
                 playersOnBall -= 1;
             }
 
@@ -92,12 +90,10 @@ namespace RFC.Strategy
             for (int i = 0; i < playersOnBall; i++)
             {
                 double positionAngle = centerAngle + incrementAngle * (i - (playersOnBall - 1.0) / 2.0);
-                Console.WriteLine(positionAngle);
                 Vector2 unNormalizedDirection = new Vector2(positionAngle);
                 Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
                 Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
-                destinations.Add(new RobotInfo(robotPosition, 0, 0)); //adds positions behind ball after ball in List
-                msngr.vdb(robotPosition);  
+                destinations.Add(new RobotInfo(robotPosition, 0, myTeam, 0)); //adds positions behind ball after ball in List
             }
             midFieldPositions = destinations;//for MidFieldPlay only
             

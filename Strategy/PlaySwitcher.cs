@@ -31,6 +31,7 @@ namespace RFC.Strategy
         KickInBehavior kickInBehavior;
         PenaltyKickBehavior penaltyKickBehavior;
         KickOffBehavior kickOffBehavior;
+        ServiceManager msngr;
 
         public PlaySwitcher(Team our_team, int goalie_id)
         {
@@ -40,6 +41,7 @@ namespace RFC.Strategy
             this.goalie_id = goalie_id;
             new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
             new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
+            this.msngr = ServiceManager.getServiceManager();
 
             // initializing behavior components
             normalBehavior = new NormalBehavior(team, goalie_id);
@@ -54,18 +56,16 @@ namespace RFC.Strategy
         {
             play = msg.PlayType;
             position = ServiceManager.getServiceManager().GetLastMessage<BallVisionMessage>().Ball.Position;
-            Console.WriteLine("switched play to " + play.ToString());
         }
         
         public void handle_vision(FieldVisionMessage msg)
         {
-            System.Threading.Thread.Sleep(50); // this is a complete hack, but things get unstable without it
+            System.Threading.Thread.Sleep(100); // this is a complete hack, but things get unstable without it
             if((play == PlayType.Direct_Ours || play == PlayType.Direct_Theirs || play == PlayType.Indirect_Ours || play == PlayType.Indirect_Theirs || play == PlayType.KickOff_Ours || play == PlayType.KickOff_Theirs) && ballIsMoved(msg.Ball.Position))
             {
                 play = PlayType.NormalPlay;
-                Console.WriteLine("switched to normal play");
             }
-
+            Console.WriteLine("PlaySwitcher: " + play);
             switch(play)
             {
                 case PlayType.NormalPlay:

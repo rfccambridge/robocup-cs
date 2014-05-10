@@ -18,7 +18,7 @@ namespace RFC.PathPlanning
 
             Vector2 position = msg.Ball.Position - offset;
 
-            RobotInfo ideal = new RobotInfo(position, angle, closest.ID);
+            RobotInfo ideal = new RobotInfo(position, angle, closest.Team, closest.ID);
 
             ServiceManager.getServiceManager().SendMessage(new RobotDestinationMessage(ideal, true, false));
         }

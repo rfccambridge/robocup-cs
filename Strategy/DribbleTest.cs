@@ -36,7 +36,7 @@ namespace RFC.Strategy
             if (!first && msg.GetRobots(team).Count() > 0)
             {
                 msngr.SendMessage(new CommandMessage(new RobotCommand(1, RobotCommand.Command.START_DRIBBLER)));
-                msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(new Vector2(1,0), 0, 1), false, false, true));
+                msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(new Vector2(1,0), 0, team, 1), false, false, true));
                 System.Threading.Thread.Sleep(100);
 
             }

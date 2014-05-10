@@ -63,17 +63,17 @@ namespace RFC.Core
 		public RobotInfo(Vector2 position, double orientation, Team team, int id)
 			: this(position, Vector2.ZERO, 0, orientation, team, id, -1)
 		{ }
-		public RobotInfo(Vector2 position, double orientation, int id)
-			: this(position, Vector2.ZERO, 0, orientation, Team.Yellow, id, -1)
-		{ }
+		//public RobotInfo(Vector2 position, double orientation, int id)
+		//	: this(position, Vector2.ZERO, 0, orientation, Team.Yellow, id, -1)
+		//{ }
 		public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity,
 		                 double orientation, Team team, int id)
 			: this(position, velocity, angularVelocity,
 			       orientation, team, id, -1) { }
-		public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity,
-		                 double orientation, int id)
-			: this(position, velocity, angularVelocity,
-			       orientation, Team.Yellow, id, -1) { }
+		//public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity,
+		//                 double orientation, int id)
+		//	: this(position, velocity, angularVelocity,
+		//	       orientation, Team.Yellow, id, -1) { }
 
 		public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity, 
 		                 double orientation, Team team, int id, double lastSeen)

@@ -31,6 +31,7 @@ namespace RFC.Strategy
             
             if (message.Ball.Position.X>0)
             {
+                Console.WriteLine("Midfield: wall defense");
                 if (count - 1 >= 3)
                 {
                     positionHelper.DefenseCommand(message, 3, true);
@@ -43,6 +44,7 @@ namespace RFC.Strategy
             }
             else
             {
+                Console.WriteLine("Midfield: clearing");
                 positionHelper.DefenseCommand(message, 1, true);
             }    
         }

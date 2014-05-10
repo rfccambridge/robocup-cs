@@ -5,6 +5,7 @@ using System.Text;
 using RFC.Messaging;
 using RFC.Core;
 using RFC.Geometry;
+using RFC.Utilities;
 
 namespace RFC.PathPlanning
 {
@@ -47,20 +48,18 @@ namespace RFC.PathPlanning
             Vector2 followThroughOffset = diff.normalizeToLength(follow_through_dist);
             Vector2 followThroughPosition = ball.Position + followThroughOffset;
             
-            RobotInfo ideal = new RobotInfo(position, angle, robot.ID);
+            RobotInfo ideal = new RobotInfo(position, angle,robot.Team, robot.ID);
             //ideal = new RobotInfo(new Vector2(), 0, robot.ID);
-            RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle, robot.ID);
-            msngr.db("dest: " + ideal.Position);
-            msngr.db("dist: " + robot.Position.distance(ideal.Position));
-            msngr.db("ang: " + Math.Abs(angle - robot.Orientation));
+            RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle,robot.Team, robot.ID);
 
             // checking if we're close enough to start the actual kick
-            if ((Math.Abs(angle - robot.Orientation) < heading_threshold) && (robot.Position.distance(ideal.Position) < dist_threshold))
+            if (AngUtils.compare(angle, robot.Orientation) < heading_threshold && (robot.Position.distance(ideal.Position) < dist_threshold))
             {
-                msngr.db("close enough");
                 // we are close enough
-                RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
+                RobotCommand cmd2 = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
+                msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
 
                 RobotDestinationMessage dest_msg = new RobotDestinationMessage(idealFollowThrough, false, false, true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
@@ -68,7 +67,6 @@ namespace RFC.PathPlanning
             else
             {
                 // not close enough
-                msngr.db("not close enough");
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
