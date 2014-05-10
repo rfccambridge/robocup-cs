@@ -147,6 +147,13 @@ namespace RFC.PathPlanning
                 oldPath = _last_successful_path[id];
             }
 
+            // making sure destination is valid
+            /*
+             * // this is too powerful
+            if (!Avoider.isValid(message.Destination.Position) && !message.IsGoalie)
+                return;
+             */
+
             //Plan a path
             RobotPath newPath;
             try
@@ -159,7 +166,6 @@ namespace RFC.PathPlanning
                 types[2] = PlayType.Indirect_Ours;
                 types[3] = PlayType.Indirect_Theirs;
                 DefenseAreaAvoid rightAvoid = (refMessage == null || types.Contains(refMessage.PlayType)) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
-
                 RobotInfo destinationCopy = new RobotInfo(message.Destination);
                 destinationCopy.Team = message.Destination.Team;
                 destinationCopy.ID = id;

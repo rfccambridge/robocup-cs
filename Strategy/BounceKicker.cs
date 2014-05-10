@@ -27,7 +27,8 @@ namespace RFC.Strategy
         Vector2 bounce_loc;
 
         // constants used to make sure robots far away from shots going on
-        private double SHOOT_AVOID = Constants.Basic.ROBOT_RADIUS + 0.01;
+        private double SHOOT_AVOID = Constants.Basic.ROBOT_RADIUS + 0.1;
+        private double AVOID_RADIUS = 1.0;
         private const double SHOOT_AVOID_DT = 0.5;
 
         public BounceKicker (Team team)
@@ -46,6 +47,7 @@ namespace RFC.Strategy
 
         private void getOutOfWay(RobotInfo ri, RobotInfo kicker, RobotInfo bouncer, Vector2 toGoal)
         {
+            /*
             Vector2 fromBallSource = null;
             Vector2 perpVec = null;
             switch (progress)
@@ -73,6 +75,9 @@ namespace RFC.Strategy
                 RobotInfo destRI = new RobotInfo(dest, ri.Orientation, team, ri.ID);
                 msngr.SendMessage(new RobotDestinationMessage(destRI, true, false));
             }
+             * */
+            RobotInfo dest = Avoider.avoid(ri, kicker.Position, AVOID_RADIUS, bouncer.Position, AVOID_RADIUS);
+            msngr.SendMessage(new RobotDestinationMessage(dest, true, false));
         }
 
         public void arrange_kick(FieldVisionMessage msg, int kicker_id, int bouncer_id)
