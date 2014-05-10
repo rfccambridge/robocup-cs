@@ -72,11 +72,24 @@ namespace RFC.Strategy
 
             // adding positions for man to man defense
             List<RobotInfo> destinations = new List<RobotInfo>();
+            //assigns positions based on threats (normal defense)
+
+            for (int i = 0; destinations.Count() < fieldPlayers.Count - playersOnBall; i++)
+            {
+            // man to man
+                if (totalThreats[i].position != msg.Ball.Position)
+                {
+                    //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
+                    Vector2 difference = Constants.FieldPts.OUR_GOAL - totalThreats[i].position;
+                    difference = difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
+                    destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, myTeam, 0));
+                }
+             }  
             // dealing with ball, either by blitz or by wall
 
-                if (blitz && playersOnBall > 0)
+             if (blitz && playersOnBall > 0)
                 {
-                    destinations.Add(new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
+                    destinations.Insert(1,new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
                     playersOnBall -= 1;
                 }
 
@@ -91,20 +104,11 @@ namespace RFC.Strategy
                     Vector2 unNormalizedDirection = new Vector2(positionAngle);
                     Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
                     Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
-                    destinations.Add(new RobotInfo(robotPosition, 0, myTeam, 0)); //adds positions behind ball after ball in List
+                    destinations.Insert(1,new RobotInfo(robotPosition, 0, myTeam, 0)); //adds positions behind ball after ball in List
                 }
-
-                for (int i = 0; destinations.Count() < fieldPlayers.Count - playersOnBall; i++)
-                {
-                // man to man
-                    if (totalThreats[i].position != msg.Ball.Position)
-                    {
-                        //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
-                        Vector2 difference = Constants.FieldPts.OUR_GOAL - totalThreats[i].position;
-                        difference=difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
-                        destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, myTeam, 0));
-                    }
-                }              
+            //truncate destinations to match fieldPlayers
+                destinations.RemoveRange(fieldPlayers.Count, destinations.Count - fieldPlayers.Count);
+           
 
             //restricts players from going past halfline for kickoffs
             if (playType==PlayType.KickOff)
