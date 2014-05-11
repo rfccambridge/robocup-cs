@@ -106,7 +106,10 @@ namespace RFC.Messaging
                 // queue
                 lock (lastMessageLock)
                 {
-                    lastMessages.Add(key, message);
+                    if (!lastMessages.ContainsKey(key))
+                    {
+                        lastMessages.Add(key, message);
+                    }
 
                     if (!channelOrder.Contains(key))
                     {

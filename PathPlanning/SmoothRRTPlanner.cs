@@ -126,8 +126,9 @@ namespace RFC.PathPlanning
             }
 
             msngr = ServiceManager.getServiceManager();
-            msngr.RegisterListener<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
+            //msngr.RegisterListener<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
             //new QueuedMessageHandler<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
+            new MultiChannelQueuedMessageHandler<RobotDestinationMessage,int>(handleRobotDestinationMessage, (message) => message.Destination.ID, new object());
         }
 
         public void handleRobotDestinationMessage(RobotDestinationMessage message)

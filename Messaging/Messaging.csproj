@@ -46,6 +46,7 @@
     <Compile Include="KickMessage.cs" />
     <Compile Include="LogMessage.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="MultiChannelQueuedMessageHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueuedMessageHandler.cs" />
     <Compile Include="RefboxStateMessage.cs" />
