@@ -1,7 +1,7 @@
 
 #VelocityDriver----------------------------------------------------------------
 
-double VD_BASE_SPEED 1.0          #In m/s
+double VD_BASE_SPEED 1.3          #In m/s
 double VD_MAX_ANGLULAR_SPEED 0.4  #In rev/s
 double VD_MAX_ANGLULAR_LINEAR_SPEED 0.4  #In rev/s/radian
 

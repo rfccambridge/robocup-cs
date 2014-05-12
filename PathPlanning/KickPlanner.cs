@@ -14,13 +14,14 @@ namespace RFC.PathPlanning
         // angle and distance to go from setting up to kick
         // to actually kicking
         const double heading_threshold = .10;
-        const double dist_threshold = .05;
+        const double dist_threshold = .02;
         const double kick_dist = .15;
+        double follow_through_dist = Constants.Basic.ROBOT_RADIUS * 2;
         ServiceManager msngr;
 
         // how far back to stand. slightly more than radius
         
-        double follow_through_dist = Constants.Basic.ROBOT_RADIUS * .5;
+        
 
         public KickPlanner()
         {

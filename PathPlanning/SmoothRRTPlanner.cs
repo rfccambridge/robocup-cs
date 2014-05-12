@@ -133,6 +133,7 @@ namespace RFC.PathPlanning
 
         public void handleRobotDestinationMessage(RobotDestinationMessage message)
         {
+            msngr.db("handling destination message");
             if (message.Destination == null || double.IsNaN(message.Destination.Position.X) || double.IsNaN(message.Destination.Position.Y))
             {
                 msngr.db("invalid destination");
@@ -577,6 +578,7 @@ namespace RFC.PathPlanning
                     //Go to the goal directly
                     if (!doRandomAgain && currentTarget != desiredPosition)
                     {
+                        msngr.db("to goal directly");
                         doRandomAgain = true;
                         currentTarget = desiredPosition;
                         stepsLeft = 1000;
@@ -585,6 +587,8 @@ namespace RFC.PathPlanning
                     //Go randomly
                     else
                     {
+                        msngr.db("to goal randomly");
+
                         doRandomAgain = true;
                         currentTarget = GetRandomPoint(desiredPosition, currentState.Position, closestSoFar);
                         activeNode = map.NearestNeighbor(currentTarget).Second;
@@ -597,6 +601,7 @@ namespace RFC.PathPlanning
                 //If we're close enough to the goal, we're done!
                 if (activeNode.info.Position.distanceSq(desiredPosition) < closeEnoughToGoal * closeEnoughToGoal)
                 {
+                    msngr.db("SUCCESS");
                     successNode = activeNode;
                     break;
                 }
@@ -606,6 +611,7 @@ namespace RFC.PathPlanning
                     avoidBallRadius, currentTarget == desiredPosition);
                 if (segment == null)
                 {
+                    msngr.db("new segment didn't work");
                     tryAgain = true;
                     continue;
                 }
@@ -615,13 +621,18 @@ namespace RFC.PathPlanning
                     avoidBallRadius, desiredPosition, obstacles);
                 if (newNode == null)
                 {
+                    msngr.db("DIDN'T WORK");
                     tryAgain = true;
                 }
                 else
                 {
+                    msngr.db("DID WORK");
                     //Make sure that we haven't already crossed past our target
                     if ((newNode.info.Position - activeNode.info.Position) * (currentTarget - newNode.info.Position) <= 0)
+                    {
+                        msngr.db("but overshot");
                         tryAgain = true;
+                    }
 
                     //Update closestSoFar
                     double dist = newNode.info.Position.distance(desiredPosition);
@@ -638,12 +649,14 @@ namespace RFC.PathPlanning
             //If we didn't succeed, take the closest node anyways
             if (!(map.Size() < MAX_TREE_SIZE && tries < MAX_PATH_TRIES))
             {
+                Console.WriteLine("failed, taking last");
                 successNode = map.NearestNeighbor(desiredPosition).Second;
                 List<Vector2> path = GetPathFrom(successNode);
                 return path;
             }
             else
             {
+                Console.WriteLine("succeeded");
                 //If we did succeed, take the succeeding node and tack on the
                 //desired state if it's not there (such as because we got close enough and stopped early).
                 List<Vector2> path = GetPathFrom(successNode);
@@ -699,6 +712,7 @@ namespace RFC.PathPlanning
 
             for (int i = 0; i < NUM_PATHS_TO_SCORE; i++)
             {
+                msngr.db("trying a point path");
                 List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius, obstacles);
                 double score = 0;
 
@@ -853,6 +867,7 @@ namespace RFC.PathPlanning
         {
             //Build obstacle list
             List<Geom> obstacles = new List<Geom>();
+            /*
             obstacles.Add(ExpandLeft(Constants.FieldPts.LEFT_GOAL_BOX));
             obstacles.Add(ExpandRight(Constants.FieldPts.RIGHT_GOAL_BOX));
 
@@ -885,7 +900,7 @@ namespace RFC.PathPlanning
                 if (g is Circle)
                     obstacles[i] = ExpandCircle((Circle)g, ROBOT_RADIUS);
             }
-
+            */
             //Error reporting
             // TODO: look at this
             /*for (int i = 0; i < obstacles.Count; i++)
