@@ -39,8 +39,7 @@ namespace RFC.Strategy
             lockObject = new object();
             this.max_robots = 12;
             this.goalie_id = goalie_id;
-            new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
-            new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
+
             this.msngr = ServiceManager.getServiceManager();
 
             // initializing behavior components
@@ -50,6 +49,8 @@ namespace RFC.Strategy
             penaltyKickBehavior = new PenaltyKickBehavior(team, goalie_id);
             kickOffBehavior = new KickOffBehavior(team, goalie_id);
 
+            new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
         }
 
         public void handle_refbox(RefboxStateMessage msg)

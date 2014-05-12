@@ -91,7 +91,7 @@ namespace RFC.Strategy
 
              if (blitz && playersOnBall > 0)
                 {
-                    destinations.Insert(1,new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
+                    destinations.Insert(0,new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
                     playersOnBall -= 1;
                 }
 
@@ -106,7 +106,7 @@ namespace RFC.Strategy
                     Vector2 unNormalizedDirection = new Vector2(positionAngle);
                     Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
                     Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
-                    destinations.Insert(1,new RobotInfo(robotPosition, 0, myTeam, 0)); //adds positions behind ball after ball in List
+                    destinations.Insert(0,new RobotInfo(robotPosition, 0, myTeam, 0)); //adds positions behind ball after ball in List
                 }
             //truncate destinations to match fieldPlayers
                 destinations.RemoveRange(fieldPlayers.Count, destinations.Count - fieldPlayers.Count);

@@ -49,6 +49,12 @@ namespace RFC.Messaging
             return combined;
 		}
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="team"></param>
+        /// <param name="id"></param>
+        /// <returns>a robot or null if this robot is not on field</returns>
 		public RobotInfo GetRobot(Team team, int id)
 		{
 			// TODO: this is frequently executed: change to use a dictionary
@@ -56,8 +62,7 @@ namespace RFC.Messaging
 			RobotInfo robot = robots.Find((RobotInfo r) => r.ID == id);
 			if (robot == null)
 			{
-				throw new ApplicationException("AveragingPredictor.GetRobot: no robot with id=" +
-				                               id.ToString() + " found on team " + team.ToString());
+                return null;
 			}
 
             return new RobotInfo(robot);
