@@ -49,6 +49,9 @@ namespace RFC.Messaging
             T message = null;
             lock (lastMessageLock)
             {
+                if (channelOrder.Count == 0)
+                    return null;
+
                 int startedAtChannel = channelOrderCurrentIndex;
                 do
                 {

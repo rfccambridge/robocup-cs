@@ -59,7 +59,10 @@ namespace RFC.Strategy
 
             // if ball is close to goal, kick it out
             Vector2 goalToBall = ballpos - goalpos;
-            Vector2 robotToBall = ballpos - msg.GetRobot(team, ID).Position;
+            RobotInfo robot = msg.GetRobot(team, ID);
+            if (robot == null)
+                return;
+            Vector2 robotToBall = ballpos - robot.Position;
             if (goalToBall.magnitude() < clearThreshold)
             {
                 RobotInfo followThrough = new RobotInfo(ballpos + robotToBall.normalizeToLength(.3), robotToBall.cartesianAngle(), team, ID);
