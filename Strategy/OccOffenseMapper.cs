@@ -90,6 +90,7 @@ namespace RFC.Strategy
             return score;
         }
 
+        // calculate how good a position is for making a goal shot
         public void update(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
         {
             for (double x = LAT_HSTART; x < LAT_HEND; x += LAT_HSIZE)

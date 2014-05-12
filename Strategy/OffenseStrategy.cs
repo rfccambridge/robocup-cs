@@ -233,10 +233,10 @@ namespace RFC.Strategy
 
             int n_passers = teamSize - 2; // not the goalie, not the ball carrier 
 
+            // have offenseMap recalculate position fitness for goal shots
             offenseMap.update(ourTeam, theirTeam, ball, fieldVision);
-            double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball);
-            double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision);
-
+            double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball); // map: how good a position is to make a goal shot "where to dribble the ball"
+            double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision); // goal shot map accounting for bounce angle, distance, etc. "where to pass the ball"
 
             //offenseMap.drawMap(passMap);
 
@@ -261,7 +261,6 @@ namespace RFC.Strategy
                     closestToBall = rob;
                 }
             }
-
 
             // used for other play functions
             shootingRobot = ballCarrier;
@@ -290,7 +289,7 @@ namespace RFC.Strategy
                 bouncingRobot = bounce_op.position; 
                 state = State.BounceShot;
                 bounceKicker.reset(bounce_op.position.Position);
-                Console.WriteLine("swtiching to bounce shot");
+                Console.WriteLine("switching to bounce shot");
                 playStartTime = DateTime.Now;
             }
             else if (false ) // put conditions to see if we should get rid of the ball ASAP
@@ -314,19 +313,21 @@ namespace RFC.Strategy
 
 
             // what should other robots do? -----------------------------------------------------------
+            // should be lined up in ideal passing locations
             
+            // build list of robots available for stationing at passing positions
             List<RobotInfo> passers = new List<RobotInfo>();
             foreach (RobotInfo rob in ourTeam)
             {
-                if (rob.ID != goalie_id && rob.ID != ballCarrier_id)
+                if (rob.ID != goalie_id && rob.ID != ballCarrier_id) // robot not the goalie or the ball carrier
                 {
                     passers.Add(rob);
                 }
             }
 
             //offenseMap.drawMap(passMap);
-
             
+            // BEGIN EDITING CODE HERE
             // trying non max supression
             List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
             maxima.Sort();
