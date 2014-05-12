@@ -14,7 +14,7 @@ namespace RFC.PathPlanning
         // angle and distance to go from setting up to kick
         // to actually kicking
         const double heading_threshold = .10;
-        const double dist_threshold = .02;
+        const double dist_threshold = .05;
         const double kick_dist = .15;
         double follow_through_dist = Constants.Basic.ROBOT_RADIUS * 2;
         ServiceManager msngr;
@@ -54,7 +54,7 @@ namespace RFC.PathPlanning
             RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle,robot.Team, robot.ID);
 
             // checking if we're close enough to start the actual kick
-            StateChecker isClose = new StateChecker(new LineSegment(ball.Position, ideal.Position), dist_threshold);
+            StateChecker isClose = new StateChecker(new LineSegment(ball.Position, position - offset), dist_threshold);
 
             if (AngUtils.compare(angle, robot.Orientation) < heading_threshold && isClose.check(robot.Position))
             {

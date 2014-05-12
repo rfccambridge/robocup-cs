@@ -662,14 +662,12 @@ namespace RFC.PathPlanning
             //If we didn't succeed, take the closest node anyways
             if (!(map.Size() < MAX_TREE_SIZE && tries < MAX_PATH_TRIES))
             {
-                Console.WriteLine("failed, taking last");
                 successNode = map.NearestNeighbor(desiredPosition).Second;
                 List<Vector2> path = GetPathFrom(successNode);
                 return path;
             }
             else
             {
-                Console.WriteLine("succeeded");
                 //If we did succeed, take the succeeding node and tack on the
                 //desired state if it's not there (such as because we got close enough and stopped early).
                 List<Vector2> path = GetPathFrom(successNode);
