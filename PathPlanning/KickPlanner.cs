@@ -53,9 +53,12 @@ namespace RFC.PathPlanning
             RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle,robot.Team, robot.ID);
 
             // checking if we're close enough to start the actual kick
-            if (AngUtils.compare(angle, robot.Orientation) < heading_threshold && (robot.Position.distance(ideal.Position) < dist_threshold))
+            StateChecker isClose = new StateChecker(new LineSegment(ball.Position, ideal.Position), dist_threshold);
+
+            if (AngUtils.compare(angle, robot.Orientation) < heading_threshold && isClose.check(robot.Position))
             {
                 // we are close enough
+                Console.WriteLine("close enough");
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
                 RobotCommand cmd2 = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
@@ -67,6 +70,7 @@ namespace RFC.PathPlanning
             else
             {
                 // not close enough
+                Console.WriteLine("not close enough");
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 

@@ -28,7 +28,8 @@ namespace RFC.Strategy
 
         public void Handle(FieldVisionMessage msg)
         {
-            //behave.WallMidfield(msg);
+            KickMessage kick = new KickMessage(msg.GetRobots(team)[0],Constants.FieldPts.THEIR_GOAL);
+            msngr.SendMessage(kick);
         }
 
 

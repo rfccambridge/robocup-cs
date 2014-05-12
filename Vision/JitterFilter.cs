@@ -73,6 +73,16 @@ namespace RFC.Vision
             officialCountup = new Dictionary<Team, Dictionary<int, int>>();
             transientCountup = new Dictionary<Team, Dictionary<int, int>>();
 
+            // initializing inner dictionaries
+            official[Team.Blue] = new Dictionary<int, RobotInfo>();
+            official[Team.Yellow] = new Dictionary<int, RobotInfo>();
+            transient[Team.Blue] = new Dictionary<int, RobotInfo>();
+            transient[Team.Yellow] = new Dictionary<int, RobotInfo>();
+            officialCountup[Team.Blue] = new Dictionary<int, int>();
+            officialCountup[Team.Yellow] = new Dictionary<int, int>();
+            transientCountup[Team.Blue] = new Dictionary<int, int>();
+            transientCountup[Team.Yellow] = new Dictionary<int, int>();
+
             // obtain message transmission equipment
             messenger = ServiceManager.getServiceManager();
 

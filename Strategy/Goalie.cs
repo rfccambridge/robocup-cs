@@ -69,7 +69,7 @@ namespace RFC.Strategy
                 RobotCommand cmd2 = new RobotCommand(ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, false, true);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, false, false);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
                 return;
             }
@@ -112,7 +112,7 @@ namespace RFC.Strategy
 
             RobotInfo goalie_dest = new RobotInfo(pos, orientation, team, ID);
 
-            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true));
+            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, false));
         }
     }
 }

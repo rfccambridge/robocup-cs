@@ -724,7 +724,7 @@ namespace RFC.PathPlanning
                     score += PER_BEND_SCORE * (vec1 * vec2) / vec1.magnitude() / vec2.magnitude();
                 }
 
-                /*
+                
                 //Win/lose points if the first segment of the path agrees 
                 //with our current velocity, multiplied by the current speed
                 
@@ -769,7 +769,7 @@ namespace RFC.PathPlanning
                         currentState.Velocity.magnitude();
                     score += dScore;
                 }
-                */
+                
 
                 //Is it the best path so far?
                 if (score > bestPathScore)
