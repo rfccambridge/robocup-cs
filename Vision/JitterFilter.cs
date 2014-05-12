@@ -80,7 +80,14 @@ namespace RFC.Vision
 
         private List<RobotInfo> getRobots(Team team)
         {
-            return official[team].Values.ToList();
+            if (official.ContainsKey(team))
+            {
+                return official[team].Values.ToList();
+            }
+            else
+            {
+                return new List<RobotInfo>();
+            }
         }
 
         public void Update(FieldVisionMessage msg)

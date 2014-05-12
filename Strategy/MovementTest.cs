@@ -18,7 +18,7 @@ namespace RFC.Strategy
         Team team;
 
         int currentWaypointIndex = 0;
-        Vector2[] waypoints = new Vector2[] { new Vector2(1,2) };
+        Vector2[] waypoints = new Vector2[] { new Vector2(1,1) };
         bool firstRun = true;
 
         bool stopped = false;
