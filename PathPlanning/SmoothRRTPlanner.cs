@@ -150,16 +150,31 @@ namespace RFC.PathPlanning
             }
 
             // making sure destination is valid
-            /*
-             * // this is too powerful
-            if (!Avoider.isValid(message.Destination.Position) && !message.IsGoalie)
-                return;
-             */
+            // approximating the defense areas as two circles of radius .8m
+            Vector2 defense_offset = new Vector2(0, .35 / 2);
+            double defense_radius = .8 + Constants.Basic.ROBOT_RADIUS;
+            Vector2 LT = Constants.FieldPts.OUR_GOAL + defense_offset;
+            Vector2 LB = Constants.FieldPts.OUR_GOAL - defense_offset;
+            Vector2 RT = Constants.FieldPts.THEIR_GOAL + defense_offset;
+            Vector2 RB = Constants.FieldPts.THEIR_GOAL - defense_offset;
 
-            //Plan a path
-            RobotPath newPath;
-            try
-            {
+            
+
+                // avoiding
+                RobotInfo destinationCopy = Avoider.avoid(message.Destination, RT, defense_radius, RB, defense_radius);
+
+                if (!message.IsGoalie)
+                    destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius, LB, defense_radius);
+
+                destinationCopy.Team = message.Destination.Team;
+                destinationCopy.ID = id;
+
+
+                //Plan a path
+                RobotPath newPath;
+
+                try
+                {
                 DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
                 RefboxStateMessage refMessage = ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>();
                 PlayType[] types = new PlayType[4];
@@ -168,9 +183,7 @@ namespace RFC.PathPlanning
                 types[2] = PlayType.Indirect_Ours;
                 types[3] = PlayType.Indirect_Theirs;
                 DefenseAreaAvoid rightAvoid = (refMessage == null || types.Contains(refMessage.PlayType)) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
-                RobotInfo destinationCopy = new RobotInfo(message.Destination);
-                destinationCopy.Team = message.Destination.Team;
-                destinationCopy.ID = id;
+                
 
                 // debug info
                 newPath = GetPath(destinationCopy, avoidBallDist, oldPath,
@@ -178,8 +191,8 @@ namespace RFC.PathPlanning
                 // if path is empty, don't move, else make sure path contains desired state
                 if (!newPath.isEmpty())
                 {
-                    newPath.Waypoints.Add(message.Destination);
-                    newPath.setFinalState(message.Destination);
+                    newPath.Waypoints.Add(destinationCopy);
+                    newPath.setFinalState(destinationCopy);
                 }
             }
             catch (Exception e)
