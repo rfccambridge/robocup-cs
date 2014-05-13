@@ -331,19 +331,22 @@ namespace RFC.Strategy
             List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
             maxima.Sort();
             maxima.Reverse();
-
-            List<RobotInfo> passingDestinations = new List<RobotInfo>();
-            for (int i = 0; i < Math.Min(passers.Count, maxima.Count); i++)
+            
+            int[] bestInd = offenseMap.vecToInd(maxima[0].position.Position);
+            if (passMap[bestInd[0], bestInd[1]] >= adjust_thresh(BSHOT_THRESH))
             {
-                RobotInfo current = maxima[i].position;
-                Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - current.Position;
-                Vector2 vector2 = ball.Position - current.Position;
-                current.Orientation = BounceKicker.getBounceOrientation(vector1, vector2);
-                passingDestinations.Add(current);
+                List<RobotInfo> passingDestinations = new List<RobotInfo>();
+                for (int i = 0; i < Math.Min(passers.Count, maxima.Count); i++)
+                {
+                    RobotInfo current = maxima[i].position;
+                    Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - current.Position;
+                    Vector2 vector2 = ball.Position - current.Position;
+                    current.Orientation = BounceKicker.getBounceOrientation(vector1, vector2);
+                    passingDestinations.Add(current);
+                }
+                // in case there are no maxima
+                DestinationMatcher.SendByDistance(passers.GetRange(0, passingDestinations.Count), passingDestinations);
             }
-
-            // in case there are no maxima
-            DestinationMatcher.SendByDistance(passers.GetRange(0, passingDestinations.Count), passingDestinations);
             
         }
 
