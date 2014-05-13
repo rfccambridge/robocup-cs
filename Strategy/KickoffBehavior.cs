@@ -106,7 +106,7 @@ namespace RFC.Strategy
 
             List<RobotInfo> destinations = new List<RobotInfo>(KickoffPositions(n));
 
-            DestinationMatcher.SendByDistance(ours, destinations);
+            DestinationMatcher.SendByCorrespondence(ours, destinations);
 
         }
 

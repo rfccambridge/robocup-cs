@@ -327,27 +327,46 @@ namespace RFC.Strategy
 
             //offenseMap.drawMap(passMap);
             
-            // BEGIN EDITING CODE HERE
-            // trying non max suppression
+            // ROBOT ASSIGNMENT CODE BEGINS HERE
+            // *********************************
 
-            // current solution does not care about robot distance to maximum...
+            // produce list of maxima sorted highest to lowest
             List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
             maxima.Sort();
             maxima.Reverse();
 
-            List<RobotInfo> passingDestinations = new List<RobotInfo>();
-            for (int i = 0; i < Math.Min(passers.Count, maxima.Count); i++)
+            List<RobotInfo> passerDestinations = new List<RobotInfo>();
+            List<RobotInfo> passerIDs = new List<RobotInfo>();
+            while (passers.Count > 0 && maxima.Count > 0)
             {
-                RobotInfo current = maxima[i].position;
-                Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - current.Position;
-                Vector2 vector2 = ball.Position - current.Position;
-                current.Orientation = BounceKicker.getBounceOrientation(vector1, vector2); // calculate robot facing angle for pass
-                passingDestinations.Add(current);
+                // get position of first maximum (which is the greatest remaining maximum)
+                RobotInfo currentStation = maxima[0].position;
+                maxima.RemoveAt(0); // remove this maximum
+
+                // find closest robot to this maximum
+                int closestBot = 0;
+                double closestDist = passers[closestBot].Position.distance(currentStation.Position);
+                for (int i = 1; i < passers.Count; i++)
+                {
+                    if (passers[i].Position.distance(currentStation.Position) < closestDist)
+                    {
+                        closestBot = i;
+                    }
+                }
+
+                // calculate robot facing angle for pass
+                Vector2 goalToStation = Constants.FieldPts.THEIR_GOAL - currentStation.Position;
+                Vector2 ballToStation = ball.Position - currentStation.Position;
+                currentStation.Orientation = BounceKicker.getBounceOrientation(goalToStation, ballToStation);
+
+                // assign the closest robot to go to this maximum
+                passerDestinations.Add(currentStation);
+                passerIDs.Add(passers[closestBot]);
+                passers.RemoveAt(closestBot); // do not assign this robot to anywhere else
             }
 
-            // in case there are no maxima
-            DestinationMatcher.SendByDistance(passers.GetRange(0, passingDestinations.Count), passingDestinations);
-            
+            // now command robot movements
+            DestinationMatcher.SendByCorrespondence(passerIDs, passerDestinations);
         }
 
         public void setState(State s)

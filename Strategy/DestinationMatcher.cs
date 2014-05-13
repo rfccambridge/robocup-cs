@@ -19,7 +19,7 @@ namespace RFC.Strategy
         // basically directs robots one-to-one to the destinations
         // i.e. robot 1 goes to destination 1; robot 2 goes to destination 2...
         // totally doesn't account for distance
-        public static void SendByDistance(List<RobotInfo> robots, List<RobotInfo> destinations)
+        public static void SendByCorrespondence(List<RobotInfo> robots, List<RobotInfo> destinations)
         {
             if (robots.Count != destinations.Count)
                 throw new Exception("different numbers of robots and destinations: " + robots.Count + ", " + destinations.Count);
