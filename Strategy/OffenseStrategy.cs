@@ -328,7 +328,9 @@ namespace RFC.Strategy
             //offenseMap.drawMap(passMap);
             
             // BEGIN EDITING CODE HERE
-            // trying non max supression
+            // trying non max suppression
+
+            // current solution does not care about robot distance to maximum...
             List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
             maxima.Sort();
             maxima.Reverse();
@@ -339,7 +341,7 @@ namespace RFC.Strategy
                 RobotInfo current = maxima[i].position;
                 Vector2 vector1 = Constants.FieldPts.THEIR_GOAL - current.Position;
                 Vector2 vector2 = ball.Position - current.Position;
-                current.Orientation = BounceKicker.getBounceOrientation(vector1, vector2);
+                current.Orientation = BounceKicker.getBounceOrientation(vector1, vector2); // calculate robot facing angle for pass
                 passingDestinations.Add(current);
             }
 

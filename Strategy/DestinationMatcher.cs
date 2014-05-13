@@ -16,6 +16,9 @@ namespace RFC.Strategy
         // assigns each robot to one of the destinations and sends messages.
         // Position and orientation come from Destinations, IDs come from Robots
         //</summary>
+        // basically directs robots one-to-one to the destinations
+        // i.e. robot 1 goes to destination 1; robot 2 goes to destination 2...
+        // totally doesn't account for distance
         public static void SendByDistance(List<RobotInfo> robots, List<RobotInfo> destinations)
         {
             if (robots.Count != destinations.Count)
