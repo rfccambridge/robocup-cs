@@ -12,25 +12,30 @@ namespace RFC.PathPlanning
         private static double convergence_threshold = .01;
         static object lockobj = new object();
         // checks if this point is in bounds and outside of defense areas
-        public static bool isValid(Vector2 target)
+        public static bool isValid(Vector2 target, bool is_goalie)
         {
             if (!in_bounds(target))
                 return false;
 
+            // if its a goalie we skip over checking the left defense area
             List<Geom> copy = new List<Geom>(Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA);
-            foreach (Geom g in copy)
+            if (!is_goalie)
             {
-                if (g is Circle)
+                foreach (Geom g in copy)
                 {
-                    if (((Circle)g).contains(target))
-                        return false;
-                }
-                else if (g is Rectangle)
-                {
-                    if (((Rectangle)g).contains(target))
-                        return false;
+                    if (g is Circle)
+                    {
+                        if (((Circle)g).contains(target))
+                            return false;
+                    }
+                    else if (g is Rectangle)
+                    {
+                        if (((Rectangle)g).contains(target))
+                            return false;
+                    }
                 }
             }
+
             copy = new List<Geom>(Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA);
             foreach (Geom g in copy)
             {

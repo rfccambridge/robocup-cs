@@ -123,12 +123,12 @@ namespace RFC.Strategy
             goalieBehave.getGoalie(msg);
 
             // getting destinations we want to go to
-            positionHelper.DefenseCommand(msg, ours.Count, false);
+            positionHelper.DefenseCommand(msg, Math.Min(ours.Count,3), false);
         }
 
         public void TheirsSetup(FieldVisionMessage msg)
         {
-            this.Theirs(msg);
+            this.OursSetup(msg);
             
         }
     }

@@ -12,13 +12,13 @@ namespace RFC.Strategy
 {
     public class MovementTest
     {
-        const double TOLERANCE = .1;
+        const double TOLERANCE = .02;
 
         int robotId;
         Team team;
 
         int currentWaypointIndex = 0;
-        Vector2[] waypoints = new Vector2[] { new Vector2(1,2) };
+        Vector2[] waypoints = new Vector2[] { new Vector2(1, 0), new Vector2(2, 0), new Vector2(2, 1), new Vector2(1, 1) };
         bool firstRun = true;
 
         bool stopped = false;
@@ -45,7 +45,7 @@ namespace RFC.Strategy
                 }
             RobotInfo info = robotVision.GetRobot(team, robotId);
 
-            if (info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE || firstRun)
+            if ((info.Position.distanceSq(waypoints[currentWaypointIndex]) < TOLERANCE && info.Velocity.magnitudeSq() < .01) || firstRun)
             {
                 currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
             }

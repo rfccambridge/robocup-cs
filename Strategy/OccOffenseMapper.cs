@@ -222,7 +222,7 @@ namespace RFC.Strategy
                     }
 
                     double isValid = 0;
-                    if (Avoider.isValid(pos))
+                    if (Avoider.isValid(pos, false))
                         isValid = 1;
                     
                     map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose * isValid);

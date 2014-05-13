@@ -133,6 +133,7 @@ namespace RFC.PathPlanning
 
         public void handleRobotDestinationMessage(RobotDestinationMessage message)
         {
+            msngr.db("handling destination message");
             if (message.Destination == null || double.IsNaN(message.Destination.Position.X) || double.IsNaN(message.Destination.Position.Y))
             {
                 msngr.db("invalid destination");
@@ -149,16 +150,31 @@ namespace RFC.PathPlanning
             }
 
             // making sure destination is valid
-            /*
-             * // this is too powerful
-            if (!Avoider.isValid(message.Destination.Position) && !message.IsGoalie)
-                return;
-             */
+            // approximating the defense areas as two circles of radius .8m
+            Vector2 defense_offset = new Vector2(0, .35 / 2);
+            double defense_radius = .8 + Constants.Basic.ROBOT_RADIUS;
+            Vector2 LT = Constants.FieldPts.OUR_GOAL + defense_offset;
+            Vector2 LB = Constants.FieldPts.OUR_GOAL - defense_offset;
+            Vector2 RT = Constants.FieldPts.THEIR_GOAL + defense_offset;
+            Vector2 RB = Constants.FieldPts.THEIR_GOAL - defense_offset;
 
-            //Plan a path
-            RobotPath newPath;
-            try
-            {
+            
+
+                // avoiding
+                RobotInfo destinationCopy = Avoider.avoid(message.Destination, RT, defense_radius, RB, defense_radius);
+
+                if (!message.IsGoalie)
+                    destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius, LB, defense_radius);
+
+                destinationCopy.Team = message.Destination.Team;
+                destinationCopy.ID = id;
+
+
+                //Plan a path
+                RobotPath newPath;
+
+                try
+                {
                 DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
                 RefboxStateMessage refMessage = ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>();
                 PlayType[] types = new PlayType[4];
@@ -167,9 +183,7 @@ namespace RFC.PathPlanning
                 types[2] = PlayType.Indirect_Ours;
                 types[3] = PlayType.Indirect_Theirs;
                 DefenseAreaAvoid rightAvoid = (refMessage == null || types.Contains(refMessage.PlayType)) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
-                RobotInfo destinationCopy = new RobotInfo(message.Destination);
-                destinationCopy.Team = message.Destination.Team;
-                destinationCopy.ID = id;
+                
 
                 // debug info
                 newPath = GetPath(destinationCopy, avoidBallDist, oldPath,
@@ -177,8 +191,8 @@ namespace RFC.PathPlanning
                 // if path is empty, don't move, else make sure path contains desired state
                 if (!newPath.isEmpty())
                 {
-                    newPath.Waypoints.Add(message.Destination);
-                    newPath.setFinalState(message.Destination);
+                    newPath.Waypoints.Add(destinationCopy);
+                    newPath.setFinalState(destinationCopy);
                 }
             }
             catch (Exception e)
@@ -577,6 +591,7 @@ namespace RFC.PathPlanning
                     //Go to the goal directly
                     if (!doRandomAgain && currentTarget != desiredPosition)
                     {
+                        msngr.db("to goal directly");
                         doRandomAgain = true;
                         currentTarget = desiredPosition;
                         stepsLeft = 1000;
@@ -585,6 +600,8 @@ namespace RFC.PathPlanning
                     //Go randomly
                     else
                     {
+                        msngr.db("to goal randomly");
+
                         doRandomAgain = true;
                         currentTarget = GetRandomPoint(desiredPosition, currentState.Position, closestSoFar);
                         activeNode = map.NearestNeighbor(currentTarget).Second;
@@ -597,6 +614,7 @@ namespace RFC.PathPlanning
                 //If we're close enough to the goal, we're done!
                 if (activeNode.info.Position.distanceSq(desiredPosition) < closeEnoughToGoal * closeEnoughToGoal)
                 {
+                    msngr.db("SUCCESS");
                     successNode = activeNode;
                     break;
                 }
@@ -606,6 +624,7 @@ namespace RFC.PathPlanning
                     avoidBallRadius, currentTarget == desiredPosition);
                 if (segment == null)
                 {
+                    msngr.db("new segment didn't work");
                     tryAgain = true;
                     continue;
                 }
@@ -615,13 +634,18 @@ namespace RFC.PathPlanning
                     avoidBallRadius, desiredPosition, obstacles);
                 if (newNode == null)
                 {
+                    msngr.db("DIDN'T WORK");
                     tryAgain = true;
                 }
                 else
                 {
+                    msngr.db("DID WORK");
                     //Make sure that we haven't already crossed past our target
                     if ((newNode.info.Position - activeNode.info.Position) * (currentTarget - newNode.info.Position) <= 0)
+                    {
+                        msngr.db("but overshot");
                         tryAgain = true;
+                    }
 
                     //Update closestSoFar
                     double dist = newNode.info.Position.distance(desiredPosition);
@@ -699,6 +723,7 @@ namespace RFC.PathPlanning
 
             for (int i = 0; i < NUM_PATHS_TO_SCORE; i++)
             {
+                msngr.db("trying a point path");
                 List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius, obstacles);
                 double score = 0;
 
@@ -724,7 +749,7 @@ namespace RFC.PathPlanning
                     score += PER_BEND_SCORE * (vec1 * vec2) / vec1.magnitude() / vec2.magnitude();
                 }
 
-                /*
+                
                 //Win/lose points if the first segment of the path agrees 
                 //with our current velocity, multiplied by the current speed
                 
@@ -769,7 +794,7 @@ namespace RFC.PathPlanning
                         currentState.Velocity.magnitude();
                     score += dScore;
                 }
-                */
+                
 
                 //Is it the best path so far?
                 if (score > bestPathScore)
@@ -853,6 +878,7 @@ namespace RFC.PathPlanning
         {
             //Build obstacle list
             List<Geom> obstacles = new List<Geom>();
+            /*
             obstacles.Add(ExpandLeft(Constants.FieldPts.LEFT_GOAL_BOX));
             obstacles.Add(ExpandRight(Constants.FieldPts.RIGHT_GOAL_BOX));
 
@@ -885,7 +911,7 @@ namespace RFC.PathPlanning
                 if (g is Circle)
                     obstacles[i] = ExpandCircle((Circle)g, ROBOT_RADIUS);
             }
-
+            */
             //Error reporting
             // TODO: look at this
             /*for (int i = 0; i < obstacles.Count; i++)

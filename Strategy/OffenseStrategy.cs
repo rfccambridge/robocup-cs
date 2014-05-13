@@ -143,7 +143,7 @@ namespace RFC.Strategy
         private void pickUpBall(RobotInfo rob, BallInfo ball)
         {
             RobotInfo destination = new RobotInfo(ball.Position, 0, rob.Team,rob.ID);
-            RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
+            RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false);
             msngr.SendMessage(destinationMessage);
         }
 
@@ -269,7 +269,7 @@ namespace RFC.Strategy
             // what should the robot with the ball do ? -------------------------------------------------
             QuantifiedPosition bounce_op = goodBounceShot(ourTeam, shootingRobot, passMap);
             ShotOpportunity shot_op = Shot1.evaluate(fieldVision, team, fieldVision.Ball.Position);
-            if (ballCarrier == null)
+            if (ballCarrier == null && closestToBall != null)
             {
                 // go get the ball
                 DribblePlanner.GetPossession(closestToBall, fieldVision);
@@ -383,7 +383,7 @@ namespace RFC.Strategy
             RobotInfo shooter = fieldVision.GetClosest(team);
             ShotOpportunity shot = Shot1.evaluateGoal(fieldVision, team, fieldVision.Ball.Position);
 
-            foreach (RobotInfo ri in fieldVision.GetRobots(team))
+            foreach (RobotInfo ri in fieldVision.GetRobotsExcept(team, goalie_id))
             {
                 if (ri.ID != shooter.ID)
                 {

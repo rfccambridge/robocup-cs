@@ -59,7 +59,10 @@ namespace RFC.Strategy
 
             // if ball is close to goal, kick it out
             Vector2 goalToBall = ballpos - goalpos;
-            Vector2 robotToBall = ballpos - msg.GetRobot(team, ID).Position;
+            RobotInfo robot = msg.GetRobot(team, ID);
+            if (robot == null)
+                return;
+            Vector2 robotToBall = ballpos - robot.Position;
             if (goalToBall.magnitude() < clearThreshold)
             {
                 RobotInfo followThrough = new RobotInfo(ballpos + robotToBall.normalizeToLength(.3), robotToBall.cartesianAngle(), team, ID);
@@ -69,7 +72,7 @@ namespace RFC.Strategy
                 RobotCommand cmd2 = new RobotCommand(ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, false, true);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, false, false);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
                 return;
             }
@@ -112,7 +115,7 @@ namespace RFC.Strategy
 
             RobotInfo goalie_dest = new RobotInfo(pos, orientation, team, ID);
 
-            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true));
+            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, false));
         }
     }
 }

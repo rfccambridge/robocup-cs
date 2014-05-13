@@ -30,6 +30,8 @@ namespace RFC.Strategy
         List<RobotInfo> midFieldPositions; //for MidFieldPlayOnly: list of positions including shadowBall
         public PlayType playType;
         const double default_radius = .35;
+        const double ball_avoid_radius = .6;
+        const double kickoff_boundary = -.1;
 
         public DefenseStrategy(Team myTeam, int goalie_id, PlayType playType)
         {
@@ -91,7 +93,7 @@ namespace RFC.Strategy
 
              if (blitz && playersOnBall > 0)
                 {
-                    destinations.Insert(1,new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
+                    destinations.Insert(0,new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
                     playersOnBall -= 1;
                 }
 
@@ -106,7 +108,7 @@ namespace RFC.Strategy
                     Vector2 unNormalizedDirection = new Vector2(positionAngle);
                     Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
                     Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
-                    destinations.Insert(1,new RobotInfo(robotPosition, 0, myTeam, 0)); //adds positions behind ball after ball in List
+                    destinations.Insert(0,new RobotInfo(robotPosition, positionAngle + Math.PI, myTeam, 0)); //adds positions behind ball after ball in List
                 }
             //truncate destinations to match fieldPlayers
                 destinations.RemoveRange(fieldPlayers.Count, destinations.Count - fieldPlayers.Count);
@@ -118,7 +120,7 @@ namespace RFC.Strategy
 
                 for (int i = 0; i < destinations.Count; i++)
                 {
-                    destinations[i] = Avoider.avoid(destinations[i], msg.Ball.Position, .5);
+                    destinations[i] = Avoider.avoid(destinations[i], msg.Ball.Position, ball_avoid_radius);
                                      
                 }
             }
@@ -127,10 +129,10 @@ namespace RFC.Strategy
                 //restricts players from going past halfline for kickoffs
                 for (int i = 1; i < destinations.Count; i++)
                 {
-                    if (destinations[i].Position.X > 0)
+                    if (destinations[i].Position.X > kickoff_boundary)
                     {
                         double tempStore = destinations[i].Position.Y;
-                        destinations[i] = new RobotInfo(new Vector2(0, tempStore),0,myTeam,0);
+                        destinations[i] = new RobotInfo(new Vector2(kickoff_boundary, tempStore),0,myTeam,0);
                     }
                 }
             }
