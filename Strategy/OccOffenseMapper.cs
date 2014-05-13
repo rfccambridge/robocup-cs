@@ -195,6 +195,16 @@ namespace RFC.Strategy
                     if (Constants.Basic.ROBOT_RADIUS * 4 > vecToBall.magnitude())
                         distScore = 0;
 
+                    // account for distance to our robots
+                    double minRobotDist = 100.0;
+                    foreach (RobotInfo rob in ourTeam)
+                    {
+                        double robotDist = (rob.Position - pos).magnitude();
+                        if (robotDist < minRobotDist)
+                            minRobotDist = robotDist;
+                    }
+                    double robDistScore = Math.Exp(-minRobotDist);
+
                     // calculate bounce score
                     // make .5(1+cos)
                     double currentBounceAngle = 180 * Math.Acos(vecToBall.cosineAngleWith(vecToGoal)) / Math.PI;
@@ -224,8 +234,8 @@ namespace RFC.Strategy
                     double isValid = 0;
                     if (Avoider.isValid(pos, false))
                         isValid = 1;
-                    
-                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose * isValid);
+
+                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose * isValid * robDistScore);
 
                     
 
