@@ -11,6 +11,7 @@ using RFC.Utilities;
 using RFC.Core;
 using RFC.InterProcessMessaging;
 using System.IO.Ports;
+using System.IO;
 
 namespace RFC.SerialControl
 {
@@ -78,10 +79,17 @@ namespace RFC.SerialControl
 
         private void connectButton_Click(object sender, EventArgs e)
         {
-            port = SerialPortManager.OpenSerialPort("COM" + COMSelector.Value);
-            timer.Interval = 50;
-            timer.Enabled = true;
-            timer.Tick += timer_Tick;
+            try
+            {
+                port = SerialPortManager.OpenSerialPort("COM" + COMSelector.Value);
+                timer.Interval = 50;
+                timer.Enabled = true;
+                timer.Tick += timer_Tick;
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show("Could not open given serial port.");
+            }
         }
 
         void timer_Tick(object s, EventArgs e)
