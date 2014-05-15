@@ -13,8 +13,8 @@ namespace RFC.Commands
     public class SerialSender
     {
         SerialPort _comPort;
-        private byte[] timesSent;
-        private DateTime[] msSent;
+        private int[,] timesSent;
+        private DateTime[,] msSent;
         // in ms
         private const int RESET_TIME = 5000;
         private const byte MAX_SEND = 3;
@@ -24,12 +24,16 @@ namespace RFC.Commands
             string port = "COM" + comNumber;
             _comPort = SerialPortManager.OpenSerialPort(port);
             new QueuedMessageHandler<CommandMessage>(handleRobotCommandMessage, new object());
-            timesSent = new byte[Enum.GetNames(typeof(RobotCommand.Command)).Length];
-            msSent = new DateTime[Enum.GetNames(typeof(RobotCommand.Command)).Length];
+            // indexed [command, robot]
+            timesSent = new int[Enum.GetNames(typeof(RobotCommand.Command)).Length,RFC.Core.Constants.Basic.NUM_ROBOTS];
+            msSent = new DateTime[Enum.GetNames(typeof(RobotCommand.Command)).Length,RFC.Core.Constants.Basic.NUM_ROBOTS];
             for (int i = 0; i < Enum.GetNames(typeof(RobotCommand.Command)).Length; i++)
             {
-                timesSent[i] = 0;
-                msSent[i] = DateTime.Now;
+                for (int j = 0; j < RFC.Core.Constants.Basic.NUM_ROBOTS; j++)
+                {
+                    timesSent[i,j] = 0;
+                    msSent[i,j] = DateTime.Now;
+                }
             }
         }
 
@@ -44,14 +48,15 @@ namespace RFC.Commands
             {
                 case RobotCommand.Command.BREAKBEAM_KICK:
                 case RobotCommand.Command.START_CHARGING:
-                    int index = (int)command.command;
-                    timesSent[index]++;
-                    if ((int)(DateTime.Now - msSent[index]).TotalMilliseconds >= RESET_TIME)
+                    int cIndex = (int)command.command;
+                    int rIndex = command.ID;
+                    timesSent[cIndex,rIndex]++;
+                    if ((int)(DateTime.Now - msSent[cIndex,rIndex]).TotalMilliseconds >= RESET_TIME)
                     {
-                        timesSent[index] = 0;
-                        msSent[index] = DateTime.Now;
+                        timesSent[cIndex,rIndex] = 0;
+                        msSent[cIndex,rIndex] = DateTime.Now;
                     }
-                    if (timesSent[index] >= MAX_SEND)
+                    if (timesSent[cIndex,rIndex] >= MAX_SEND)
                     {
                         return;
                     }
