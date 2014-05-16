@@ -47,6 +47,8 @@ namespace RFC.PathPlanning
 
         //Scaling for speed based on distance from goal
         private Pair<double, double>[] SCALE_BY_DISTANCE;
+        //Slow version
+        //private Pair<double, double>[] SCALE_BY_DISTANCE_SLOW;
         //Scaling for speed based on distance from obstacle
         private Pair<double, double>[] SCALE_BY_OBSTACLE_DISTANCE;
         //Scaling for distance from obstacle based on cosine of angle
@@ -150,7 +152,9 @@ namespace RFC.PathPlanning
             PLANNED_ANG_SPEED_CORRECTION = ConstantsRaw.get<double>("control", "VD_PLANNED_ANG_SPEED_CORRECTION");
             CURRENT_ANG_SPEED_CORRECTION = ConstantsRaw.get<double>("control", "VD_CURRENT_ANG_SPEED_CORRECTION");
 
+
             SCALE_BY_DISTANCE = readDoublePairArray("VD_NUM_SCALE_BY_DISTANCE", "VD_SCALE_BY_DISTANCE_");
+            //SCALE_BY_DISTANCE_SLOW = readDoublePairArray("VD_NUM_SCALE_BY_DISTANCE_SLOW", "VD_SCALE_BY_DISTANCE_SLOW_");
             SCALE_BY_OBSTACLE_DISTANCE = readDoublePairArray("VD_NUM_SCALE_BY_OBSTACLE_DISTANCE", "VD_SCALE_BY_OBSTACLE_DISTANCE_");
             AGREEMENT_EFFECTIVE_DISTANCE_FACTOR = readDoublePairArray("VD_NUM_AGREEMENT_EFFECTIVE_DISTANCE_FACTOR", "VD_AGREEMENT_EFFECTIVE_DISTANCE_FACTOR_");
         }
@@ -272,6 +276,14 @@ namespace RFC.PathPlanning
 
             //Scale to desired speed
             double speed = BASE_SPEED * Math.Min(interp(SCALE_BY_DISTANCE, distanceLeft), interp(SCALE_BY_OBSTACLE_DISTANCE, obstacleDist));
+            /*if (!path.Slow)
+            {
+                speed = BASE_SPEED * Math.Min(interp(SCALE_BY_DISTANCE, distanceLeft), interp(SCALE_BY_OBSTACLE_DISTANCE, obstacleDist));
+            }
+            else
+            {
+                speed = BASE_SPEED * Math.Min(interp(SCALE_BY_DISTANCE_SLOW, distanceLeft), interp(SCALE_BY_OBSTACLE_DISTANCE, obstacleDist));
+            } */   
             bool linearDone = distanceLeft <= GOOD_ENOUGH_DIST;
             if (linearDone)
                 speed = 0;
@@ -337,13 +349,7 @@ namespace RFC.PathPlanning
                 }
             }
 
-            if (path.Slow)
-            {
-                speeds.lb *= .5;
-                speeds.rb *= .5;
-                speeds.rf *= .5;
-                speeds.lf *= .5;
-            }
+          
 
             //Adjust speeds to cope with a maximum acceleration limit
             WheelSpeeds old = lastSpeeds[id];

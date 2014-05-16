@@ -92,6 +92,7 @@ namespace RFC.Strategy
             msngr.SendMessage<CommandMessage>(new CommandMessage(bb_cmd));
 
             // common vectors
+            bounce_loc = bounce.Position;
             Vector2 toGoal = Shot1.evaluate(msg, team, msg.Ball.Position).target - bounce_loc;
             Vector2 toBall = msg.Ball.Position - bounce_loc;
             bounce.Orientation = (2*toGoal.cartesianAngle() + toBall.cartesianAngle())/3;
