@@ -17,6 +17,7 @@ using RFC.Logging;
 using RFC.Messaging;
 using RFC.Simulator;
 using RFC.FieldDrawer;
+using System.IO;
 
 namespace ControlForm
 {
@@ -51,11 +52,10 @@ namespace ControlForm
 
         SetupTest bounce;
 
-        public void Run()
+        public bool Run()
         {
             if (!running)
             {
-                running = true;
                 int com = (int)ComNumberChooser.Value;
                 Team team = Team.Yellow;
                 Enum.TryParse<Team>(TeamBox.SelectedValue.ToString(), out team);
@@ -63,6 +63,24 @@ namespace ControlForm
                 int maxRobotId = 12;
                 bool simulator = simulatorCheckBox.Checked;
                 int goalieNumber = (int)GoalieNumberChooser.Value;
+
+                if (simulator)
+                {
+                    new SimulatorSender();
+                }
+                else
+                {
+                    try
+                    {
+                        new SerialSender(com);
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show("Could not open given serial port.");
+
+                        return false;
+                    }
+                }
 
                 new LogHandler();
 
@@ -81,27 +99,25 @@ namespace ControlForm
                 
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 
-                if (simulator)
-                {
-                    new SimulatorSender();
-                }
-                else
-                {
-                    new SerialSender(com);
-                }
-
                 refbox.Connect("224.5.92.12", 10100);
                 refbox.Start();
+
+                running = true;
+                return true;
             }
+            return false;
         }
 
         private void RunButton_Click(object sender, EventArgs e)
         {
-            Run();
+            bool success = Run();
 
-            DisableControls();
+            if (success)
+            {
+                DisableControls();
 
-            ServiceManager.getServiceManager().SendMessage(new LogMessage("started"));
+                ServiceManager.getServiceManager().SendMessage(new LogMessage("started"));
+            }
         }
 
         private void StopButton_Click(object sender, EventArgs e)
