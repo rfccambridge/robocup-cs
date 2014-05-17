@@ -63,6 +63,7 @@ namespace RFC.Strategy
                 if (ballPossess(robot, msg.Ball))
                 {
                     prioritizedThreats.RemoveAt(0);
+                    break;
                 }
             }
             /*foreach (Threat threat in prioritizedThreats)
@@ -81,10 +82,15 @@ namespace RFC.Strategy
                 //Console.WriteLine("length of getRobots is " + getRobots.Count);
             foreach(RobotInfo robot in getRobots)  /*adds each player on the opposite team to indexedThreats*/
 			{
-                Threat dummy = new Threat(playerShotRisk(robot, msg.Ball, getRobots, ballRisk)
+                //eliminates their goalie from tracking
+                if(robot.Position.X<Constants.Field.WIDTH-Constants.Field.GOAL_WIDTH||Math.Abs(robot.Position.Y)<Constants.Field.GOAL_HEIGHT/2)
+                {
+                
+                    Threat dummy = new Threat(playerShotRisk(robot, msg.Ball, getRobots, ballRisk)
                        + playerPassRisk(robot, msg, getRobots, ballRisk),
                        robot);
 				indexedThreats.Add(dummy);
+                }
                 //Console.WriteLine("Added robot to indexedThreats with position " + dummy.position);
 			}
             indexedThreats.Add(new Threat(-1, Constants.FieldPts.OUR_GOAL + new Vector2(1, 1), Threat.ThreatType.space));
