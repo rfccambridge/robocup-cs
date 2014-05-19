@@ -50,6 +50,7 @@ namespace RFC.PathPlanning
         double VELOCITY_AGREEMENT_SCORE; //Bonus for agreeing with current velocity, per m/s velocity
         double OLDPATH_AGREEMENT_SCORE; //Bonus for agreeing with the old path, per m/s velocity
         double OLDPATH_AGREEMENT_DIST; //Score nothing for points that differ by this many meters from the old path
+        double MIN_WEIGHT_VEL = 0.1; // min vel for weight; if less than this velocity, take velocity equal to it
 
         Rectangle LEGAL_RECTANGLE; //The basic rectangle determining what points in the field are legal to move to
 
@@ -790,8 +791,13 @@ namespace RFC.PathPlanning
                     }
 
                     double avgDist = (distSum) / (path.Count - 1);
+                    double velocity = currentState.Velocity.magnitude();
+                    if (velocity < MIN_WEIGHT_VEL)
+                    {
+                        velocity = MIN_WEIGHT_VEL;
+                    }
                     double dScore = (OLDPATH_AGREEMENT_DIST - avgDist) * OLDPATH_AGREEMENT_SCORE *
-                        currentState.Velocity.magnitude();
+                        velocity;
                     score += dScore;
                 }
                 
