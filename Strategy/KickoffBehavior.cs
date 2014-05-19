@@ -128,7 +128,7 @@ namespace RFC.Strategy
 
         public void TheirsSetup(FieldVisionMessage msg)
         {
-            this.OursSetup(msg);
+            this.Theirs(msg);
             
         }
     }
