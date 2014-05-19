@@ -94,7 +94,7 @@ namespace RFC.Strategy
             this.playStartTime = DateTime.Now;
 
             offenseMap = new OccOffenseMapper(team);
-            bounceKicker = new BounceKicker(team);
+            bounceKicker = new BounceKicker(team, goalie_id);
             goalie = new Goalie(team, goalie_id);
             msngr = ServiceManager.getServiceManager();
 
@@ -114,7 +114,7 @@ namespace RFC.Strategy
             this.playStartTime = DateTime.Now;
 
             offenseMap = new OccOffenseMapper(team, xmin, xmax);
-            bounceKicker = new BounceKicker(team);
+            bounceKicker = new BounceKicker(team, goalie_id);
             goalie = new Goalie(team, goalie_id);
             msngr = ServiceManager.getServiceManager();
 

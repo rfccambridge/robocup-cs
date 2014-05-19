@@ -25,16 +25,18 @@ namespace RFC.Strategy
         ServiceManager msngr;
         double critical_radius = .3;
         Vector2 bounce_loc;
+        int goalie_id;
 
         // constants used to make sure robots far away from shots going on
         private double SHOOT_AVOID = Constants.Basic.ROBOT_RADIUS + 0.1;
         private double AVOID_RADIUS = 1.0;
         private const double SHOOT_AVOID_DT = 0.5;
 
-        public BounceKicker (Team team)
+        public BounceKicker (Team team, int goalie_id)
         {
             this.team = team;
             this.progress = Progress.Far;
+            this.goalie_id = goalie_id;
 
             msngr = ServiceManager.getServiceManager();
         }
@@ -97,7 +99,7 @@ namespace RFC.Strategy
             Vector2 toBall = msg.Ball.Position - bounce_loc;
             bounce.Orientation = (2*toGoal.cartesianAngle() + toBall.cartesianAngle())/3;
 
-            foreach (RobotInfo ri in msg.GetRobots(team))
+            foreach (RobotInfo ri in msg.GetRobotsExcept(team, goalie_id))
             {
                 if (ri.ID != kicker_id && ri.ID != bouncer_id)
                 {

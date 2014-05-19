@@ -26,7 +26,7 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             this.ko = new KickOffBehavior(team, goalie);
             this.lockObject = new object();
-            this.bk = new BounceKicker(team);
+            this.bk = new BounceKicker(team, goalie_id);
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
         }
 

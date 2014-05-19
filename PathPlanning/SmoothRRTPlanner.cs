@@ -160,21 +160,21 @@ namespace RFC.PathPlanning
 
             
 
-                // avoiding
-                RobotInfo destinationCopy = Avoider.avoid(message.Destination, RT, defense_radius, RB, defense_radius);
+            // avoiding
+            RobotInfo destinationCopy = Avoider.avoid(message.Destination, RT, defense_radius, RB, defense_radius);
 
-                if (!message.IsGoalie)
-                    destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius, LB, defense_radius);
+            if (!message.IsGoalie)
+                destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius, LB, defense_radius);
 
-                destinationCopy.Team = message.Destination.Team;
-                destinationCopy.ID = id;
+            destinationCopy.Team = message.Destination.Team;
+            destinationCopy.ID = id;
 
 
-                //Plan a path
-                RobotPath newPath;
+            //Plan a path
+            RobotPath newPath;
 
-                try
-                {
+            try
+            {
                 DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
                 RefboxStateMessage refMessage = ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>();
                 PlayType[] types = new PlayType[4];
