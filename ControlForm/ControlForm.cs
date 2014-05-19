@@ -87,6 +87,7 @@ namespace ControlForm
                 new SmoothRRTPlanner(true, maxRobotId);
                 new VelocityDriver();
                 new KickPlanner();
+                new BreakBeamEmulator(team);
 
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);

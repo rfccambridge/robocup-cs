@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Avoider.cs" />
+    <Compile Include="BreakBeamEmulator.cs" />
     <Compile Include="DribblePlanner.cs" />
     <Compile Include="KickPlanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

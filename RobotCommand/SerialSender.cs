@@ -46,7 +46,9 @@ namespace RFC.Commands
         {
             switch (command.command)
             {
-                case RobotCommand.Command.BREAKBEAM_KICK:
+                case RobotCommand.Command.FULL_BREAKBEAM_KICK:
+                    return;
+
                 case RobotCommand.Command.START_CHARGING:
                     int cIndex = (int)command.command;
                     int rIndex = command.ID;
