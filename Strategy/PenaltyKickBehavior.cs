@@ -12,6 +12,7 @@ namespace RFC.Strategy
     public class PenaltyKickBehavior
     {
         Team team;
+        Team oTeam;
         ServiceManager msngr;
         int kicker_id;
         int goalie_id;
@@ -21,6 +22,7 @@ namespace RFC.Strategy
         public PenaltyKickBehavior(Team team, int goalie_id)
         {
             this.team = team;
+            oTeam = team == Team.Blue ? Team.Yellow : Team.Blue;
             this.msngr = ServiceManager.getServiceManager();
             this.kicker_id = 0;
             this.goalie_id = goalie_id;
@@ -90,8 +92,24 @@ namespace RFC.Strategy
             RobotInfo goalie = msg.GetRobot(team, goalie_id);
             List<RobotInfo> rest = msg.GetRobots(team);
             // getting desired position
-            goalieBehave.getGoalie(msg);
-            
+            // goalieBehave.getGoalie(msg);
+            // has to be on the goal line, so...
+            // extend line from their kicker to ball to goalline, placing robot there
+            RobotInfo pKicker = msg.GetClosest(oTeam);
+            double angle = (pKicker.Position - msg.Ball.Position).cartesianAngle();
+            double goalieXPos = Constants.Field.GOAL_XMIN + Constants.Field.GOAL_WIDTH + Constants.Basic.ROBOT_RADIUS;
+            double goalY = pKicker.Position.Y + Math.Atan(angle) * (goalieXPos - pKicker.Position.X);
+            if (goalY - Constants.Basic.ROBOT_RADIUS < Constants.Field.GOAL_YMIN)
+            {
+                goalY = Constants.Field.GOAL_YMIN + Constants.Basic.ROBOT_RADIUS;
+            }
+            else if (goalY + Constants.Basic.ROBOT_RADIUS > Constants.Field.GOAL_YMAX)
+            {
+                goalY = Constants.Field.GOAL_YMAX - Constants.Basic.ROBOT_RADIUS;
+            }
+            RobotInfo destRI = new RobotInfo(new Vector2(goalieXPos, goalY), goalie.Orientation, team, goalie.ID);
+            msngr.SendMessage(new RobotDestinationMessage(destRI, false, true));
+
             // making sure the rest of ours are behind the line
             
             foreach (RobotInfo robot in rest)
