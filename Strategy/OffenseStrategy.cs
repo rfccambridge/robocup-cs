@@ -336,6 +336,7 @@ namespace RFC.Strategy
             maxima.Reverse();
 
             // Eric Anschuetz assignment code--compiles
+            /*
             int[] bestInd = offenseMap.vecToInd(maxima[0].position.Position);
             if (passMap[bestInd[0], bestInd[1]] >= adjust_thresh(BSHOT_THRESH))
             {
@@ -351,10 +352,10 @@ namespace RFC.Strategy
                 // in case there are no maxima
                 DestinationMatcher.SendByCorrespondence(passers.GetRange(0, passingDestinations.Count), passingDestinations);
             }
-
+            */
 
             // Eric Lu assignment code--compiles, not sure if it works
-            /*
+            
             List<RobotInfo> passerDestinations = new List<RobotInfo>();
             List<RobotInfo> passerIDs = new List<RobotInfo>();
             while (passers.Count > 0 && maxima.Count > 0)
@@ -387,7 +388,7 @@ namespace RFC.Strategy
 
             // now command robot movements
             DestinationMatcher.SendByCorrespondence(passerIDs, passerDestinations);
-            */
+            
         }
 
         public void setState(State s)
