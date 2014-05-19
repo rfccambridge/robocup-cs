@@ -65,8 +65,8 @@ namespace RFC.Strategy
             if((play == PlayType.Direct_Ours || play == PlayType.Direct_Theirs || play == PlayType.Indirect_Ours || play == PlayType.Indirect_Theirs || play == PlayType.KickOff_Ours || play == PlayType.KickOff_Theirs) && ballIsMoved(msg.Ball.Position))
             {
                 play = PlayType.NormalPlay;
+                Console.WriteLine("switched to normal");
             }
-            Console.WriteLine("PlaySwitcher: " + play);
             switch(play)
             {
                 case PlayType.NormalPlay:

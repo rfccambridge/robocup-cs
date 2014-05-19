@@ -21,6 +21,7 @@ namespace RFC.Strategy
         Team otherTeam;
 		double cornerZone; /*length of zone at endgoal where player poses passing risk only, rather than shooting*/
 		double otherPassRisk; /*adjustable probability of other team's passing ability*/
+        double OWNERSHIP_THRESHOLD = 3 * Constants.Basic.ROBOT_RADIUS;
 				
 		public AssessThreats(Team myTeam, double otherPassRisk) 
 		{
@@ -161,7 +162,7 @@ namespace RFC.Strategy
 		
 		bool ballPossess(RobotInfo player, BallInfo ball){/*determines if robot has the ball*/
 			bool possess = false;
-			if(player.Position.distance(ball.Position)<2*Constants.Basic.ROBOT_RADIUS){
+			if(player.Position.distance(ball.Position) < OWNERSHIP_THRESHOLD){
 				possess = true;
 			}
 			return possess;

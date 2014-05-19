@@ -33,7 +33,7 @@ namespace RFC.Strategy
         public void Handle(FieldVisionMessage msg)
         {
             //bk.arrange_kick(msg,3,5);
-            ko.OursSetup(msg);
+            ko.Theirs(msg);
         }
 
     }

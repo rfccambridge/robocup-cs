@@ -95,7 +95,7 @@ namespace ControlForm
                 //new GoalieTest(team, goalieNumber);
                 //new SetupTest1(team, goalieNumber);
                 new PlaySwitcher(team, goalieNumber);
-                //new SetupTest(Team.Blue, 6);
+                //new SetupTest(team, goalieNumber);
                 
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 

@@ -58,7 +58,7 @@ namespace RFC.Strategy
         // how long should a play continue before it times out (in milliseconds)?
         private const int SHOT_TIMEOUT = 2000;
         private const int BSHOT_TIMEOUT = 10000;
-        private const int NORMAL_TIMEOUT = 5000; // then start decreasing thresholds
+        private const int NORMAL_TIMEOUT = 8000; // then start decreasing thresholds
 
         // when did the current play start executing?
         private DateTime playStartTime;
@@ -207,20 +207,8 @@ namespace RFC.Strategy
         private double adjust_thresh(double thresh)
         {
             int time = (int)(DateTime.Now - playStartTime).TotalMilliseconds;
-            if (time >= 2 * NORMAL_TIMEOUT)
-            {
-                // way over, return 0
-                return -1;
-            }
-            else if (time >= NORMAL_TIMEOUT)
-            {
-                // just over, start decreasing
-                double ratio = time * 1.0 / NORMAL_TIMEOUT;
-                ratio = 2 - ratio;
-                return thresh * ratio;
-            }
-            else
-                return thresh;
+            double ratio = (NORMAL_TIMEOUT - time) / NORMAL_TIMEOUT;
+            return ratio * thresh;
         }
         
 
