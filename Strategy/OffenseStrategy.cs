@@ -59,7 +59,7 @@ namespace RFC.Strategy
         // how long should a play continue before it times out (in milliseconds)?
         private const int SHOT_TIMEOUT = 2000;
         private const int BSHOT_TIMEOUT = 10000;
-        private const int NORMAL_TIMEOUT = 8000; // then start decreasing thresholds
+        private const int NORMAL_TIMEOUT = 10000; // then start decreasing thresholds
 
         // when did the current play start executing?
         private DateTime playStartTime;

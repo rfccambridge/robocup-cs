@@ -14,7 +14,7 @@ namespace RFC.PathPlanning
         private Dictionary<int, DateTime> timeOuts;
         private ServiceManager msngr;
         private int RESET_TIME = 10000;
-        private double THRESHOLD = .2;
+        private double THRESHOLD = .05;
         Team team;
 
         public BreakBeamEmulator(Team team)
