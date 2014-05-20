@@ -92,35 +92,65 @@ namespace RFC.SerialControl
             }
         }
 
+        private void chargeButton_Click(object sender, EventArgs e)
+        {
+            byte[] packet = new RobotCommand((int)idSelector.Value, RobotCommand.Command.START_CHARGING).ToPacket();
+            port.Write(packet, 0, packet.Length);
+        }
+
+        private void KickButton_Click(object sender, EventArgs e)
+        {
+            byte[] packet = new RobotCommand((int)idSelector.Value, RobotCommand.Command.KICK).ToPacket();
+            port.Write(packet, 0, packet.Length);
+        }
+
+        private void breakbeamButton_Click(object sender, EventArgs e)
+        {
+            byte[] packet = new RobotCommand((int)idSelector.Value, RobotCommand.Command.FULL_BREAKBEAM_KICK).ToPacket();
+            port.Write(packet, 0, packet.Length);
+        }
+
+        private void dribbler_Click(object sender, EventArgs e)
+        {
+            byte[] packet = new RobotCommand((int)idSelector.Value, RobotCommand.Command.STOP_DRIBBLER).ToPacket();
+            port.Write(packet, 0, packet.Length);
+        }
+
+        private void dribblerStop_Click(object sender, EventArgs e)
+        {
+            byte[] packet = new RobotCommand((int)idSelector.Value, RobotCommand.Command.START_DRIBBLER).ToPacket();
+            port.Write(packet, 0, packet.Length);
+        }
+
         void timer_Tick(object s, EventArgs e)
         {
             int speed = (int)speedSelector.Value;
             WheelSpeeds speeds = new WheelSpeeds();
             if(states.HasFlag(KeyStates.Left)){
-                speeds.lb += speed;
+                speeds.lb -= speed;
                 speeds.rb -= speed;
-                speeds.lf -= speed;
+                speeds.lf += speed;
                 speeds.rf += speed;
             }
             if (states.HasFlag(KeyStates.Right))
             {
-                speeds.lb -= speed;
+                speeds.lb += speed;
                 speeds.rb += speed;
-                speeds.lf += speed;
+                speeds.lf -= speed;
                 speeds.rf -= speed;
             }
             if (states.HasFlag(KeyStates.Up))
             {
-                speeds.lb += speed;
+                speeds.lb -= speed;
                 speeds.rb += speed;
-                speeds.lf += speed;
+                speeds.lf -= speed;
                 speeds.rf += speed;
             }
             if (states.HasFlag(KeyStates.Down))
             {
-                speeds.lb -= speed;
+                speeds.lb += speed;
                 speeds.rb -= speed;
-                speeds.lf -= speed;
+                speeds.lf += speed;
                 speeds.rf -= speed;
             }
             byte[] packet = new RobotCommand((int)idSelector.Value, speeds).ToPacket();
