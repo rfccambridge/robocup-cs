@@ -330,7 +330,7 @@ namespace RFC.Strategy
             maxima.Sort();
             maxima.Reverse();
 
-            // Eric Anschuetz assignment code--compiles
+            // Eric Anschuetz assignment code
             /*
             int[] bestInd = offenseMap.vecToInd(maxima[0].position.Position);
             if (passMap[bestInd[0], bestInd[1]] >= adjust_thresh(BSHOT_THRESH))
@@ -349,7 +349,7 @@ namespace RFC.Strategy
             }
             */
 
-            // Eric Lu assignment code--compiles, not sure if it works
+            // Eric Lu assignment code
             
             List<RobotInfo> passerDestinations = new List<RobotInfo>();
             List<RobotInfo> passerIDs = new List<RobotInfo>();

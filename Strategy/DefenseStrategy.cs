@@ -81,7 +81,7 @@ namespace RFC.Strategy
             for (int i = 0; destinations.Count() < fieldPlayers.Count - playersOnBall; i++)
             {
             // man to man
-                if (totalThreats[i].position != msg.Ball.Position)
+                if ((totalThreats[i].position - msg.Ball.Position).magnitude() > 0.01)
                 {
                     //Console.WriteLine("Subtracting " + Constants.FieldPts.OUR_GOAL + " and " + topThreats[i].Position);
                     Vector2 difference = Constants.FieldPts.OUR_GOAL - totalThreats[i].position;
@@ -115,25 +115,25 @@ namespace RFC.Strategy
            
 
             
-            if (playType==PlayType.KickIn||playType==PlayType.KickOff)
-            {   //prevents players from getting within 50 cm of ball before being touched
-
-                for (int i = 0; i < destinations.Count; i++)
-                {
-                    destinations[i] = Avoider.avoid(destinations[i], msg.Ball.Position, ball_avoid_radius);
-                                     
-                }
-            }
             if (playType==PlayType.KickOff)
             {
                 //restricts players from going past halfline for kickoffs
-                for (int i = 1; i < destinations.Count; i++)
+                for (int i = 0; i < destinations.Count; i++)
                 {
                     if (destinations[i].Position.X > kickoff_boundary)
                     {
                         double tempStore = destinations[i].Position.Y;
                         destinations[i] = new RobotInfo(new Vector2(kickoff_boundary, tempStore),0,myTeam,0);
                     }
+                }
+            }
+            if (playType == PlayType.KickIn || playType == PlayType.KickOff)
+            {   //prevents players from getting within 50 cm of ball before being touched
+
+                for (int i = 0; i < destinations.Count; i++)
+                {
+                    destinations[i] = Avoider.avoid(destinations[i], msg.Ball.Position, ball_avoid_radius);
+
                 }
             }
                    
@@ -145,7 +145,7 @@ namespace RFC.Strategy
             // sending dest messages for each one
             for (int i = 0; i <n; i++)
             {
-                if (destinations[assignments[i]].Position == msg.Ball.Position)
+                if ((destinations[assignments[i]].Position - msg.Ball.Position).magnitude() < 0.01)
                 {
                     // if we can, shoot on goal
                     ShotOpportunity shot = Shot1.evaluateGoal(msg, myTeam, msg.Ball.Position);
