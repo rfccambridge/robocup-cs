@@ -433,7 +433,7 @@ namespace RFC.Strategy
         public void bounceShotPlay(FieldVisionMessage fieldVision)
         {
             // escape back to normal play
-            if ((int)(DateTime.Now - playStartTime).TotalMilliseconds >= BSHOT_TIMEOUT || sc.check(fieldVision.Ball.Position))
+            if ((int)(DateTime.Now - playStartTime).TotalMilliseconds >= BSHOT_TIMEOUT || !sc.check(fieldVision.Ball.Position))
             {
                 if (!sc.check(fieldVision.Ball.Position)) Console.WriteLine("TOO FAR");
                 state = State.Normal;
