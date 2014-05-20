@@ -65,7 +65,7 @@ namespace RFC.PathPlanning
                 RobotCommand cmd2 = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(idealFollowThrough, false, false, false);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(idealFollowThrough, false);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
             else
@@ -75,7 +75,7 @@ namespace RFC.PathPlanning
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true,false,true);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
         }

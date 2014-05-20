@@ -84,6 +84,7 @@ namespace RFC.Strategy
 
         public void arrange_kick(FieldVisionMessage msg, int kicker_id, int bouncer_id)
         {
+            
             RobotInfo kicker = msg.GetRobot(team, kicker_id);
             RobotInfo bounce = msg.GetRobot(team, bouncer_id);
             
@@ -94,7 +95,6 @@ namespace RFC.Strategy
             msngr.SendMessage<CommandMessage>(new CommandMessage(bb_cmd));
 
             // common vectors
-            bounce_loc = bounce.Position;
             Vector2 toGoal = Shot1.evaluate(msg, team, msg.Ball.Position).target - bounce_loc;
             Vector2 toBall = msg.Ball.Position - bounce_loc;
             bounce.Orientation = (2*toGoal.cartesianAngle() + toBall.cartesianAngle())/3;
@@ -111,6 +111,7 @@ namespace RFC.Strategy
             radVec = radVec.normalizeToLength(Constants.Basic.ROBOT_FRONT_RADIUS);
             bounce.Position = bounce_loc - radVec;
             Console.WriteLine(progress);
+            
             switch(progress)
             {
                 case Progress.Far:
@@ -135,7 +136,10 @@ namespace RFC.Strategy
                     }
                     break;
                 case Progress.Kicked:
-                    bounce.Position = msg.Ball.Position + (bounce.Position - msg.Ball.Position).projectionLength(msg.Ball.Velocity)*msg.Ball.Velocity;
+                    //if (msg.Ball.Velocity.magnitude() > 0.5)
+                    //{
+                        bounce.Position = msg.Ball.Position + (bounce.Position - msg.Ball.Position).projectionLength(msg.Ball.Velocity) * msg.Ball.Velocity.normalize();
+                    //}
 
                     // changing states
                     if (bounce.Position.distance(msg.Ball.Position) < critical_radius)
@@ -158,8 +162,9 @@ namespace RFC.Strategy
                     break;
             }
 
-            RobotDestinationMessage dest_bnc = new RobotDestinationMessage(bounce, false, false, true);
+            RobotDestinationMessage dest_bnc = new RobotDestinationMessage(bounce, false);
             msngr.SendMessage<RobotDestinationMessage>(dest_bnc);
+             
         }
 
         public static double getBounceOrientation(Vector2 toBall, Vector2 toGoal)

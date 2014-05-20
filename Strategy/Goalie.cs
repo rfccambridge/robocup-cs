@@ -30,6 +30,7 @@ namespace RFC.Strategy
         // output quantity used in weighted average
         public double guardRegime(double ballvel)
         {
+            /*
             if (ballvel > 0.5)
             {
                 return 1;
@@ -37,7 +38,8 @@ namespace RFC.Strategy
             else
             {
                 return 0;
-            }
+            }*/
+            return 0;
         }
 
         public void getGoalie(FieldVisionMessage msg)
@@ -65,15 +67,20 @@ namespace RFC.Strategy
             Vector2 robotToBall = ballpos - robot.Position;
             if (goalToBall.magnitude() < clearThreshold)
             {
-                RobotInfo followThrough = new RobotInfo(ballpos + robotToBall.normalizeToLength(.3), robotToBall.cartesianAngle(), team, ID);
+
+                RobotInfo followThrough = new RobotInfo(ballpos, robotToBall.cartesianAngle(), team, ID);
+                /*
                 // we are close enough
                 RobotCommand cmd = new RobotCommand(ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
                 RobotCommand cmd2 = new RobotCommand(ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, false, false);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
+                */
+                KickMessage mkg = new KickMessage(followThrough, Constants.FieldPts.THEIR_GOAL);
+                msngr.SendMessage(mkg);
                 return;
             }
 
@@ -115,7 +122,7 @@ namespace RFC.Strategy
 
             RobotInfo goalie_dest = new RobotInfo(pos, orientation, team, ID);
 
-            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, false));
+            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false));
         }
     }
 }

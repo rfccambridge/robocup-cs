@@ -84,6 +84,10 @@
       <Project>{5BA71877-D1CE-4DC9-9A7E-5D82A74B627C}</Project>
       <Name>InterProcessMessaging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Logging\Logging.csproj">
+      <Project>{afd94145-d3fb-4143-9925-6ac7b766e224}</Project>
+      <Name>Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Messaging\Messaging.csproj">
       <Project>{69ae7f48-fff1-46aa-9cf3-b4a9f5fb2d13}</Project>
       <Name>Messaging</Name>

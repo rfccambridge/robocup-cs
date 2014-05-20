@@ -51,7 +51,7 @@ namespace RFC.Strategy
             }
 
             RobotInfo destination = new RobotInfo(waypoints[currentWaypointIndex], 0, team,robotId);
-            RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true, false, true);
+            RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true);
 
             msngr.SendMessage(destinationMessage);
             firstRun = false;

@@ -84,10 +84,10 @@ namespace ControlForm
 
                 new LogHandler();
 
-                new SmoothRRTPlanner(true, maxRobotId);
+                new SmoothRRTPlanner(true, maxRobotId, goalieNumber);
                 new VelocityDriver();
                 new KickPlanner();
-                //new BreakBeamEmulator(team);
+                new BreakBeamEmulator(team);
 
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
@@ -97,6 +97,7 @@ namespace ControlForm
                 //new SetupTest1(team, goalieNumber);
                 new PlaySwitcher(team, goalieNumber);
                 //new SetupTest(team, goalieNumber);
+                //new KickTester(team, goalieNumber);
                 
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 

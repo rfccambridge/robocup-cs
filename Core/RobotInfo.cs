@@ -50,6 +50,12 @@ namespace RFC.Core
 		{
 			return "BallInfo: " + position;
 		}
+
+        // prints useful information about a robotinfo
+        public string bio()
+        {
+            return "" + Position.X + ", " + Position.Y;
+        }
 	}
 
 	/// <summary>
@@ -166,7 +172,16 @@ namespace RFC.Core
 		{
 			return idnum + ": " + position + " (" + orientation + ")";
 		}
-	}
+	
+        // prints useful information about a robotinfo
+        public string bio()
+        {
+            string t = "1";
+            if (team == Team.Blue)
+                t = "-1";
+            return t + ", " + ID + ", " + Position.X + ", " + Position.Y + ", " + Orientation;
+        }
+    }
 	/// <summary>
 	/// This class is for use by the interpreter only.  The interpreter copies the data from RobotInfos into these objects,
 	/// adding some extra data.

@@ -36,7 +36,7 @@ namespace RFC.Strategy
         {
             foreach (RobotInfo rob in msg.GetRobots(team))
             {
-                msngr.SendMessage(new RobotDestinationMessage(rob, true, true, true));
+                msngr.SendMessage(new RobotDestinationMessage(rob, true));
             }
         }
 

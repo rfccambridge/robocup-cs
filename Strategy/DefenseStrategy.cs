@@ -170,7 +170,7 @@ namespace RFC.Strategy
                     RobotInfo dest = new RobotInfo(destinations[assignments[i]]);
                     dest.ID = fieldPlayers[i].ID;
 
-                    msngr.SendMessage(new RobotDestinationMessage(dest, true, false, true));
+                    msngr.SendMessage(new RobotDestinationMessage(dest, true));
                 }
             }
 
