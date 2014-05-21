@@ -169,7 +169,7 @@ namespace RFC.PathPlanning
             RobotInfo destinationCopy = new RobotInfo(message.Destination);
 
             if (message.Destination.ID != goalie_id)
-                destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius, LB, defense_radius);
+                destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius * 1.25, LB, defense_radius * 1.25);
 
             destinationCopy.Team = message.Destination.Team;
             destinationCopy.ID = id;

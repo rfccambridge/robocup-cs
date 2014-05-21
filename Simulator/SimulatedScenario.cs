@@ -101,7 +101,7 @@ namespace RFC.Simulator
             robots[Team.Blue] = blueRobots;
 
             result.Robots = robots;
-            result.Ball = new BallInfo(new Vector2(2.5,0));
+            result.Ball = new BallInfo(new Vector2(-2.5,1.0));
 
             return result;
         }
