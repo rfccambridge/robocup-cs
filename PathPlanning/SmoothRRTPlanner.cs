@@ -176,14 +176,14 @@ namespace RFC.PathPlanning
 
             try
             {
-                DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.NORMAL;
+                DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.FULL;
                 RefboxStateMessage refMessage = ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>();
                 PlayType[] types = new PlayType[4];
                 types[0] = PlayType.Direct_Ours;
                 types[1] = PlayType.Direct_Theirs;
                 types[2] = PlayType.Indirect_Ours;
                 types[3] = PlayType.Indirect_Theirs;
-                DefenseAreaAvoid rightAvoid = (refMessage == null || types.Contains(refMessage.PlayType)) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
+                DefenseAreaAvoid rightAvoid = DefenseAreaAvoid.NONE;//(refMessage == null || types.Contains(refMessage.PlayType)) ? DefenseAreaAvoid.FULL : DefenseAreaAvoid.NONE;
                 
 
                 // debug info
