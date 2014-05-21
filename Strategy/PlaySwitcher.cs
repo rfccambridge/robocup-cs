@@ -51,6 +51,7 @@ namespace RFC.Strategy
             kickInBehavior = new KickInBehavior(team, goalie_id);
             penaltyKickBehavior = new PenaltyKickBehavior(team, goalie_id);
             kickOffBehavior = new KickOffBehavior(team, goalie_id);
+            this.play = PlayType.Stopped;
 
             new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
             new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);

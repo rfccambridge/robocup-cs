@@ -384,7 +384,7 @@ namespace RFC.Simulator
                             newBallVelocity = relVel + r.Velocity;
 
                             // handling the dribbler, as an additional force back towards the robot
-                            /*
+                            
                             if (dribblers_on[r.Team][r.ID])
                             {
                                 Console.WriteLine("dribbler on");
@@ -402,7 +402,7 @@ namespace RFC.Simulator
                                     newBallVelocity += dribbler_force;
                                     Console.WriteLine(dribbler_force);
                                 }
-                            }*/
+                            }
                             break;
                         }
                     }

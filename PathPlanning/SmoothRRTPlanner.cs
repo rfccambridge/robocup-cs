@@ -166,7 +166,7 @@ namespace RFC.PathPlanning
             
 
             // avoiding
-            RobotInfo destinationCopy = Avoider.avoid(message.Destination, RT, defense_radius, RB, defense_radius);
+            RobotInfo destinationCopy = new RobotInfo(message.Destination);
 
             if (message.Destination.ID != goalie_id)
                 destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius, LB, defense_radius);

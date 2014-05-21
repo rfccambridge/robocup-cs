@@ -14,7 +14,7 @@ namespace RFC.Logging
         public MatchRecorder()
         {
             this.msngr = ServiceManager.getServiceManager();
-            logger = new System.IO.StreamWriter(@"match_history.txt", false);
+            logger = new System.IO.StreamWriter(@"match_history.txt", true);
 
         }
 

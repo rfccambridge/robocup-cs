@@ -88,6 +88,8 @@ namespace ControlForm
                 new VelocityDriver();
                 new KickPlanner();
                 new BreakBeamEmulator(team);
+                //new DribblerControler(team);
+
 
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
@@ -95,13 +97,13 @@ namespace ControlForm
                 //new SetupTest(team, goalieNumber);
                 //new GoalieTest(team, goalieNumber);
                 //new SetupTest1(team, goalieNumber);
-                new PlaySwitcher(team, goalieNumber);
-                //new SetupTest(team, goalieNumber);
+                //new PlaySwitcher(team, goalieNumber);
+                new SetupTest(team, goalieNumber);
                 //new KickTester(team, goalieNumber);
                 
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 
-                refbox.Connect("224.5.92.12", 10100);
+                refbox.Connect("224.5.23.1", 10001);
                 refbox.Start();
 
                 running = true;
