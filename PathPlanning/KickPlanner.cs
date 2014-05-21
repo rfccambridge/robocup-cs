@@ -32,7 +32,6 @@ namespace RFC.PathPlanning
 
         public void Handle(KickMessage kick)
         {
-            
             BallVisionMessage bvm = msngr.GetLastMessage<BallVisionMessage>();
             if (bvm == null)
                 return;
@@ -44,9 +43,10 @@ namespace RFC.PathPlanning
             Vector2 diff = kick.Target - ball.Position;
             double angle = diff.cartesianAngle();
             Vector2 offset = diff.normalizeToLength(kick_dist);
-            
-            Vector2 position = ball.Position - offset;
+
+            Vector2 position = ball.Position - offset + diff.normalizeToLength(Constants.Basic.ROBOT_RADIUS);
             Vector2 followThroughOffset = diff.normalizeToLength(follow_through_dist);
+            //quick fix, move the robot a little further because of friction on the field
             Vector2 followThroughPosition = ball.Position + followThroughOffset;
             
             RobotInfo ideal = new RobotInfo(position, angle,robot.Team, robot.ID);
