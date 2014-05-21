@@ -32,7 +32,6 @@ namespace RFC.PathPlanning
 
         public void Handle(KickMessage kick)
         {
-            
             BallVisionMessage bvm = msngr.GetLastMessage<BallVisionMessage>();
             if (bvm == null)
                 return;
@@ -44,12 +43,20 @@ namespace RFC.PathPlanning
             Vector2 diff = kick.Target - ball.Position;
             double angle = diff.cartesianAngle();
             Vector2 offset = diff.normalizeToLength(kick_dist);
-            
+
             Vector2 position = ball.Position - offset;
+            RobotInfo ideal = new RobotInfo(position, angle, robot.Team, robot.ID);
+
+            // a little further than we need so we actually get there
+            Vector2 to_go = position - robot.Position;
+            Vector2 excessive_pos = position + to_go.normalizeToLength(.02);
+            RobotInfo excessive = new RobotInfo(excessive_pos, angle, robot.Team, robot.ID);
+
             Vector2 followThroughOffset = diff.normalizeToLength(follow_through_dist);
+            //quick fix, move the robot a little further because of friction on the field
             Vector2 followThroughPosition = ball.Position + followThroughOffset;
             
-            RobotInfo ideal = new RobotInfo(position, angle,robot.Team, robot.ID);
+            
             //ideal = new RobotInfo(new Vector2(), 0, robot.ID);
             RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle,robot.Team, robot.ID);
 
@@ -73,7 +80,7 @@ namespace RFC.PathPlanning
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(excessive,true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
         }

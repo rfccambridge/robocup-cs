@@ -23,7 +23,7 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
-            this.id = 3;
+            this.id = 4;
 
             behave = new MidfieldPlay(team, goalie_id);
         }

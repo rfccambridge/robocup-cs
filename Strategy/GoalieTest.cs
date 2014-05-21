@@ -41,8 +41,8 @@ namespace RFC.Strategy
             if (!first && fieldVision.GetRobots(team).Count() > 0)
             {
                 goalie.getGoalie(fieldVision);
-                KickMessage kmg = new KickMessage(fieldVision.GetRobot(team, 1), Constants.FieldPts.OUR_GOAL);
-                msngr.SendMessage(kmg);
+                //KickMessage kmg = new KickMessage(fieldVision.GetRobot(team, 1), Constants.FieldPts.OUR_GOAL);
+                //msngr.SendMessage(kmg);
             }
             first = false;
 
