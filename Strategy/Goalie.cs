@@ -16,6 +16,8 @@ namespace RFC.Strategy
         public int ID {get; private set;}
         ServiceManager msngr;
         double clearThreshold = 1;
+        int framesTowardGoal = 0;
+        int FRAME_THRESH = 5;
 
         public Goalie(Team team, int ID)
         {
@@ -28,14 +30,19 @@ namespace RFC.Strategy
         // low number indicates shadowing ball
         // high number indicates predicting ball intersection/closest approach
         // output quantity used in weighted average
-        public double guardRegime(double ballvel)
+        public double guardRegime(Vector2 ballvel)
         {
-            if (ballvel > 0.5)
+            if (ballvel.cartesianAngle() < Math.PI / 2 && ballvel.cartesianAngle() > 3 * Math.PI / 2)
+            {
+                framesTowardGoal++;
+            }
+            if (framesTowardGoal > FRAME_THRESH && ballvel.magnitude() > 0.5)
             {
                 return 1;
             }
             else
             {
+                framesTowardGoal = 0;
                 return 0;
             }
         }
@@ -107,7 +114,7 @@ namespace RFC.Strategy
                 leadAngle = (ballray.closestPointTo(goalpos) - goalpos).cartesianAngle();
             }
 
-            double regime = guardRegime(ballvel.magnitude());
+            double regime = guardRegime(ballvel);
             double angle = shadowAngle * (1 - regime) + leadAngle * regime;
 
             Vector2 pos = new Vector2(angle) * hold + goalpos;
