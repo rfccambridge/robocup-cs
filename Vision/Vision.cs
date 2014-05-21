@@ -18,6 +18,9 @@ namespace RFC.Vision
 		bool _clientOpen = false;
 		bool _running = false;
 		Thread _visionThread;
+        BallInfo last_ball;
+        const double DT = 1.0 / 60.0;
+        const double STDDEV = 1;
 
 		public void Connect(string hostname, int port)
 		{
@@ -27,6 +30,7 @@ namespace RFC.Vision
 			_client = new SSLVisionClient();
 			_client.Connect(hostname, port);
 			_clientOpen = true;
+            new QueuedMessageHandler<BallVisionMessage>(handleBallVisionMessage, new object());
 		}
 
 		public void Disconnect()
@@ -62,6 +66,11 @@ namespace RFC.Vision
 			_running = false;
 		}
 
+        public void handleBallVisionMessage(BallVisionMessage msg)
+        {
+            this.last_ball = msg.Ball;
+        }
+
 		private void loop()
 		{
 			while (true)
@@ -87,15 +96,25 @@ namespace RFC.Vision
 					msg.Delay = t_processing;
 
 					//Ball info:
+                    Vector2 last_location;
+                    if (last_ball == null)
+                        last_location = new Vector2();
+                    else
+                        last_location = last_ball.Position + DT * last_ball.Velocity;
+
 					float maxBallConfidence = float.MinValue;
 					for (int i = 0; i < balls_n; i++)
 					{
-						SSL_DetectionBall ball = detection.balls[i];
+						SSL_DetectionBall sball = detection.balls[i];
+                        BallInfo ball = new BallInfo(ConvertFromSSLVisionCoords(new Vector2(sball.x, sball.y)));
 
-						if ((ball.confidence > 0.0) && (ball.confidence > maxBallConfidence))
+                        double dist_conf = 1 + Probability.gaussianPDF(ball.Position, last_location, STDDEV);
+
+						if ((sball.confidence > 0.0) && (sball.confidence * dist_conf > maxBallConfidence))
 						{
-							msg.Ball = new BallInfo(ConvertFromSSLVisionCoords(new Vector2(ball.x, ball.y)));
-							maxBallConfidence = ball.confidence;
+                            msg.Ball = ball;
+                            
+							maxBallConfidence = sball.confidence * (float)dist_conf;
 						}
 					}
 
@@ -122,6 +141,7 @@ namespace RFC.Vision
 
 			}
 		}
+
 
 		private void loopErrorHandler(IAsyncResult result)
 		{
