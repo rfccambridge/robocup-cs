@@ -53,8 +53,10 @@ namespace RFC.Strategy
         private const double BALL_HANDLE_MIN = 0.2;
 
         // the lower the number, the more likely to make a shot
-        private const double SHOT_THRESH = .05;
-        private const double BSHOT_THRESH = 20;
+        // private const double SHOT_THRESH = .05;
+        // private const double BSHOT_THRESH = 20;
+        private const double SHOT_THRESH = 0.0;
+        private const double BSHOT_THRESH = 20000;
 
         // how long should a play continue before it times out (in milliseconds)?
         private const int SHOT_TIMEOUT = 2000;
