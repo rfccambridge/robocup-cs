@@ -44,6 +44,7 @@ namespace RFC.Commands
 
         private void sendCommand(RobotCommand command)
         {
+            /*
             switch (command.command)
             {
                 case RobotCommand.Command.FULL_BREAKBEAM_KICK:
@@ -65,7 +66,7 @@ namespace RFC.Commands
                     break;
                 default:
                     break;
-            }
+            }*/
             byte[] packet = command.ToPacket();
             _comPort.Write(packet, 0, packet.Length);
         }

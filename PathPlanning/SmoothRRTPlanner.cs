@@ -17,6 +17,7 @@ namespace RFC.PathPlanning
         /// </summary>
         public enum DefenseAreaAvoid { NONE, NORMAL, FULL };
 
+
         //Constants-------------------------------------
         double TIME_STEP; //Time step in secs, with velocity determines RRT extension length
         double ROBOT_VELOCITY; //Assume our robot can move this fast
@@ -55,6 +56,8 @@ namespace RFC.PathPlanning
         Rectangle LEGAL_RECTANGLE; //The basic rectangle determining what points in the field are legal to move to
 
         int NUM_PATHS_TO_SCORE; //How many paths do we generate and score?
+
+        int goalie_id;
 
         public void ReloadConstants()
         {
@@ -112,9 +115,10 @@ namespace RFC.PathPlanning
 
         private ServiceManager msngr;
 
-        public SmoothRRTPlanner(bool includeCurStateInPath, int numberRobots)
+        public SmoothRRTPlanner(bool includeCurStateInPath, int numberRobots, int goalie_id)
         {
             this.includeCurStateInPath = includeCurStateInPath;
+            this.goalie_id = goalie_id;
             ReloadConstants();
 
             _last_successful_path = new RobotPath[numberRobots];
@@ -162,9 +166,9 @@ namespace RFC.PathPlanning
             
 
             // avoiding
-            RobotInfo destinationCopy = Avoider.avoid(message.Destination, RT, defense_radius, RB, defense_radius);
+            RobotInfo destinationCopy = new RobotInfo(message.Destination);
 
-            if (!message.IsGoalie)
+            if (message.Destination.ID != goalie_id)
                 destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius, LB, defense_radius);
 
             destinationCopy.Team = message.Destination.Team;
@@ -176,7 +180,7 @@ namespace RFC.PathPlanning
 
             try
             {
-                DefenseAreaAvoid leftAvoid = (message.IsGoalie) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.FULL;
+                DefenseAreaAvoid leftAvoid = (message.Destination.ID != goalie_id) ? DefenseAreaAvoid.NONE : DefenseAreaAvoid.FULL;
                 RefboxStateMessage refMessage = ServiceManager.getServiceManager().GetLastMessage<RefboxStateMessage>();
                 PlayType[] types = new PlayType[4];
                 types[0] = PlayType.Direct_Ours;

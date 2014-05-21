@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RFC.Core;
 using RFC.Messaging;
 using RFC.Geometry;
+using RFC.Logging;
 
 namespace RFC.Strategy
 {
@@ -32,6 +33,7 @@ namespace RFC.Strategy
         PenaltyKickBehavior penaltyKickBehavior;
         KickOffBehavior kickOffBehavior;
         ServiceManager msngr;
+        MatchRecorder recorder;
 
         public PlaySwitcher(Team our_team, int goalie_id)
         {
@@ -41,6 +43,7 @@ namespace RFC.Strategy
             this.goalie_id = goalie_id;
 
             this.msngr = ServiceManager.getServiceManager();
+            this.recorder = new MatchRecorder();
 
             // initializing behavior components
             normalBehavior = new NormalBehavior(team, goalie_id);
@@ -48,6 +51,7 @@ namespace RFC.Strategy
             kickInBehavior = new KickInBehavior(team, goalie_id);
             penaltyKickBehavior = new PenaltyKickBehavior(team, goalie_id);
             kickOffBehavior = new KickOffBehavior(team, goalie_id);
+            this.play = PlayType.Stopped;
 
             new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
             new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
@@ -112,6 +116,8 @@ namespace RFC.Strategy
                     kickOffBehavior.Theirs(msg);
                     break;
             }
+            recorder.Handle(msg);
+
         }
     }
 }

@@ -43,6 +43,7 @@
     <Compile Include="Avoider.cs" />
     <Compile Include="BreakBeamEmulator.cs" />
     <Compile Include="DribblePlanner.cs" />
+    <Compile Include="DribblerControler.cs" />
     <Compile Include="KickPlanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmoothRRTPlanner.cs" />

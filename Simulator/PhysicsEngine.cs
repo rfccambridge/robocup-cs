@@ -384,10 +384,9 @@ namespace RFC.Simulator
                             newBallVelocity = relVel + r.Velocity;
 
                             // handling the dribbler, as an additional force back towards the robot
-                            /*
+                            
                             if (dribblers_on[r.Team][r.ID])
                             {
-                                Console.WriteLine("dribbler on");
                                 const double CENTER_TO_DRIBBLER_DIST = 0.05;
                                 const double DRIBBLER_ACTIVITY_RADIUS = .03;
 
@@ -395,14 +394,12 @@ namespace RFC.Simulator
                                 Vector2 dribblerPosition = r.Position + CENTER_TO_DRIBBLER_DIST * robotFaceDir;
                                 if (dribblerPosition.distanceSq(ball.Position) < DRIBBLER_ACTIVITY_RADIUS * DRIBBLER_ACTIVITY_RADIUS)
                                 {
-                                    Console.WriteLine("in range");
                                     // in range of dribbler
                                     // exert slight force towards robot
                                     Vector2 dribbler_force = (r.Position - ball.Position).normalizeToLength(1);
                                     newBallVelocity += dribbler_force;
-                                    Console.WriteLine(dribbler_force);
                                 }
-                            }*/
+                            }
                             break;
                         }
                     }

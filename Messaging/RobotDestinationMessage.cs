@@ -11,13 +11,11 @@ namespace RFC.Messaging
         public RobotInfo Destination {get; private set;}
         public bool AvoidBall { get; private set; }
         public bool Slow { get; private set; }
-        public bool IsGoalie { get; private set; }
 
-        public RobotDestinationMessage(RobotInfo destination, bool avoidBall, bool isGoalie, bool slow = false)
+        public RobotDestinationMessage(RobotInfo destination, bool avoidBall, bool slow = false)
         {
             Destination = destination;
             AvoidBall = avoidBall;
-            IsGoalie = isGoalie;
             Slow = slow;
         }
     }

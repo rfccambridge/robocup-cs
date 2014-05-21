@@ -15,6 +15,7 @@ namespace RFC.Strategy
         Team team;
         ServiceManager msngr;
         KickOffBehavior ko;
+        PenaltyKickBehavior pk;
         int goalie_id;
         object lockObject;
         BounceKicker bk;
@@ -27,13 +28,16 @@ namespace RFC.Strategy
             this.ko = new KickOffBehavior(team, goalie);
             this.lockObject = new object();
             this.bk = new BounceKicker(team, goalie_id);
+            this.bk.reset(new Vector2(1, 0));
+            this.pk = new PenaltyKickBehavior(team, goalie);
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
         }
 
         public void Handle(FieldVisionMessage msg)
         {
-            //bk.arrange_kick(msg,3,5);
-            ko.Theirs(msg);
+            //bk.arrange_kick(msg,1,2);
+            pk.Ours(msg);
+            //ko.TheirsSetup(msg);
         }
 
     }

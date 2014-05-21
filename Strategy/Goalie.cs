@@ -17,7 +17,7 @@ namespace RFC.Strategy
         ServiceManager msngr;
         double clearThreshold = 1;
         int framesTowardGoal = 0;
-        int FRAME_THRESH = 5;
+        int FRAME_THRESH = 10;
 
         public Goalie(Team team, int ID)
         {
@@ -30,19 +30,24 @@ namespace RFC.Strategy
         // low number indicates shadowing ball
         // high number indicates predicting ball intersection/closest approach
         // output quantity used in weighted average
-        public double guardRegime(Vector2 ballvel)
+        public double guardRegime(BallInfo ball)
         {
-            if (ballvel.cartesianAngle() < Math.PI / 2 && ballvel.cartesianAngle() > 3 * Math.PI / 2)
+            Vector2 ball2goal = Constants.FieldPts.OUR_GOAL - ball.Position;
+            if (ball.Velocity.cosineAngleWith(ball2goal) > .9)
             {
                 framesTowardGoal++;
             }
-            if (framesTowardGoal > FRAME_THRESH && ballvel.magnitude() > 0.5)
+            else
+            {
+                
+                framesTowardGoal = 0;
+            }
+            if (framesTowardGoal > FRAME_THRESH && ball.Velocity.magnitude() > 0.5)
             {
                 return 1;
             }
             else
             {
-                framesTowardGoal = 0;
                 return 0;
             }
         }
@@ -72,15 +77,20 @@ namespace RFC.Strategy
             Vector2 robotToBall = ballpos - robot.Position;
             if (goalToBall.magnitude() < clearThreshold)
             {
-                RobotInfo followThrough = new RobotInfo(ballpos + robotToBall.normalizeToLength(.3), robotToBall.cartesianAngle(), team, ID);
+
+                RobotInfo followThrough = new RobotInfo(ballpos, robotToBall.cartesianAngle(), team, ID);
+                /*
                 // we are close enough
                 RobotCommand cmd = new RobotCommand(ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
                 RobotCommand cmd2 = new RobotCommand(ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, false, false);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(followThrough, false, true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
+                */
+                KickMessage mkg = new KickMessage(followThrough, Constants.FieldPts.THEIR_GOAL);
+                msngr.SendMessage(mkg);
                 return;
             }
 
@@ -114,7 +124,7 @@ namespace RFC.Strategy
                 leadAngle = (ballray.closestPointTo(goalpos) - goalpos).cartesianAngle();
             }
 
-            double regime = guardRegime(ballvel);
+            double regime = guardRegime(ball);
             double angle = shadowAngle * (1 - regime) + leadAngle * regime;
 
             Vector2 pos = new Vector2(angle) * hold + goalpos;
@@ -122,7 +132,7 @@ namespace RFC.Strategy
 
             RobotInfo goalie_dest = new RobotInfo(pos, orientation, team, ID);
 
-            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false, true, false));
+            msngr.SendMessage<RobotDestinationMessage>(new RobotDestinationMessage(goalie_dest, false));
         }
     }
 }

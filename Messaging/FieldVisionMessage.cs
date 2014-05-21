@@ -89,5 +89,24 @@ namespace RFC.Messaging
                 return new RobotInfo(closestToBall);
             }
         }
+
+        public string bio()
+        {
+            string rep = DateTime.Now.TimeOfDay + ", ";
+            foreach (RobotInfo rob in robots[Team.Yellow])
+            {
+                rep = rep + rob.bio() + ", ";
+            }
+            foreach (RobotInfo rob in robots[Team.Blue])
+            {
+                rep = rep + rob.bio() + ", ";
+            }
+            if (Ball != null)
+                rep = rep + Ball.bio() + ", ";
+            else
+                rep = rep + "null, ";
+
+            return rep;
+        }
     }
 }

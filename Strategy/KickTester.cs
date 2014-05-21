@@ -13,6 +13,7 @@ namespace RFC.Strategy
         int goalie_id;
         ServiceManager msngr;
         MidfieldPlay behave;
+        int id;
 
 
         public KickTester(Team team, int goalie_id)
@@ -22,13 +23,14 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             object lockObject = new object();
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
+            this.id = 4;
 
             behave = new MidfieldPlay(team, goalie_id);
         }
 
         public void Handle(FieldVisionMessage msg)
         {
-            KickMessage kick = new KickMessage(msg.GetRobots(team)[0], Constants.FieldPts.THEIR_GOAL);
+            KickMessage kick = new KickMessage(msg.GetRobot(team,id), Constants.FieldPts.THEIR_GOAL);
             msngr.SendMessage(kick);
         }
 

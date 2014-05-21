@@ -51,6 +51,10 @@ namespace RFC.PathPlanning
                 }
                 // see if close enough to kick
                 RobotInfo kicker = msg.GetRobot(team, i);
+
+                if (kicker == null)
+                    continue;
+
                 Vector2 ideal = kicker.Position + new Vector2(kicker.Orientation).normalizeToLength(Constants.Basic.ROBOT_FRONT_RADIUS);
                 if (ideal.distance(msg.Ball.Position) < THRESHOLD)
                 {

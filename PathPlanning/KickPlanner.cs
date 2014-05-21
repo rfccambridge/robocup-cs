@@ -44,12 +44,19 @@ namespace RFC.PathPlanning
             double angle = diff.cartesianAngle();
             Vector2 offset = diff.normalizeToLength(kick_dist);
 
-            Vector2 position = ball.Position - offset + diff.normalizeToLength(Constants.Basic.ROBOT_RADIUS);
+            Vector2 position = ball.Position - offset;
+            RobotInfo ideal = new RobotInfo(position, angle, robot.Team, robot.ID);
+
+            // a little further than we need so we actually get there
+            Vector2 to_go = position - robot.Position;
+            Vector2 excessive_pos = position + to_go.normalizeToLength(.02);
+            RobotInfo excessive = new RobotInfo(excessive_pos, angle, robot.Team, robot.ID);
+
             Vector2 followThroughOffset = diff.normalizeToLength(follow_through_dist);
             //quick fix, move the robot a little further because of friction on the field
             Vector2 followThroughPosition = ball.Position + followThroughOffset;
             
-            RobotInfo ideal = new RobotInfo(position, angle,robot.Team, robot.ID);
+            
             //ideal = new RobotInfo(new Vector2(), 0, robot.ID);
             RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle,robot.Team, robot.ID);
 
@@ -59,23 +66,21 @@ namespace RFC.PathPlanning
             if (AngUtils.compare(angle, robot.Orientation) < heading_threshold && isClose.check(robot.Position))
             {
                 // we are close enough
-                Console.WriteLine("close enough");
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
                 RobotCommand cmd2 = new RobotCommand(robot.ID, RobotCommand.Command.FULL_BREAKBEAM_KICK);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd2));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(idealFollowThrough, false, false, false);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(idealFollowThrough, false);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
             else
             {
                 // not close enough
-                Console.WriteLine("not close enough");
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true,false,true);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(excessive,true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
         }
