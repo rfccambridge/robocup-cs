@@ -47,7 +47,14 @@ namespace RFC.Strategy
 
         public List<Threat> getThreats(FieldVisionMessage msg) //returns list of threats in decreasing order of risk severity
         {/*creates list of Threats, then prioritizes them*/
-            List<RobotInfo> getRobots = msg.GetRobots(otherTeam);
+            List<RobotInfo> getallRobots = msg.GetRobots(otherTeam);
+            List<RobotInfo> getRobots = new List<RobotInfo>();
+            foreach (RobotInfo robot in getallRobots)
+            {
+                if (robot.Position.X < .3)
+                    getRobots.Add(robot);
+            }
+
             double ballRisk = ballRiskRating(msg.Ball, getRobots);
             foreach(RobotInfo robot in getRobots)
             {
@@ -94,9 +101,9 @@ namespace RFC.Strategy
                 }
                 //Console.WriteLine("Added robot to indexedThreats with position " + dummy.position);
 			}
-            indexedThreats.Add(new Threat(-1, Constants.FieldPts.OUR_GOAL + new Vector2(1, 1), Threat.ThreatType.space));
-            indexedThreats.Add(new Threat(-2, Constants.FieldPts.OUR_GOAL + new Vector2(1, -1), Threat.ThreatType.space));
-            indexedThreats.Add(new Threat(-3, Constants.FieldPts.OUR_GOAL + new Vector2(1.5, 0), Threat.ThreatType.space));
+            indexedThreats.Add(new Threat(-2, Constants.FieldPts.OUR_GOAL + new Vector2(1, 1), Threat.ThreatType.space));
+            indexedThreats.Add(new Threat(-3, Constants.FieldPts.OUR_GOAL + new Vector2(1, -1), Threat.ThreatType.space));
+            indexedThreats.Add(new Threat(-1, Constants.FieldPts.OUR_GOAL + new Vector2(1.5, 0), Threat.ThreatType.space));
 			return;
 		}
 		
@@ -126,6 +133,7 @@ namespace RFC.Strategy
 			else{
 				Vector2 pathToGoal = Constants.FieldPts.OUR_GOAL-ball.Position;
 				double distanceRisk = pathToGoal.magnitude()/Constants.Field.WIDTH*50;
+
 				double angleRisk = Math.Abs(pathToGoal.cosineAngleWith(centerLine));
 				riskRating += distanceRisk*angleRisk;
 				return riskRating;
@@ -138,7 +146,7 @@ namespace RFC.Strategy
 		{
             double passRisk=0;
             Threat playerThreat= new Threat(playerShotRisk(player, msg.Ball,getRobots,ballRisk),msg.Ball);
-            for (int i = 0; i < getRobots.Count; i++)/*prevents adding self-risk to passing risk, excluded index 0 for goalie*/
+            for (int i = 0; i < shooterThreats.Count; i++)/*prevents adding self-risk to passing risk, excluded index 0 for goalie*/
             {
 			    if(shooterThreats[i].Equals(playerThreat))
 			    {
