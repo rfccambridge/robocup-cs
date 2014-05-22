@@ -116,7 +116,7 @@ namespace RFC.Vision
         private void combineBall()
         {
             double time = HighResTimer.SecondsSinceStart();
-
+            
             // Return the average from all the cameras that see it weighted 
             // by the time since they last saw it                 
 
@@ -124,6 +124,8 @@ namespace RFC.Vision
             Vector2 avgVelocity = null;
             double avgLastSeen = 0;
             double sum = 0;
+            double closestBallDistance = Double.MaxValue;
+            BallInfo closestBall = null;
             for (int i = 0; i < fieldStates.Length; i++)
             {
                 BallInfo ball = fieldStates[i].GetBall();
@@ -132,22 +134,28 @@ namespace RFC.Vision
                     //double t = time - ball.LastSeen;
                     double t = 1;
                     // First time, we don't add, just initialize
-                    if (avgPosition == null)
+                    if (lastBall == null || (ball.Position - lastBall.Position).magnitude() < closestBallDistance)
                     {
                         avgPosition = t * ball.Position;
                         avgVelocity = t * ball.Velocity;
                         avgLastSeen = t * ball.LastSeen;
                         sum = t;
+                        closestBall = ball;
+                        if (lastBall != null)
+                        {
+                            closestBallDistance = (ball.Position - lastBall.Position).magnitude();
+                        }
                     }
+                    /*
                     avgPosition += t * ball.Position;
                     avgVelocity += t * ball.Velocity;
                     avgLastSeen += t * ball.LastSeen;
-                    sum += t;
+                    sum += t;*/
                 }
             }
-
+            
             BallInfo retBall = null;
-            if (avgPosition != null) // if we saw at least one ball
+            if (closestBall != null && avgPosition != null) // if we saw at least one ball
             {
                 avgPosition /= sum;
                 avgVelocity /= sum;
@@ -155,6 +163,7 @@ namespace RFC.Vision
                 retBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
                 lastBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
             }
+            
             // Predict the latest position with zero velocity if all cameras have timed out
             else if (lastBall != null && (time - lastBall.LastSeen <= Constants.Predictor.MAX_SECONDS_TO_KEEP_BALL))
             {
