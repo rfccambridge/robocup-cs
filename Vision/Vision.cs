@@ -6,6 +6,7 @@ using RFC.Core;
 using RFC.Geometry;
 using RFC.SSLVisionLib;
 using RFC.Messaging;
+using RFC.Utilities;
 
 namespace RFC.Vision
 {

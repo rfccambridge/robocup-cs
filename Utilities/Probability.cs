@@ -6,7 +6,7 @@ using RFC.Geometry;
 
 namespace RFC.Utilities
 {
-    static class Probability
+    public static class Probability
     {
         public static double gaussianPDF(double x, double mean, double stdDev)
         {

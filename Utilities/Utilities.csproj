@@ -36,11 +36,18 @@
     <Compile Include="FunctionLoop.cs" />
     <Compile Include="HighResTimer.cs" />
     <Compile Include="HungarianAlgorithm.cs" />
+    <Compile Include="Probability.cs" />
     <Compile Include="RandGen.cs" />
     <Compile Include="SerialUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Geometry\Geometry.csproj">
+      <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
+      <Name>Geometry</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
