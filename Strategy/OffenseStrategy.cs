@@ -310,8 +310,15 @@ namespace RFC.Strategy
 
 
             // what should other robots do? -----------------------------------------------------------
+
+            List<RobotInfo> rest = fieldVision.GetRobotsExcept(team, closestToBall.ID);
+            foreach (RobotInfo rob in rest)
+            {
+                msngr.SendMessage(new RobotDestinationMessage(rob, true));
+            }
+
             // should be lined up in ideal passing locations
-            
+            /*
             // build list of robots available for stationing at passing positions
             List<RobotInfo> passers = new List<RobotInfo>();
             foreach (RobotInfo rob in ourTeam)
@@ -331,7 +338,7 @@ namespace RFC.Strategy
             List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
             maxima.Sort();
             maxima.Reverse();
-
+            */
             // Eric Anschuetz assignment code
             /*
             int[] bestInd = offenseMap.vecToInd(maxima[0].position.Position);
@@ -352,7 +359,7 @@ namespace RFC.Strategy
             */
 
             // Eric Lu assignment code
-            
+            /*
             List<RobotInfo> passerDestinations = new List<RobotInfo>();
             List<RobotInfo> passerIDs = new List<RobotInfo>();
             while (passers.Count > 0 && maxima.Count > 0)
@@ -385,7 +392,7 @@ namespace RFC.Strategy
 
             // now command robot movements
             DestinationMatcher.SendByCorrespondence(passerIDs, passerDestinations);
-            
+            */
         }
 
         public void setState(State s)

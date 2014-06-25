@@ -146,7 +146,7 @@ namespace RFC.Strategy
 		{
             double passRisk=0;
             Threat playerThreat= new Threat(playerShotRisk(player, msg.Ball,getRobots,ballRisk),msg.Ball);
-            for (int i = 0; i < shooterThreats.Count; i++)/*prevents adding self-risk to passing risk, excluded index 0 for goalie*/
+            for (int i = 0; i < getRobots.Count; i++)/*prevents adding self-risk to passing risk, excluded index 0 for goalie*/
             {
 			    if(shooterThreats[i].Equals(playerThreat))
 			    {

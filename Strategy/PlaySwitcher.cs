@@ -25,6 +25,7 @@ namespace RFC.Strategy
         object lockObject;
         int max_robots;
         int goalie_id;
+        int kick_id;
 
         // play behaviors
         NormalBehavior normalBehavior;
@@ -52,6 +53,7 @@ namespace RFC.Strategy
             penaltyKickBehavior = new PenaltyKickBehavior(team, goalie_id);
             kickOffBehavior = new KickOffBehavior(team, goalie_id);
             this.play = PlayType.Stopped;
+            this.kick_id = 2;
 
             new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
             new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
@@ -83,19 +85,22 @@ namespace RFC.Strategy
                     waitBehavior.Stop(msg);
                     break;
                 case PlayType.Direct_Ours:
-                    kickInBehavior.DirectOurs(msg);
+                    KickMessage kick = new KickMessage(msg.GetRobot(team,kick_id), Constants.FieldPts.THEIR_GOAL);
+                    msngr.SendMessage(kick);
                     break;
                 case PlayType.Direct_Theirs:
                     kickInBehavior.DirectTheirs(msg);
                     break;
                 case PlayType.Indirect_Ours:
-                    kickInBehavior.IndirectOurs(msg);
+                    KickMessage kick2 = new KickMessage(msg.GetRobot(team,kick_id), Constants.FieldPts.THEIR_GOAL);
+                    msngr.SendMessage(kick2);
                     break;
                 case PlayType.Indirect_Theirs:
                     kickInBehavior.IndirectTheirs(msg);
                     break;
                 case PlayType.PenaltyKick_Ours:
-                    penaltyKickBehavior.Ours(msg);
+                    KickMessage kick3 = new KickMessage(msg.GetRobot(team,kick_id), Constants.FieldPts.THEIR_GOAL);
+                    msngr.SendMessage(kick3);
                     break;
                 case PlayType.PenaltyKick_Ours_Setup:
                     penaltyKickBehavior.OursSetup(msg);
@@ -104,7 +109,8 @@ namespace RFC.Strategy
                     penaltyKickBehavior.Theirs(msg);
                     break;
                 case PlayType.KickOff_Ours:
-                    kickOffBehavior.Ours(msg);
+                    KickMessage kick4 = new KickMessage(msg.GetRobot(team,kick_id), Constants.FieldPts.THEIR_GOAL);
+                    msngr.SendMessage(kick4);
                     break;
                 case PlayType.KickOff_Ours_Setup:
                     kickOffBehavior.OursSetup(msg);

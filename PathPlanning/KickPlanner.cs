@@ -14,9 +14,9 @@ namespace RFC.PathPlanning
         // angle and distance to go from setting up to kick
         // to actually kicking
         const double heading_threshold = .10;
-        const double dist_threshold = .02;
+        const double dist_threshold = .06;
         const double kick_dist = .15;
-        double follow_through_dist = Constants.Basic.ROBOT_RADIUS * .5;
+        double follow_through_dist = Constants.Basic.ROBOT_RADIUS * .3;
         ServiceManager msngr;
 
         // how far back to stand. slightly more than radius
@@ -80,7 +80,7 @@ namespace RFC.PathPlanning
                 RobotCommand cmd = new RobotCommand(robot.ID, RobotCommand.Command.START_CHARGING);
                 msngr.SendMessage<CommandMessage>(new CommandMessage(cmd));
 
-                RobotDestinationMessage dest_msg = new RobotDestinationMessage(excessive,true);
+                RobotDestinationMessage dest_msg = new RobotDestinationMessage(ideal,true);
                 msngr.SendMessage<RobotDestinationMessage>(dest_msg);
             }
         }

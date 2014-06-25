@@ -34,7 +34,8 @@ namespace RFC.Strategy
 
         public void DirectTheirs(FieldVisionMessage msg)
         {
-            defense.DefenseCommand(msg, 3, false, avoid_radius);
+            int n = msg.GetRobotsExcept(team, goalie_id).Count;
+            defense.DefenseCommand(msg, Math.Min(3, n), false, avoid_radius);
         }
 
         public void IndirectOurs(FieldVisionMessage msg)
