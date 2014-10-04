@@ -14,8 +14,18 @@ namespace RFC.Logging
         public MatchRecorder()
         {
             this.msngr = ServiceManager.getServiceManager();
-            logger = new System.IO.StreamWriter(@"match_history.txt", true);
-
+            try
+            {
+                logger = new System.IO.StreamWriter(@"match_history.txt", true);
+            }
+            catch (Exception e)
+            {
+                // if first log already being written to, write in second log
+                // this happens when two ControlForms are being used
+                // should probably not make rest of code dependent on there being a log...
+                logger = new System.IO.StreamWriter(@"match_history2.txt", true);
+                
+            }
         }
 
         public void Handle(FieldVisionMessage msg)
