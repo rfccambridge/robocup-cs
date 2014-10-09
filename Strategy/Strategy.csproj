@@ -69,6 +69,7 @@
     <Compile Include="Shot1.cs" />
     <Compile Include="StateChecker.cs" />
     <Compile Include="Threat.cs" />
+    <Compile Include="TimeoutBehavior.cs" />
     <Compile Include="WaitBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
