@@ -1,4 +1,5 @@
 ﻿using RFC.Core;
+using RFC.Geometry;
 using RFC.Messaging;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace RFC.Strategy
         private Team team;
         private int goalie_id;
         private ServiceManager msngr;
+        private object lockObject;
 
         private static readonly State STATE = State.Timeout;
         // private static readonly State START_STATE = State.Victory;
@@ -25,6 +27,8 @@ namespace RFC.Strategy
             this.team = team;
             this.goalie_id = goalie_id;
             this.msngr = ServiceManager.getServiceManager();
+            this.lockObject = new object();
+            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
         }
 
         private void timeoutHandle(FieldVisionMessage fieldVision)
