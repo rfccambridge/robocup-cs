@@ -34,30 +34,21 @@ namespace RFC.Strategy
         private void timeoutHandle(FieldVisionMessage fieldVision)
         {
             List<RobotInfo> robots = fieldVision.GetRobots(team);
-            int numRobots = robots.Count;
-            for (int i = 0; i < numRobots; i++)
+            List<RobotInfo> destinations = new List<RobotInfo>(robots.Count);
+
+            for(int i = 0; i < robots.Count(); i++)
             {
-                double xDisp = ((i + 1 - numRobots / 2.0) * Constants.Basic.ROBOT_RADIUS * 3.0);
-                Vector2 pos = Constants.FieldPts.TOP - (new Vector2(xDisp, 0));
-                RobotInfo ri = new RobotInfo(pos, 0, team, i);
-                msngr.SendMessage(new RobotDestinationMessage(ri, true));
+                double x = Constants.FieldPts.TOP.X + Constants.Basic.ROBOT_RADIUS * (2 * i - (robots.Count - 1));
+                Vector2 dest = new Vector2(x,Constants.FieldPts.TOP.Y);
+                destinations.Add(new RobotInfo(dest, 0, team, 0));
             }
+
+             DestinationMatcher.SendByCorrespondence(robots, destinations);
         }
 
         private void victoryHandle(FieldVisionMessage fieldVision)
         {
-            List<RobotInfo> robots = fieldVision.GetRobots(team);
-            int numRobots = robots.Count;
-            double phase = 2 * Math.PI / robots.Count;
-            double r = 0.5;
-            int t = (int)(DateTime.Now - startTime).TotalMilliseconds;
-            double w = 1.0 / 1000.0;
-            for (int i = 0; i < numRobots; i++)
-            {
-                Vector2 pos = new Vector2(r * Math.Cos(w * t + phase * i), r * Math.Sin(w * t + phase * i));
-                RobotInfo ri = new RobotInfo(pos, 0, team, i);
-                msngr.SendMessage(new RobotDestinationMessage(ri, true));
-            }
+
         }
 
         public void Handle(FieldVisionMessage fieldVision)
