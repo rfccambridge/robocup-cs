@@ -39,7 +39,7 @@ namespace RFC.Strategy
             {
                 double xDisp = ((i + 1 - numRobots / 2.0) * Constants.Basic.ROBOT_RADIUS * 3.0);
                 Vector2 pos = Constants.FieldPts.TOP - (new Vector2(xDisp, 0));
-                RobotInfo ri = new RobotInfo(pos, 0, team, i);
+                RobotInfo ri = new RobotInfo(pos, 0, team, robots[i].ID);
                 msngr.SendMessage(new RobotDestinationMessage(ri, true));
             }
         }
