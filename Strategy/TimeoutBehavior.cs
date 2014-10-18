@@ -34,7 +34,7 @@ namespace RFC.Strategy
         public RobotInfo[] timeoutPositions(int n){
             double positionY = Constants.Field.YMAX;
             double fieldCenterX = (Constants.Field.XMIN + Constants.Field.XMAX) / 2.0;
-            double robotSpacing = 1.2*Constants.Basic.ROBOT_RADIUS;
+            double robotSpacing = 4.0 * Constants.Basic.ROBOT_RADIUS;
             RobotInfo[] values = new RobotInfo[n];
             for (int i = 0; i < n; i++)
             {
