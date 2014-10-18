@@ -33,7 +33,21 @@ namespace RFC.Strategy
 
         private void timeoutHandle(FieldVisionMessage fieldVision)
         {
-            // TODO
+            int numRobots =  5;
+            for (int i = 0; i < numRobots; i++)
+            {
+                int robotId = fieldVision.GetRobots(team)[i].ID; // take first robot
+                
+                Vector2 center = new Vector2((Constants.Field.WIDTH /2) + (i * -1^(i)),0);
+                RobotInfo destination = new RobotInfo(center, 0, team, robotId);
+                RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, true);
+
+                msngr.SendMessage(destinationMessage);
+                //firstRun = false;
+            }
+          //  }
+        //}
+            // end insert
         }
 
         private void victoryHandle(FieldVisionMessage fieldVision)
