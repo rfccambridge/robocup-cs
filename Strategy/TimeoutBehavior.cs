@@ -34,6 +34,22 @@ namespace RFC.Strategy
         private void timeoutHandle(FieldVisionMessage fieldVision)
         {
             // TODO
+            //move just the goalie for now until i figure out how to iterate over all the robots
+            Vector2 topleft = Constants.FieldPts.TOP_LEFT;
+            Vector2 topright = Constants.FieldPts.TOP_RIGHT;
+            int count = 0;
+            List<RobotInfo> Robots = fieldVision.GetRobots();
+            int numrobots = Robots.Count;
+            foreach (RobotInfo r in Robots)
+            {
+                Vector2 startpos = r.Position;
+                Vector2 endpos = new Vector2(topleft.X + (count * topright.X / numrobots),topleft.Y);//where we're going--different for each robot
+                RobotInfo r2 = new RobotInfo(endpos, 0, team, r.ID);
+                RobotDestinationMessage gohere = new RobotDestinationMessage(r2, true, false);
+                msngr.SendMessage(gohere);
+                count++;
+            }
+
         }
 
         private void victoryHandle(FieldVisionMessage fieldVision)
