@@ -31,17 +31,35 @@ namespace RFC.Strategy
             new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
         }
 
+        public RobotInfo[] timeoutPositions(int n){
+            double positionY = Constants.Field.YMAX;
+            double fieldCenterX = (Constants.Field.XMIN + Constants.Field.XMAX) / 2.0;
+            double robotSpacing = 1.2*Constants.Basic.ROBOT_RADIUS;
+            RobotInfo[] values = new RobotInfo[n];
+            for (int i = 0; i < n; i++)
+            {
+                double positionX = 0;
+                if (i % 2 == 0)
+                {
+                    // Even case space out in pos direction.
+                    positionX = fieldCenterX + (robotSpacing * (i / 2));
+                }
+                else
+                {
+                    // Odd case, space out in neg direction.
+                    positionX = fieldCenterX - (robotSpacing * ((i / 2) + 1));
+                }
+                Vector2 position = new Vector2(positionX, positionY);
+                values[i] = new RobotInfo(position, 0, this.team, 0);
+            }
+            return values;
+        }
+
         private void timeoutHandle(FieldVisionMessage fieldVision)
         {
             List<RobotInfo> robots = fieldVision.GetRobots(team);
-            int numRobots = robots.Count;
-            for (int i = 0; i < numRobots; i++)
-            {
-                double xDisp = ((i + 1 - numRobots / 2.0) * Constants.Basic.ROBOT_RADIUS * 3.0);
-                Vector2 pos = Constants.FieldPts.TOP - (new Vector2(xDisp, 0));
-                RobotInfo ri = new RobotInfo(pos, 0, team, i);
-                msngr.SendMessage(new RobotDestinationMessage(ri, true));
-            }
+            List<RobotInfo> positions = new List<RobotInfo>(timeoutPositions(robots.Count));
+            DestinationMatcher.SendByCorrespondence(robots, positions);
         }
 
         private void victoryHandle(FieldVisionMessage fieldVision)
