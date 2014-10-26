@@ -686,10 +686,9 @@ namespace RFC.FieldDrawer
             // Center circle
             const int SLICES = 20;
             GL.LoadIdentity();
-            //GL.Translate(0, 0, 0);            
-            GL.Begin(BeginMode.LineLoop);
-            OpenTK.Graphics.Glu.Disk(_centerCircleQuadric, 0, CENTER_CIRCLE_RADIUS, SLICES, 1);
-            GL.End();
+            GL.Translate(0, 0, 0);         
+            drawCircle(CENTER_CIRCLE_RADIUS);
+            
 
             //Goals
             GL.Begin(BeginMode.LineLoop);
@@ -708,25 +707,17 @@ namespace RFC.FieldDrawer
 
             //Defense areas
             GL.LoadIdentity();
-            GL.Translate(-FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT/2, 0);            
-            GL.Begin(BeginMode.LineLoop);
-            OpenTK.Graphics.Glu.PartialDisk(_centerCircleQuadric,0,DEFENSE_AREA_RADIUS,SLICES,1,0,90);
-            GL.End();
+            GL.Translate(-FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT/2, 0);      
+            drawPartialCircle(DEFENSE_AREA_RADIUS, 0, 90);
             GL.LoadIdentity();
             GL.Translate(-FIELD_WIDTH / 2, -DEFENSE_RECT_HEIGHT / 2, 0);
-            GL.Begin(BeginMode.LineLoop);
-            OpenTK.Graphics.Glu.PartialDisk(_centerCircleQuadric,0,DEFENSE_AREA_RADIUS,SLICES,1,90,90);
-            GL.End();
+            drawPartialCircle(DEFENSE_AREA_RADIUS, -90, 0);
             GL.LoadIdentity();
             GL.Translate(FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT / 2, 0);
-            GL.Begin(BeginMode.LineLoop);
-            OpenTK.Graphics.Glu.PartialDisk(_centerCircleQuadric, 0, DEFENSE_AREA_RADIUS, SLICES, 1, 270, 90);
-            GL.End();
+            drawPartialCircle(DEFENSE_AREA_RADIUS, 90, 180);
             GL.LoadIdentity();
             GL.Translate(FIELD_WIDTH / 2, -DEFENSE_RECT_HEIGHT / 2, 0);
-            GL.Begin(BeginMode.LineLoop);
-            OpenTK.Graphics.Glu.PartialDisk(_centerCircleQuadric, 0, DEFENSE_AREA_RADIUS, SLICES, 1, 180, 90);
-            GL.End();
+            drawPartialCircle(DEFENSE_AREA_RADIUS, 180, 270);
             GL.LoadIdentity();
             GL.Begin(BeginMode.Lines);
             GL.Vertex2(-FIELD_WIDTH / 2 + DEFENSE_AREA_RADIUS, -DEFENSE_RECT_HEIGHT / 2);
@@ -751,11 +742,13 @@ namespace RFC.FieldDrawer
             GL.Translate(robot.Position.X, robot.Position.Y, 0);
             GL.Rotate(angle, 0, 0, 1);
             GL.Color3(robot.Team == Team.Yellow ? Color.Yellow : Color.Blue);            
-            GL.Begin(BeginMode.Polygon);
+            //GL.Begin(BeginMode.Polygon);
 
-            OpenTK.Graphics.Glu.PartialDisk(_robotQuadric, 0, Constants.Basic.ROBOT_RADIUS, SLICES, 1,
-                                            -(360 - ROBOT_ARC_SWEEP) / 2, ROBOT_ARC_SWEEP);
-            GL.End();
+            //OpenTK.Graphics.Glu.PartialDisk(_robotQuadric, 0, Constants.Basic.ROBOT_RADIUS, SLICES, 1,
+            //                                -(360 - ROBOT_ARC_SWEEP) / 2, ROBOT_ARC_SWEEP);
+            //GL.End();
+            // TODO: better drawing of robot
+            drawCircle(Constants.Basic.ROBOT_RADIUS, true);
             
             /*
             GL.MatrixMode(MatrixMode.Modelview);
@@ -780,9 +773,7 @@ namespace RFC.FieldDrawer
             GL.LoadIdentity();
             GL.Translate(ball.Position.X, ball.Position.Y, 0);
             GL.Color3(Color.Orange);
-            GL.Begin(BeginMode.Polygon);
-            OpenTK.Graphics.Glu.Disk(_ballQuadric, 0, Constants.Basic.BALL_RADIUS, SLICES, 1);
-            GL.End();
+            drawCircle(Constants.Basic.BALL_RADIUS, true);
         }
 
         private void drawMarker(Marker marker)
@@ -827,9 +818,7 @@ namespace RFC.FieldDrawer
                 GL.LoadIdentity();
                 GL.Color3(path.Team == Team.Yellow ? Color.Yellow : Color.Blue);
                 GL.Translate(waypoint.Position.X, waypoint.Position.Y, 0);
-                GL.Begin(BeginMode.Polygon);
-                OpenTK.Graphics.Glu.Disk(_ballQuadric, 0, WAYPOINT_RADIUS, SLICES, 1);
-                GL.End();
+                drawCircle(WAYPOINT_RADIUS, true);
             }
         }
 
@@ -886,6 +875,41 @@ namespace RFC.FieldDrawer
             GL.Translate(screen);
             _printer.Print(s, new Font(FontFamily.GenericSansSerif, size), color);
             _printer.End();
+        }
+
+        void drawCircle(double radius, bool fill = false)
+        {
+            if (fill)
+                GL.Begin(BeginMode.Polygon);
+            else
+                GL.Begin(BeginMode.LineLoop);
+
+            for (int i = 0; i < 360; i++)
+            {
+                double degInRad = i * 3.1416 / 180;
+                GL.Vertex2(Math.Cos(degInRad) * radius, Math.Sin(degInRad) * radius);
+            }
+            GL.End();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="radius"></param>
+        /// <param name="startAngle">in degrees</param>
+        /// <param name="endAngle"></param>
+        void drawPartialCircle(double radius, int startAngle, int endAngle)
+        {
+            GL.Begin(BeginMode.LineStrip);
+
+            for (int i = startAngle; i < endAngle; i++)
+            {
+                double degInRad = i * 3.1416 / 180;
+                GL.Vertex2(Math.Cos(degInRad) * radius, Math.Sin(degInRad) * radius);
+            }
+            GL.End();
         }
 
         private Vector2 controlToFieldCoords(Point loc)
