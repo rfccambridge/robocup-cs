@@ -9,6 +9,8 @@ using RFC.Strategy;
 using RFC.Utilities;
 using RFC.PathPlanning;
 
+//Test content in prep for adding new defensive strategy
+
 namespace RFC.Strategy
 {
     public class DefenseStrategy
