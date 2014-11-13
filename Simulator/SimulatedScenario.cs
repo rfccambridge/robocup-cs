@@ -102,6 +102,7 @@ namespace RFC.Simulator
 
             result.Robots = robots;
             result.Ball = new BallInfo(new Vector2());
+            result.Ball.Velocity = new Vector2(1.0, 1.0); // TODO: revert to zero when done
 
             return result;
         }

@@ -15,12 +15,16 @@ namespace RFC.Simulator
     {
         const double BALL_ROBOT_ELASTICITY = 0.5; //The fraction of the speed kept when bouncing off a robot
         const double BALL_WALL_ELASTICITY = 0.9; //The fraction of the speed kept when bouncing off a wall
-        const double BALL_FRICTION = .76; //The amount of speed lost per second by the ball
         const double BREAKBEAM_TIMEOUT = 10; //Seconds
         const double DELAY_ADJUSTMENT = 0.01; //Add this much to dt to additionally compensate for any slowness 
         const double DRIBBLER_SPEED = .1;
         //TODO this is still the old 0-5 scale. Change this to the new 0-25 scale and remeasure kick speeds to retune
         static double[] KICK_SPEED = new double[RobotCommand.MAX_KICKER_STRENGTH / 5 + 1] { 0, 0, 1.81, 2.88, 3.33, 4.25 };
+
+        // Friction model. All in SI units. See http://robocup.mi.fu-berlin.de/buch/rolling.pdf
+        // Possible todo: look into adding rotational momentum to the simulation?
+        const double BALL_FRICTION_PHASE_2 = 0.305; // The constant force against the ball in phase 2
+        const double BALL_FRICTION_PHASE_2_STOP_THRESHOLD = 0.02; // The speed at which the ball can no longer climb the carpet
 
         private bool _marking = false;
         private Vector2 _markedPosition;
@@ -303,133 +307,7 @@ namespace RFC.Simulator
                     }
                 }
 
-                //To get better resolution, accurate bounces, and prevent the ball from going through stuff, 
-                //use dt/64 for the next part, 64 times.
-                dt = dt / 64.0;
-                bool ballOut = false;
-                bool goalScored = false;
-                for (int reps = 0; reps < 64; reps++)
-                {
-                    //Attempt kicking
-                    foreach (Team team in Enum.GetValues(typeof(Team)))
-                    {
-                        foreach (RobotInfo robot in robots[team])
-                        {
-                            int frames = break_beam_frames[team][robot.ID];
-                            if (frames > 0)
-                            {
-                                if (tryKick(robot, kick_strengths[team][robot.ID]))
-                                    break_beam_frames[team][robot.ID] = 0;
-                            }
-                        }
-                    }
-
-                    // Update ball location
-                    Vector2 newBallLocation = ball.Position + dt * ball.Velocity;
-                    Vector2 newBallVelocity;
-                    double ballSpeed = ball.Velocity.magnitude();
-                    ballSpeed -= BALL_FRICTION * dt;
-                    if (ballSpeed <= 0)
-                    { ballSpeed = 0; newBallVelocity = Vector2.ZERO; }
-                    else
-                    { newBallVelocity = ball.Velocity.normalizeToLength(ballSpeed); }
-
-                    // Check for collisions ball-robot and update ball position
-                    foreach (RobotInfo r in allRobots)
-                    {
-                        Vector2 robotLoc = r.Position;
-
-                        bool collided = false;
-                        //Possible collision
-                        if (newBallLocation.distanceSq(robotLoc) <= BALL_COLLISION_RADIUS * BALL_COLLISION_RADIUS)
-                        {
-                            //We have a virtual line (BALL_RADIUS+ROBOT_FRONT_RADIUS) in front of the robot
-                            //Make sure the ball is on the robot-side of this line as well.
-                            Vector2 robotToBall = newBallLocation - robotLoc;
-                            Vector2 robotOrientationVec = Vector2.GetUnitVector(r.Orientation);
-                            double projectionLen = robotToBall.projectionLength(robotOrientationVec);
-                            if (projectionLen <= BALL_RADIUS + ROBOT_FRONT_RADIUS)
-                                collided = true;
-                        }
-
-                        if (collided)
-                        {
-                            LastTouched = r.Team;
-
-                            //Compute new position of ball
-                            newBallLocation = robotLoc + (BALL_COLLISION_RADIUS + .005) * (ball.Position - robotLoc).normalize();
-
-                            //Compute new velocity of ball
-                            Vector2 relVel = newBallVelocity - r.Velocity; //The relative velocity of the ball to the robot
-                            Vector2 normal = newBallLocation - robotLoc; //The normal to the collision
-
-                            //If the relative velocity is away from the robot somehow, then leave it unchanged
-                            if (relVel * normal >= 0)
-                                break;
-
-                            //If somehow the normal is zero or too small, just reflect the ball straight back...
-                            if (normal.magnitudeSq() <= 1e-16)
-                                relVel = -BALL_ROBOT_ELASTICITY * relVel;
-                            else
-                            {
-                                //Perpendicular component is unaffected. Parallel component reverses and
-                                //is discounted by BOUNCE_ELASTICITY
-                                //This is wrong for when the ball hits the front of the robot, but hopefully
-                                //it's not too horrendous of an approximation
-                                relVel = -BALL_ROBOT_ELASTICITY * relVel.parallelComponent(normal)
-                                    + relVel.perpendicularComponent(normal);
-                            }
-
-                            //Translate back to absolute velocity
-                            newBallVelocity = relVel + r.Velocity;
-
-                            // handling the dribbler, as an additional force back towards the robot
-                            
-                            if (dribblers_on[r.Team][r.ID])
-                            {
-                                const double CENTER_TO_DRIBBLER_DIST = 0.05;
-                                const double DRIBBLER_ACTIVITY_RADIUS = .03;
-
-                                Vector2 robotFaceDir = new Vector2(r.Orientation);
-                                Vector2 dribblerPosition = r.Position + CENTER_TO_DRIBBLER_DIST * robotFaceDir;
-                                if (dribblerPosition.distanceSq(ball.Position) < DRIBBLER_ACTIVITY_RADIUS * DRIBBLER_ACTIVITY_RADIUS)
-                                {
-                                    // in range of dribbler
-                                    // exert slight force towards robot
-                                    Vector2 dribbler_force = (r.Position - ball.Position).normalizeToLength(1);
-                                    newBallVelocity += dribbler_force;
-                                }
-                            }
-                            break;
-                        }
-                    }
-
-                    // Do ball-wall collisions
-                    {
-                        double ballX = newBallLocation.X;
-                        double ballY = newBallLocation.Y;
-                        double ballVx = newBallVelocity.X;
-                        double ballVy = newBallVelocity.Y;
-                        if (ballX < Constants.Field.FULL_XMIN)
-                        { ballVx = Math.Abs(ballVx) * BALL_WALL_ELASTICITY; ballX = 2 * Constants.Field.FULL_XMIN - ballX; }
-                        else if (ballX > Constants.Field.FULL_XMAX)
-                        { ballVx = -Math.Abs(ballVx) * BALL_WALL_ELASTICITY; ballX = 2 * Constants.Field.FULL_XMAX - ballX; }
-                        if (ballY < Constants.Field.FULL_YMIN)
-                        { ballVy = Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * Constants.Field.FULL_YMIN - ballY; }
-                        else if (ballY > Constants.Field.FULL_YMAX)
-                        { ballVy = -Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * Constants.Field.FULL_YMAX - ballY; }
-
-                        newBallVelocity = new Vector2(ballVx, ballVy);
-                        newBallLocation = new Vector2(ballX, ballY);
-                    }
-
-                    UpdateBall(new BallInfo(newBallLocation, newBallVelocity));
-                    RefereeDeclaration decl = Referee.RunRef(this);
-                    if (decl == RefereeDeclaration.DECLARE_BALL_OUT)
-                    { ballOut = true; break; }
-                    if (decl == RefereeDeclaration.DECLARE_GOAL_SCORED)
-                    { goalScored = true; break; }
-                }
+                stepBall(dt);
 
                 //Drain breakbeam timeout frames
                 foreach (Team team in Enum.GetValues(typeof(Team)))
@@ -448,12 +326,159 @@ namespace RFC.Simulator
                 sslVisionServer.Send(packet);
 
                 //Handle referee
-                if (ballOut)
-                    scenario.BallOut(ball.Position);
-                if (goalScored)
-                    scenario.GoalScored();
                 if (refBoxStarted)
                     refBoxSender.SendCommand(Referee.GetLastCommand());
+            }
+        }
+
+        /// <summary>
+        /// Steps forward the given number of seconds
+        /// </summary>
+        delegate Vector2 kinematicPredictor(double timeFromNow);
+        delegate double kinematicInversePredictor(Vector2 v);
+        delegate void earliestReplacer(double newTime, ballInfoCreater newEventFunction);
+        delegate BallInfo ballInfoCreater();
+        private Vector2 ballPositionPredict(double timeFromNow)
+        {
+            double stopTime = ballVelocityInversePredict(Vector2.ZERO);
+            timeFromNow = Math.Min(timeFromNow, stopTime);
+            return ball.Position + ball.Velocity * timeFromNow - 0.5 * ball.Velocity.normalize() * BALL_FRICTION_PHASE_2 * timeFromNow * timeFromNow; // Use 0.5*a*t^2 + v_0*t + x*0
+        }
+        private double ballPositionInversePredict(Vector2 target)
+        {
+            double distanceToV = (target - ball.Position) * ball.Velocity.normalize(); // Get component in the direction of our motion
+            double discriminant = ball.Velocity.magnitudeSq() - 2 * BALL_FRICTION_PHASE_2 * distanceToV;
+            if (discriminant > 0)
+                return (ball.Velocity.magnitude() - Math.Sqrt(discriminant)) / BALL_FRICTION_PHASE_2; // Ball will get to the point, use the quadratic formula to get the time
+            else
+                return Double.PositiveInfinity; // Ball will never get to the point
+        }
+        private Vector2 ballVelocityPredict(double timeFromNow)
+        {
+            double stopTime = ballVelocityInversePredict(Vector2.ZERO);
+            timeFromNow = Math.Min(timeFromNow, stopTime);
+            return ball.Velocity - ball.Velocity.normalize() * BALL_FRICTION_PHASE_2 * timeFromNow; // Use a*t + v_0
+        }
+        private double ballVelocityInversePredict(Vector2 target)
+        {
+            double parallel = target * ball.Velocity.normalize(); // Get component in the direction of our motion
+            if (parallel < 0)
+                return Double.PositiveInfinity; // Friction cannot reverse the ball
+            else
+                return (ball.Velocity.magnitude() - parallel) / BALL_FRICTION_PHASE_2;
+        }
+        private void stepBall(double remainingTime)
+        {            
+            // Collect results, find the first to occur
+            // Default to the end of the step state
+            double earliestEventTimeFromNow = remainingTime;
+            BallInfo earliestEvent = new BallInfo(ball);
+            earliestEvent.Position = ballPositionPredict(remainingTime);
+            earliestEvent.Velocity = ballVelocityPredict(remainingTime);
+            earliestReplacer replaceEarliestIfEarlierButNotNegative = (newTime, newEventFunction) => // Ask for the new time of the event, and a callback to get the actual event (to avoid extra computation)
+                {
+                    if (newTime < earliestEventTimeFromNow && newTime > 0)
+                    {
+                        earliestEventTimeFromNow = newTime;
+                        earliestEvent = newEventFunction();
+                    }
+                };
+
+            // Check for ball out of bounds, and in goal
+            //      Top:
+            Vector2 outOfBoundsTop = ball.Position + ball.Velocity * ((Constants.Field.YMAX + Constants.Basic.BALL_RADIUS - ball.Position.Y) / ball.Velocity.X);
+            double outOfBoundsTopTime = ballPositionInversePredict(outOfBoundsTop);
+            replaceEarliestIfEarlierButNotNegative(outOfBoundsTopTime, () =>
+                {
+                    BallInfo ev = new BallInfo(ball);
+                    ev.Position = outOfBoundsTop;
+                    ev.Velocity = Vector2.ZERO;
+                    return ev;
+                });
+            //      Bottom:
+            Vector2 outOfBoundsBottom = ball.Position + ball.Velocity * ((-Constants.Field.YMIN + Constants.Basic.BALL_RADIUS + ball.Position.Y) / ball.Velocity.X);
+            double outOfBoundsBottomTime = ballPositionInversePredict(outOfBoundsBottom);
+            replaceEarliestIfEarlierButNotNegative(outOfBoundsBottomTime, () =>
+            {
+                BallInfo ev = new BallInfo(ball);
+                ev.Position = outOfBoundsBottom;
+                ev.Velocity = Vector2.ZERO;
+                return ev;
+            });
+            //      Left:
+            Vector2 outOfBoundsLeft = ball.Position + ball.Velocity * ((-Constants.Field.XMIN + Constants.Basic.BALL_RADIUS + ball.Position.X) / ball.Velocity.Y);
+            double outOfBoundsLeftTime = ballPositionInversePredict(outOfBoundsLeft);
+            replaceEarliestIfEarlierButNotNegative(outOfBoundsLeftTime, () =>
+            {
+                BallInfo ev = new BallInfo(ball);
+                ev.Position = outOfBoundsLeft;
+                ev.Velocity = Vector2.ZERO;
+                return ev;
+            });
+            //      Right:
+            Vector2 outOfBoundsRight = ball.Position + ball.Velocity * ((Constants.Field.XMAX + Constants.Basic.BALL_RADIUS - ball.Position.X) / ball.Velocity.Y);
+            double outOfBoundsRightTime = ballPositionInversePredict(outOfBoundsRight);
+            replaceEarliestIfEarlierButNotNegative(outOfBoundsRightTime, () =>
+            {
+                BallInfo ev = new BallInfo(ball);
+                ev.Position = outOfBoundsRight;
+                ev.Velocity = Vector2.ZERO;
+                return ev;
+            });
+
+            // Check for collisions with robots
+            //double robotCircleCollisionRadius = Constants.Basic.ROBOT_RADIUS + Constants.Basic.BALL_RADIUS, robotFrontCollisionRadius = Constants.Basic.ROBOT_FRONT_RADIUS + Constants.Basic.BALL_RADIUS;
+            //foreach (Team team in Enum.GetValues(typeof(Team)))
+            //{
+            //    foreach (RobotInfo robot in robots[team])
+            //    {
+            //        // TODO: check if a robot jumped on top of our ball
+//
+            //        Vector2 pathToRobot = (robot.Position - ball.Position).perpendicularComponent(ball.Velocity);
+            //        if (pathToRobot.magnitude() < robotCircleCollisionRadius) // If true, the ball may or may not contact the robot. If false, the ball definitely won't touch the robot
+            //        {
+            //            Vector2 pathCircleIntersection = ((robot.Position - ball.Position) - pathToRobot) - ball.Velocity.normalizeToLength(robotCircleCollisionRadius * robotCircleCollisionRadius - pathToRobot.magnitudeSq());
+            //            Vector2 pathLineIntersection = null; // We'll set this in a few lines, after some messy algebra that has loads of extra variables
+            //            {
+            //                // Represent the lines as homogenous vectors
+            //                double line1X = ball.Velocity.Y, line1Y = ball.Velocity.X, line1W = Vector2.cross(ball.Velocity, ball.Position);
+            //                double line2X = Math.Cos(robot.Orientation), line2Y = Math.Sin(robot.Orientation), line2W = line2X * robot.Position.X + line2Y + robot.Position.Y;
+//
+            //                // Find the intersection as a homogenous vector
+            //                double intersectionX = line1Y * line2W - line1W * line2Y,
+            //                       intersectionY = line1W * line2X - line1X * line2W,
+            //                       intersectionW = line1X * line2Y - line1Y * line2X;
+//
+            //                // The real intersection is a 2d vector
+            //                if (intersectionW != 0) // If intersectionW is zero, the lines are parallel
+            //                {
+            //                    pathLineIntersection = new Vector2(intersectionX / intersectionW, intersectionY / intersectionW);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
+            // Move the ball
+            UpdateBall(earliestEvent);
+
+            // Run the referee
+            RefereeDeclaration decl = Referee.RunRef(this);
+            if (decl == RefereeDeclaration.DECLARE_BALL_OUT)
+            {
+                scenario.BallOut(ball.Position);
+                return;
+            }
+            if (decl == RefereeDeclaration.DECLARE_GOAL_SCORED)
+            {
+                scenario.GoalScored();
+                return;
+            }
+
+            // Repeat if there is time remaining
+            if (remainingTime - earliestEventTimeFromNow > 0.001) // TODO what to put instead of 0.001?
+            {
+                stepBall(remainingTime - earliestEventTimeFromNow);
             }
         }
 
