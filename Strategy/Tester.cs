@@ -12,6 +12,5 @@ namespace RFC.Strategy
 {
     public interface Tester
     {
-        void Handle(FieldVisionMessage msg);
     }
 }

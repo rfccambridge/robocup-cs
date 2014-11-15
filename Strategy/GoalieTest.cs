@@ -10,7 +10,7 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class GoalieTest
+    public class GoalieTest : Tester
     {
 
         Team team;

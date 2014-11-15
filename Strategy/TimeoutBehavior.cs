@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RFC.Strategy
 {
-    public class TimeoutBehavior
+    public class TimeoutBehavior : Tester
     {
         private enum State { Timeout, Victory };
         private DateTime startTime;

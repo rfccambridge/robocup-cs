@@ -10,7 +10,7 @@ using System.Drawing;
 
 namespace RFC.Strategy
 {
-    public class MovementTest
+    public class MovementTest : Tester
     {
         const double TOLERANCE = .02;
 

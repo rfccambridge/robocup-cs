@@ -63,6 +63,7 @@ namespace ControlForm
                 int maxRobotId = 12;
                 bool simulator = simulatorCheckBox.Checked;
                 int goalieNumber = (int)GoalieNumberChooser.Value;
+                string play = PlayBox.Text;
 
                 if (simulator)
                 {
@@ -90,9 +91,9 @@ namespace ControlForm
                 new BreakBeamEmulator(team);
                 //new DribblerControler(team);
 
-                TesterFactory.newTester("Offense", team, goalieNumber);
+                TesterFactory.newTester(play, team, goalieNumber);
 
-                new NormalTester(team, goalieNumber);
+                //new NormalTester(team, goalieNumber);
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
                 //new OffenseTester(team, goalieNumber);
@@ -129,13 +130,23 @@ namespace ControlForm
 
         private void StopButton_Click(object sender, EventArgs e)
         {
+            EnableControls();
             ServiceManager.getServiceManager().SendMessage(new StopMessage());
         }
 
+        private void EnableControls()
+        {
+            TeamBox.Enabled = true;
+            PlayBox.Enabled = true;
+            ComNumberChooser.Enabled = true;
+            flippedCheckBox.Enabled = true;
+            simulatorCheckBox.Enabled = true;
+        }
 
         private void DisableControls()
         {
             TeamBox.Enabled = false;
+            PlayBox.Enabled = false;
             ComNumberChooser.Enabled = false;
             flippedCheckBox.Enabled = false;
             simulatorCheckBox.Enabled = false;
@@ -154,6 +165,11 @@ namespace ControlForm
         private void simulatorCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             ComNumberChooser.Enabled = simulatorCheckBox.Checked;
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -9,7 +9,7 @@ using RFC.Geometry;
 
 namespace RFC.Strategy
 {
-    public class NormalBehavior
+    public class NormalBehavior : Tester
     {
         Team team;
         ServiceManager msngr;
