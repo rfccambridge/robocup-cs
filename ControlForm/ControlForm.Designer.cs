@@ -109,6 +109,8 @@
             // simulatorCheckBox
             // 
             this.simulatorCheckBox.AutoSize = true;
+            this.simulatorCheckBox.Checked = true;
+            this.simulatorCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.simulatorCheckBox.Location = new System.Drawing.Point(15, 38);
             this.simulatorCheckBox.Name = "simulatorCheckBox";
             this.simulatorCheckBox.Size = new System.Drawing.Size(122, 17);

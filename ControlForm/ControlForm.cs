@@ -90,6 +90,7 @@ namespace ControlForm
                 new BreakBeamEmulator(team);
                 //new DribblerControler(team);
 
+                TesterFactory.newTester("Offense", team, goalieNumber);
 
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
@@ -100,7 +101,7 @@ namespace ControlForm
                 //new PlaySwitcher(team, goalieNumber);
                 //new SetupTest(team, goalieNumber);
                 //new KickTester(team, goalieNumber);
-                new TimeoutBehavior(team, goalieNumber);
+                //new TimeoutBehavior(team, goalieNumber);
                 
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 
@@ -151,7 +152,7 @@ namespace ControlForm
 
         private void simulatorCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            ComNumberChooser.Enabled = !simulatorCheckBox.Checked;
+            ComNumberChooser.Enabled = simulatorCheckBox.Checked;
         }
     }
 }

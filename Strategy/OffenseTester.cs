@@ -10,7 +10,7 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class OffenseTester
+    public class OffenseTester : Tester
     {
         Team team;
         ServiceManager msngr;

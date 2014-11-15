@@ -68,6 +68,8 @@
     <Compile Include="SetupTest1.cs" />
     <Compile Include="Shot1.cs" />
     <Compile Include="StateChecker.cs" />
+    <Compile Include="Tester.cs" />
+    <Compile Include="TesterFactory.cs" />
     <Compile Include="Threat.cs" />
     <Compile Include="TimeoutBehavior.cs" />
     <Compile Include="WaitBehavior.cs" />
