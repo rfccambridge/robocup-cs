@@ -33,6 +33,9 @@ namespace RFC.Strategy
 
         private void timeoutHandle(FieldVisionMessage fieldVision)
         {
+            fieldVision.GetRobots();
+            RobotDestinationMessage message = new RobotDestinationMessage(new RobotInfo(new Vector2(0,0), 0, team, 0), true);
+            msngr.SendMessage(message);
         }
 
         private void victoryHandle(FieldVisionMessage fieldVision)

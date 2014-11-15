@@ -111,6 +111,10 @@
       <Project>{6e92ddbb-42a7-462c-9e34-6b88fe64025f}</Project>
       <Name>Commands</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SerialControl\Vision\Vision.csproj">
+      <Project>{7cada0c4-1262-48a5-b314-7611e3bc8b1d}</Project>
+      <Name>Vision</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Simulator\Simulator.csproj">
       <Project>{0aedcdcc-bbcd-4cac-9a45-f13e9dcdb0ec}</Project>
       <Name>Simulator</Name>
@@ -118,10 +122,6 @@
     <ProjectReference Include="..\Strategy\Strategy.csproj">
       <Project>{1dae3b27-6eb0-4dd7-966b-efb615b31da5}</Project>
       <Name>Strategy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Vision\Vision.csproj">
-      <Project>{7cada0c4-1262-48a5-b314-7611e3bc8b1d}</Project>
-      <Name>Vision</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

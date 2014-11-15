@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="protobuf-net">
-      <HintPath>..\SSLVisionLib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\SSLVisionLib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,23 +49,23 @@
     <Compile Include="Vision.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
+    <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{2a163721-de91-4ad9-a7c7-29573095a2b3}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Geometry\Geometry.csproj">
+    <ProjectReference Include="..\..\Geometry\Geometry.csproj">
       <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
       <Name>Geometry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Messaging\Messaging.csproj">
+    <ProjectReference Include="..\..\Messaging\Messaging.csproj">
       <Project>{69ae7f48-fff1-46aa-9cf3-b4a9f5fb2d13}</Project>
       <Name>Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SSLVisionLib\SSLVisionLib.csproj">
+    <ProjectReference Include="..\..\SSLVisionLib\SSLVisionLib.csproj">
       <Project>{814ff38e-f4a4-4647-912c-067fbdff3419}</Project>
       <Name>SSLVisionLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{644cf1d1-4066-4e97-a75c-da16e710443e}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
