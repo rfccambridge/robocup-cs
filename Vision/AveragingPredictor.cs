@@ -113,6 +113,7 @@ namespace RFC.Vision
         private BallInfo lastBall = null;
         // Return the average of info from all cameras weighed by the time since 
         // it was last updated
+        // combineBall() called for each frame of the game
         private void combineBall()
         {
             double time = HighResTimer.SecondsSinceStart();
@@ -126,21 +127,29 @@ namespace RFC.Vision
             double sum = 0;
             double closestBallDistance = Double.MaxValue;
             BallInfo closestBall = null;
+            //go through all the fieldStates (one for each camera)
             for (int i = 0; i < fieldStates.Length; i++)
             {
                 BallInfo ball = fieldStates[i].GetBall();
+                // if there is a ball
                 if (ball != null)
                 {
                     //double t = time - ball.LastSeen;
                     double t = 1;
                     // First time, we don't add, just initialize
+                    // if there wasn't a ball beforehand or if the last ball is within a certain distance of the new one
                     if (lastBall == null || (ball.Position - lastBall.Position).magnitude() < closestBallDistance)
                     {
+                        //resetting the average position to the latest position: we trust it's true
                         avgPosition = t * ball.Position;
                         avgVelocity = t * ball.Velocity;
                         avgLastSeen = t * ball.LastSeen;
+                        // set sum to t (here, 1)
                         sum = t;
+                        // set the closest ball to the ball from the given field state
                         closestBall = ball;
+                        // if there is a last ball (previous if statement means it's within some distance of previous ball)
+                        // Q: doesn't this just make it closestBallDistance smaller each time
                         if (lastBall != null)
                         {
                             closestBallDistance = (ball.Position - lastBall.Position).magnitude();
@@ -153,10 +162,11 @@ namespace RFC.Vision
                     sum += t;*/
                 }
             }
-            
+            //Now we have information from all the cameras. Let's return a new ball
             BallInfo retBall = null;
             if (closestBall != null && avgPosition != null) // if we saw at least one ball
             {
+                // TODO: how is this not just dividing by 1?
                 avgPosition /= sum;
                 avgVelocity /= sum;
                 avgLastSeen /= sum;
@@ -169,7 +179,7 @@ namespace RFC.Vision
             {
                 retBall = new BallInfo(lastBall.Position, Vector2.ZERO, lastBall.LastSeen);
             }
-
+            // defines what comes out
             this.ball = retBall;
         }
 
@@ -187,6 +197,7 @@ namespace RFC.Vision
             // infos for that robot believed by different cameras. We later average over the inner list.
             // TODO: in the future, the parent predictor could keep its own state so that patternless
             // ids stay steady
+            // ?
             List<List<RobotInfo>> robotSightings = new List<List<RobotInfo>>();
 
             // Technically, need to record acquisition time for each camera, but it's ok
@@ -202,6 +213,7 @@ namespace RFC.Vision
             }
 
             // Construct the robot sightings list for later averaging
+            // loop over the cameras
             for (int cameraID = 0; cameraID < NUM_CAMERAS; cameraID++)
             {
                 // Iterate over robots seen by the camera
@@ -271,6 +283,7 @@ namespace RFC.Vision
             }
 
             // Now we have assembled information for each robot, just take the average
+            //Q: avg over cameras or over many frames per camera?
             foreach (List<RobotInfo> sList in robotSightings)
             {
                 RobotInfo avgRobot = new RobotInfo(sList[0]);
@@ -280,7 +293,6 @@ namespace RFC.Vision
                 {
                     avgRobot.ID = ++nextID;
                 }
-
                 double t = time - avgRobot.LastSeen;
                 t = 1;
                 Vector2 avgPosition = t * (new Vector2(avgRobot.Position));
@@ -292,6 +304,8 @@ namespace RFC.Vision
                 for (int i = 1; i < sList.Count; i++)
                 {
                     //t = time - sList[i].LastSeen;
+                    // TODO: This should be modified to not just do the average over many robots.
+                    //COMBINE with jitter filter
                     t = 1;
                     avgPosition += t * sList[i].Position;
                     avgVelocity += t * sList[i].Velocity;

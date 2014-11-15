@@ -58,6 +58,7 @@
     <Compile Include="MidfieldPlay.cs" />
     <Compile Include="MovementTest.cs" />
     <Compile Include="NormalBehavior.cs" />
+    <Compile Include="NormalTester.cs" />
     <Compile Include="OccOffenseMapper.cs" />
     <Compile Include="OffenseStrategy.cs" />
     <Compile Include="OffenseTester.cs" />

@@ -92,6 +92,7 @@ namespace ControlForm
 
                 TesterFactory.newTester("Offense", team, goalieNumber);
 
+                new NormalTester(team, goalieNumber);
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
                 //new OffenseTester(team, goalieNumber);
