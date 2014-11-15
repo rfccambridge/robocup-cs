@@ -91,6 +91,7 @@ namespace ControlForm
                 //new DribblerControler(team);
 
 
+                new NormalTester(team, goalieNumber);
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
                 //new OffenseTester(team, goalieNumber);
@@ -100,7 +101,7 @@ namespace ControlForm
                 //new PlaySwitcher(team, goalieNumber);
                 //new SetupTest(team, goalieNumber);
                 //new KickTester(team, goalieNumber);
-                new TimeoutBehavior(team, goalieNumber);
+                //new TimeoutBehavior(team, goalieNumber);
                 
                 MulticastRefBoxListener refbox = new MulticastRefBoxListener(team);
 
