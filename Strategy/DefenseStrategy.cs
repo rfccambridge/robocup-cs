@@ -90,7 +90,17 @@ namespace RFC.Strategy
                     difference = difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
                     destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, myTeam, 0));
                 }
-             }  
+             }
+            /*
+             * Kick Message
+                Arguments - robot to kick, position to kick to (source, target)
+
+                Look at kicktester.cs in strategy
+
+                We’re sending these kickmessages from field vision imputs.
+             * 
+            
+             */
             // dealing with ball, either by blitz or by wall
 
              if (blitz && playersOnBall > 0)
