@@ -33,6 +33,8 @@ namespace ControlForm
             InitializeComponent();
 
             TeamBox.DataSource = Enum.GetValues(typeof(Team));
+            
+            PlayBox.DataSource = Enum.GetValues(typeof(Play))
 
             StartVision();
         }
@@ -93,6 +95,10 @@ namespace ControlForm
 
                 TesterFactory.newTester(play, team, goalieNumber);
 
+                // Do not use code hidden below! You can select a play after running ControlForm.
+                // If you want you can comment out the TesterFactory line above and then use plays below as before.
+                // To create a new permanent tester, make a behavior class implementing the (blank) interface Tester,
+                // add it to TesterFactory, and add it to the play list in ControlForm.cs[Design].
                 //new NormalTester(team, goalieNumber);
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using RFC.Core;
-// using RFC.Messaging;
+// using RFC.Messaging
 
 namespace RFC.Simulator
 {
@@ -23,9 +23,6 @@ namespace RFC.Simulator
             InitializeComponent();
 
             createScenarios();
-
-         //   object lockObject = new object();
-         //   ServiceManager.getServiceManager().RegisterListener<StopMessage>(handleStopMessage, lockObject);
 
             // Otherwise focus goes to the console window
             this.BringToFront();
@@ -140,10 +137,6 @@ namespace RFC.Simulator
             _physicsEngine.ResetScenarioScene();
         }
 
-       /* public void stopMessageHandler(StopMessage message)
-        {
-            _physicsEngine.ResetScenarioScene();
-        } */
 
         private void SimulatorForm_FormClosing(object sender, FormClosingEventArgs e)
         {

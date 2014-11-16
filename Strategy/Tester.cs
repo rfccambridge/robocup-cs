@@ -8,6 +8,10 @@ using RFC.Core;
 using RFC.Geometry;
 using RFC.PathPlanning;
 
+/* <summary>
+ * Interface for testers
+ * </summary> */
+
 namespace RFC.Strategy
 {
     public interface Tester
