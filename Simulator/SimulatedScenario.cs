@@ -91,7 +91,7 @@ namespace RFC.Simulator
             if (numBlue > 1)
                 blueRobots.Add(new RobotInfo(new Vector2(0.3, 0), Math.PI, Team.Blue, 6));
             if (numBlue > 2)
-                blueRobots.Add(new RobotInfo(new Vector2(1.0, 1), Math.PI, Team.Blue, 7));
+                blueRobots.Add(new RobotInfo(new Vector2(1.0, 1), 3.5, Team.Blue, 7));
             if (numBlue > 3)
                 blueRobots.Add(new RobotInfo(new Vector2(2f, -1), Math.PI, Team.Blue, 8));
             if (numBlue > 4)

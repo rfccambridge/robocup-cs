@@ -427,37 +427,62 @@ namespace RFC.Simulator
             });
 
             // Check for collisions with robots
-            //double robotCircleCollisionRadius = Constants.Basic.ROBOT_RADIUS + Constants.Basic.BALL_RADIUS, robotFrontCollisionRadius = Constants.Basic.ROBOT_FRONT_RADIUS + Constants.Basic.BALL_RADIUS;
-            //foreach (Team team in Enum.GetValues(typeof(Team)))
-            //{
-            //    foreach (RobotInfo robot in robots[team])
-            //    {
-            //        // TODO: check if a robot jumped on top of our ball
-//
-            //        Vector2 pathToRobot = (robot.Position - ball.Position).perpendicularComponent(ball.Velocity);
-            //        if (pathToRobot.magnitude() < robotCircleCollisionRadius) // If true, the ball may or may not contact the robot. If false, the ball definitely won't touch the robot
-            //        {
-            //            Vector2 pathCircleIntersection = ((robot.Position - ball.Position) - pathToRobot) - ball.Velocity.normalizeToLength(robotCircleCollisionRadius * robotCircleCollisionRadius - pathToRobot.magnitudeSq());
-            //            Vector2 pathLineIntersection = null; // We'll set this in a few lines, after some messy algebra that has loads of extra variables
-            //            {
-            //                // Represent the lines as homogenous vectors
-            //                double line1X = ball.Velocity.Y, line1Y = ball.Velocity.X, line1W = Vector2.cross(ball.Velocity, ball.Position);
-            //                double line2X = Math.Cos(robot.Orientation), line2Y = Math.Sin(robot.Orientation), line2W = line2X * robot.Position.X + line2Y + robot.Position.Y;
-//
-            //                // Find the intersection as a homogenous vector
-            //                double intersectionX = line1Y * line2W - line1W * line2Y,
-            //                       intersectionY = line1W * line2X - line1X * line2W,
-            //                       intersectionW = line1X * line2Y - line1Y * line2X;
-//
-            //                // The real intersection is a 2d vector
-            //                if (intersectionW != 0) // If intersectionW is zero, the lines are parallel
-            //                {
-            //                    pathLineIntersection = new Vector2(intersectionX / intersectionW, intersectionY / intersectionW);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+            double robotCircleCollisionRadius = Constants.Basic.ROBOT_RADIUS + Constants.Basic.BALL_RADIUS, robotFrontCollisionRadius = Constants.Basic.ROBOT_FRONT_RADIUS + Constants.Basic.BALL_RADIUS;
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+            {
+                foreach (RobotInfo robot in robots[team])
+                {
+                    // TODO: throw out if the robot is really far away, for performance
+                    // TODO: check if the robot jumped on top of our ball
+
+                    Vector2 pathToRobot = (robot.Position - ball.Position).perpendicularComponent(ball.Velocity);
+                    if (pathToRobot.magnitude() < robotCircleCollisionRadius) // If true, the ball may or may not contact the robot. If false, the ball definitely won't touch the robot
+                    {
+                        // First, consider the ball hitting the round part of the robot
+                        Vector2 ballRobotCollisionPoint = ball.Position + (robot.Position - ball.Position).parallelComponent(ball.Velocity) - ball.Velocity.normalizeToLength(Math.Sqrt(robotCircleCollisionRadius * robotCircleCollisionRadius - pathToRobot.magnitudeSq()));
+                        // In this case, the ball bounces away from the center of the robot
+                        Vector2 impulseDirection = ballRobotCollisionPoint - robot.Position;
+
+                        // Second, consider the ball hitting the flat part of the robot
+                        // Limit the scope of the variables because there are a lot
+                        {
+                            // Represent the lines as homogenous vectors
+                            double line1X = ball.Velocity.Y, line1Y = -ball.Velocity.X, line1W = Vector2.cross(ball.Velocity, ball.Position);
+                            double line2X = Math.Cos(robot.Orientation), line2Y = Math.Sin(robot.Orientation), line2W = line2X * robot.Position.X + line2Y * robot.Position.Y + Constants.Basic.ROBOT_FRONT_RADIUS;
+
+                            // Find the intersection as a homogenous vector
+                            double intersectionX = line1Y * line2W - line1W * line2Y,
+                                   intersectionY = line1W * line2X - line1X * line2W,
+                                   intersectionW = -(line1X * line2Y - line1Y * line2X); // TODO: I don't know why this needs a negative, but it works...
+
+                            // If intersectionW is zero, the lines are parallel, so they do not intersect
+                            if (intersectionW != 0)
+                            {
+                                // The actual intersection is a 2d vector
+                                Vector2 flatIntersectionPoint = new Vector2(intersectionX / intersectionW, intersectionY / intersectionW);
+
+                                // This only matters if the ball hits the part of the line within the circle
+                                if (flatIntersectionPoint.distance(robot.Position) < robotCircleCollisionRadius)
+                                {
+                                    ballRobotCollisionPoint = flatIntersectionPoint;
+                                    // In this case, the ball bounces in the direction that the robot is facing
+                                    impulseDirection = new Vector2(robot.Orientation);
+                                    // TODO: handle kicking
+                                }
+                            }
+                        }
+
+                        double ballRobotCollisionTime = ballPositionInversePredict(ballRobotCollisionPoint);
+                        replaceEarliestIfEarlierButNotNegative(ballRobotCollisionTime, () =>
+                        {
+                            BallInfo ev = new BallInfo(ball);
+                            ev.Position = ballRobotCollisionPoint;
+                            ev.Velocity = ball.Velocity - (1 + BALL_ROBOT_ELASTICITY) * ball.Velocity.parallelComponent(impulseDirection);
+                            return ev;
+                        });
+                    }
+                }
+            }
 
             // Move the ball
             UpdateBall(earliestEvent);
