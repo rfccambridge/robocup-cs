@@ -740,7 +740,7 @@ namespace RFC.FieldDrawer
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Translate(robot.Position.X, robot.Position.Y, 0);
-            GL.Rotate(angle, 0, 0, 1);
+            //GL.Rotate(angle, 0, 0, 1); // TODO: do we need this line?
             GL.Color3(robot.Team == Team.Yellow ? Color.Yellow : Color.Blue);            
             //GL.Begin(BeginMode.Polygon);
 
@@ -748,7 +748,8 @@ namespace RFC.FieldDrawer
             //                                -(360 - ROBOT_ARC_SWEEP) / 2, ROBOT_ARC_SWEEP);
             //GL.End();
             // TODO: better drawing of robot
-            drawCircle(Constants.Basic.ROBOT_RADIUS, true);
+            // REVIEW: Is this better?
+            drawTruncatedCircle(Constants.Basic.ROBOT_RADIUS, robot.Orientation, 45, true);
             
             /*
             GL.MatrixMode(MatrixMode.Modelview);
@@ -887,6 +888,21 @@ namespace RFC.FieldDrawer
             for (int i = 0; i < 360; i++)
             {
                 double degInRad = i * 3.1416 / 180;
+                GL.Vertex2(Math.Cos(degInRad) * radius, Math.Sin(degInRad) * radius);
+            }
+            GL.End();
+        }
+
+        void drawTruncatedCircle(double radius, double centerOfTruncationInRadians, int halfTruncationAngleInDegrees, bool fill = false)
+        {
+            if (fill)
+                GL.Begin(BeginMode.Polygon);
+            else
+                GL.Begin(BeginMode.LineLoop);
+
+            for (int i = halfTruncationAngleInDegrees; i <= 360 - halfTruncationAngleInDegrees; i++)
+            {
+                double degInRad = i * 3.1416 / 180 + centerOfTruncationInRadians;
                 GL.Vertex2(Math.Cos(degInRad) * radius, Math.Sin(degInRad) * radius);
             }
             GL.End();
