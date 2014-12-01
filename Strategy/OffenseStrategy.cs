@@ -296,6 +296,13 @@ namespace RFC.Strategy
             }
             else
             {
+                // shoot on goal
+                state = State.Shot;
+                Console.WriteLine("swtiching to shot");
+                playStartTime = DateTime.Now;
+            }
+            /*else
+            {
                 // else just dribble the ball somewhere
                 //TODO good dribbling
                 /*
@@ -305,8 +312,8 @@ namespace RFC.Strategy
                 destination.ID = ballCarrier.ID;
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
                 msngr.SendMessage(destinationMessage);
-                 * */
-            }
+                 
+            } */
 
 
             // what should other robots do? -----------------------------------------------------------
