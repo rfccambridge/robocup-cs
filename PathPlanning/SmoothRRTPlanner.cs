@@ -386,6 +386,11 @@ namespace RFC.PathPlanning
                             return false;
                     }
                 }
+                else if (g is LineSegment)
+                {
+                    if (GeomFuncs.intersects(seg, g))
+                        return false;
+                }
                 else
                     throw new Exception("Smooth RRT only supports circles and rectangles currently!");
             }
@@ -870,7 +875,10 @@ namespace RFC.PathPlanning
         {
             return new Circle(c.Center, c.Radius + d);
         }
-
+        private Rectangle ExpandLineSeg(LineSegment l, double d)
+        {
+            return new Rectangle(l.P0.X-d, l.P1.X+d, l.P0.Y-d, l.P1.Y+d);
+        }
         //Eeeewwwww TODO replace this
         private Rectangle ExpandLeft(Rectangle r)
         {
@@ -888,6 +896,14 @@ namespace RFC.PathPlanning
         {
             //Build obstacle list
             List<Geom> obstacles = new List<Geom>();
+            LineSegment leftWall = new LineSegment(new Vector2(Constants.Field.GOAL_XMAX, Constants.Field.GOAL_YMAX), new Vector2(Constants.Field.GOAL_XMIN, Constants.Field.GOAL_YMAX));
+            LineSegment rightWall = new LineSegment(new Vector2(Constants.Field.GOAL_XMAX, Constants.Field.GOAL_YMIN), new Vector2(Constants.Field.GOAL_XMIN, Constants.Field.GOAL_YMIN));
+            LineSegment verticalWall = new LineSegment(new Vector2(Constants.Field.GOAL_XMAX, Constants.Field.GOAL_YMAX), new Vector2(Constants.Field.GOAL_XMAX, Constants.Field.GOAL_YMIN));
+            obstacles.Add(ExpandLineSeg(leftWall, ROBOT_RADIUS));
+            obstacles.Add(ExpandLineSeg(rightWall, ROBOT_RADIUS));
+            obstacles.Add(ExpandLineSeg(verticalWall, ROBOT_RADIUS));
+            msngr.vdb(leftWall.P0);
+            msngr.vdb(leftWall.P1);
             /*
             obstacles.Add(ExpandLeft(Constants.FieldPts.LEFT_GOAL_BOX));
             obstacles.Add(ExpandRight(Constants.FieldPts.RIGHT_GOAL_BOX));
@@ -914,7 +930,7 @@ namespace RFC.PathPlanning
             obstacles.AddRange(range);
 
             for (int i = 0; i < obstacles.Count; i++)
-            {
+            {1
                 Geom g = obstacles[i];
                 if (g is Rectangle)
                     obstacles[i] = ExpandRectangle((Rectangle)g, ROBOT_RADIUS);
@@ -932,11 +948,16 @@ namespace RFC.PathPlanning
                 else if (g is Circle && ((Circle)g).contains(desiredState.Position))
                     Console.WriteLine("Warning: SmoothRRTPlanner desired state inside obstacle!");
             }*/
-
-
-            return GetPath(desiredState, avoidBallRadius, oldPath, obstacles);
+            try
+            {
+                return GetPath(desiredState, avoidBallRadius, oldPath, obstacles);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return null;
+            }
         }
-
     }
 
 }
