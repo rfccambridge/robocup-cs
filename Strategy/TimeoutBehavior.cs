@@ -33,6 +33,7 @@ namespace RFC.Strategy
 
         private void timeoutHandle(FieldVisionMessage fieldVision)
         {
+
         }
 
         private void victoryHandle(FieldVisionMessage fieldVision)

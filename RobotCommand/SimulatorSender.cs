@@ -11,7 +11,7 @@ namespace RFC.Commands
     public class SimulatorSender
     {
         const string host = "localhost";
-        const int port = 50100;
+        const int port = 50101;
 
         ClientMessageSender<RobotCommand> sender;
 

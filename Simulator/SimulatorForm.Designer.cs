@@ -105,7 +105,7 @@
             this.txtSimCmdPort.Name = "txtSimCmdPort";
             this.txtSimCmdPort.Size = new System.Drawing.Size(71, 20);
             this.txtSimCmdPort.TabIndex = 56;
-            this.txtSimCmdPort.Text = "50100";
+            this.txtSimCmdPort.Text = "50101";
             // 
             // btnReset
             // 

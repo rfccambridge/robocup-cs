@@ -30,11 +30,16 @@ namespace RFC.Strategy
         {
             RobotDestinationMessage ds;
             RobotInfo ri;
+
+            /*
+             * if we haven't hit the middle of the goal, travel towards it. After we have, move to the top right corner
+             * */
             if (!hitGoal)
             {
                 ri = new RobotInfo(Constants.FieldPts.THEIR_GOAL, 0.0, team, goalie_id);
+
                 ds = new RobotDestinationMessage(ri, false);
-                msngr.SendMessage(ds);
+                msngr.SendMessage(ds);    
             }
             if (hitGoal || msg.GetRobot(team, goalie_id).Position.distance(Constants.FieldPts.THEIR_GOAL) < epsilon)
             {
@@ -42,8 +47,10 @@ namespace RFC.Strategy
                 ri = new RobotInfo(Constants.FieldPts.TOP_RIGHT, 0.0, team, goalie_id);
                 ds = new RobotDestinationMessage(ri, false);
                 msngr.SendMessage(ds);
+                
             }
-            
+             
+
         }
     }
 }
