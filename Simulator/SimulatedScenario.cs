@@ -108,7 +108,7 @@ namespace RFC.Simulator
 
         public override void GoalScored()
         {
-            _engine.UpdateBall(new BallInfo(Vector2.ZERO));
+            _engine.UpdateBall(new BallInfo(new Vector2(-3, 0.9))); // (Vector2.ZERO));
 
             // Update referee state
             // XXX: This is plain wrong for autogoals, but there's no trivial way of determining who attacks which side

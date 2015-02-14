@@ -91,10 +91,10 @@ namespace ControlForm
                 //new DribblerControler(team);
 
 
-                new NormalTester(team, goalieNumber);
+                //new NormalTester(team, goalieNumber);
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
-                //new OffenseTester(team, goalieNumber);
+                new OffenseTester(team, goalieNumber);
                 //new SetupTest(team, goalieNumber);
                 //new GoalieTest(team, goalieNumber);
                 //new SetupTest1(team, goalieNumber);

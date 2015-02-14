@@ -14,7 +14,7 @@ namespace RFC.Strategy
         ServiceManager msngr;
         MidfieldPlay behave;
         int id;
-
+        
 
         public KickTester(Team team, int goalie_id)
         {

@@ -15,7 +15,8 @@ namespace RFC.Strategy
         Team team;
         public int ID {get; private set;}
         ServiceManager msngr;
-        double clearThreshold = 1;
+        // increased from 1 to 1.2 for balls just outside semicircle
+        double clearThreshold = 1.1;  
         int framesTowardGoal = 0;
         int FRAME_THRESH = 10;
 
@@ -67,7 +68,7 @@ namespace RFC.Strategy
             Vector2 goalpos = Constants.FieldPts.OUR_GOAL;
             Vector2 ballpos = ball.Position;
             Vector2 ballvel = ball.Velocity;
-            double hold = Constants.Field.GOAL_HEIGHT/2; // robot distance from goal
+            double hold = Constants.Field.GOAL_HEIGHT/2; // robot distance from goal 
 
             // if ball is close to goal, kick it out
             Vector2 goalToBall = ballpos - goalpos;
