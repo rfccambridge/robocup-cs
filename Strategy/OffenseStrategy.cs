@@ -162,7 +162,7 @@ namespace RFC.Strategy
             {
                 for (int yi = 0; yi < map.GetLength(1); yi++)
                 {
-                    if (map[xi, yi] < best)
+                    if (map[xi, yi] > best)
                     {
                         best = map[xi, yi];
                         best_x = xi;
