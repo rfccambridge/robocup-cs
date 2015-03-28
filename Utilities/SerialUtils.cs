@@ -8,7 +8,8 @@ namespace RFC.Utilities
 {
     static public class SerialPortManager
     {
-        static readonly string br = "38400";
+        // static readonly string br = "38400"; // old radio
+        static readonly string br = "9600"; // XBee
         static readonly string pr = "None";
         static readonly string db = "8";
         static readonly string sb = "One";
