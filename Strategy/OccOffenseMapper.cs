@@ -153,6 +153,7 @@ namespace RFC.Strategy
 
         // within bounce angle -> good
         // make sure pass between ball and position is good
+        // no longer used for passing, takes care of robots that don't have the ball
         // make sure position has good shot
         public double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
         {
@@ -169,7 +170,10 @@ namespace RFC.Strategy
                     // see if position has good line of sight with ball
                     double distSum = 1.0;
                     double tooClose = 1.0;
-                    
+
+                    // depends on how close to an enemy robot
+                    double toEnemyRob = 0;
+
                     foreach (RobotInfo rob in theirTeam)
                     {
 
@@ -184,6 +188,8 @@ namespace RFC.Strategy
                         if (dist.magnitude() < Constants.Basic.ROBOT_RADIUS * 4)
                             tooClose = 0.0;
 
+                        // check distance to enemy robot
+                        toEnemyRob = (1.0 / (indToVec((int) x,(int) y) - rob.Position).magnitudeSq() + 1.0);
                     }
                     if (distSum < 0)
                     {
@@ -206,6 +212,7 @@ namespace RFC.Strategy
                     double robDistScore = Math.Exp(-minRobotDist);
 
                     // calculate bounce score
+                    /* Not needed, variable set to 1.
                     // make .5(1+cos)
                     double currentBounceAngle = 180 * Math.Acos(vecToBall.cosineAngleWith(vecToGoal)) / Math.PI;
                     if (double.IsNaN(currentBounceAngle))
@@ -217,6 +224,7 @@ namespace RFC.Strategy
                     {
                         bounceScore = 0;
                     }
+                     */
 
                     int[] ind = vecToInd(new Vector2(x, y));
                     int i = ind[0];
@@ -235,7 +243,8 @@ namespace RFC.Strategy
                     if (Avoider.isValid(pos, false))
                         isValid = 1;
 
-                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose * isValid * robDistScore);
+                    // removed bounceScore from consideration, toEnemyRob is under test
+                    map[i, j] = normalize(shotMap[i, j] * toEnemyRob * distSum * distScore * tooClose * isValid * robDistScore);
 
                     
 
