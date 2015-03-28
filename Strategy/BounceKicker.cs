@@ -78,10 +78,7 @@ namespace RFC.Strategy
                 msngr.SendMessage(new RobotDestinationMessage(destRI, true, false));
             }
              * */
-            // This was edited 3/28/15 to include 4 extra argument due to new avoid implementation 
-            // that considers both half circles. To revert check Avoider.cs
-            RobotInfo dest = Avoider.avoid(ri, kicker.Position, AVOID_RADIUS, bouncer.Position, AVOID_RADIUS,
-                kicker.Position, AVOID_RADIUS, bouncer.Position, AVOID_RADIUS);
+            RobotInfo dest = Avoider.avoid(ri, kicker.Position, AVOID_RADIUS, bouncer.Position, AVOID_RADIUS);
             msngr.SendMessage(new RobotDestinationMessage(dest, true, false));
         }
 

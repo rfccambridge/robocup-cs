@@ -97,7 +97,7 @@ namespace RFC.PathPlanning
 
         // iteratively avoid both obstacles until result converges
         // kind of a hack, but whatever
-        /*public static RobotInfo avoid(RobotInfo target, Vector2 obst1, double rad1, Vector2 obst2, double rad2)
+        public static RobotInfo avoid(RobotInfo target, Vector2 obst1, double rad1, Vector2 obst2, double rad2)
         {
             RobotInfo lastResult = new RobotInfo(new Vector2(-10, -10), 0,target.Team,0);
             RobotInfo result = new RobotInfo(target);
@@ -110,27 +110,7 @@ namespace RFC.PathPlanning
             }
 
             return result;
-        } */
-
-        //changed avoid so that it takes into account both half circles
-        public static RobotInfo avoid(RobotInfo target, Vector2 obst1, double rad1, Vector2 obst2, double rad2, 
-            Vector2 obst3, double rad3, Vector2 obst4, double rad4)
-        {
-            RobotInfo lastResult = new RobotInfo(new Vector2(-10, -10), 0, target.Team, 0);
-            RobotInfo result = new RobotInfo(target);
-
-            while (result.Position.distance(lastResult.Position) > convergence_threshold)
-            {
-                lastResult = new RobotInfo(result);
-                result = avoid(result, obst1, rad1);
-                result = avoid(result, obst2, rad2);
-                result = avoid(result, obst3, rad3);
-                result = avoid(result, obst4, rad4);
-            }
-
-            return result;
         }
-
         private static bool in_bounds(RobotInfo rob)
         {
             return in_bounds(rob.Position);

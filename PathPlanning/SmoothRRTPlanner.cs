@@ -157,7 +157,7 @@ namespace RFC.PathPlanning
             // making sure destination is valid
             // approximating the defense areas as two circles of radius .8m
             Vector2 defense_offset = new Vector2(0, .35 / 2);
-            double defense_radius = .9 + Constants.Basic.ROBOT_RADIUS; //changed to .9 to avoid robot getting too close to half circle
+            double defense_radius = .8 + Constants.Basic.ROBOT_RADIUS;
             Vector2 LT = Constants.FieldPts.OUR_GOAL + defense_offset;
             Vector2 LB = Constants.FieldPts.OUR_GOAL - defense_offset;
             Vector2 RT = Constants.FieldPts.THEIR_GOAL + defense_offset;
@@ -168,11 +168,8 @@ namespace RFC.PathPlanning
             // avoiding
             RobotInfo destinationCopy = new RobotInfo(message.Destination);
 
-            // considers 9 arguments instead of 4 to consider both half circles, to revert change definition 
-            // in Avoider.cs
             if (message.Destination.ID != goalie_id)
-                destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius * 1.25, LB, defense_radius * 1.25,
-                    RT, defense_radius * 1.25, RB, defense_radius * 1.25);
+                destinationCopy = Avoider.avoid(destinationCopy, LT, defense_radius * 1.25, LB, defense_radius * 1.25);
 
             destinationCopy.Team = message.Destination.Team;
             destinationCopy.ID = id;
