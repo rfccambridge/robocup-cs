@@ -40,6 +40,21 @@ namespace RFC.Messaging
             return rlist;
         }
 
+        // TODO: merge with above function
+        public List<RobotInfo> GetRobotsExceptTwo(Team team, int id1, int id2)
+        {
+            List<RobotInfo> rlist = new List<RobotInfo>();
+
+            foreach (RobotInfo robot in robots[team])
+            {
+                if (robot.ID != id1 && robot.ID != id2)
+                {
+                    rlist.Add(new RobotInfo(robot));
+                }
+            }
+            return rlist;
+        }
+
 		public List<RobotInfo> GetRobots()
 		{
 			List<RobotInfo> combined = new List<RobotInfo>();

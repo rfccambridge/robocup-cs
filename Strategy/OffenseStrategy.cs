@@ -229,7 +229,7 @@ namespace RFC.Strategy
             double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball); // map: how good a position is to make a goal shot "where to dribble the ball"
             double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision); // goal shot map accounting for bounce angle, distance, etc. "where to pass the ball"
 
-            //offenseMap.drawMap(passMap);
+            // offenseMap.drawMap(passMap);
 
             // defining ball carrier
             RobotInfo ballCarrier = null;
@@ -318,11 +318,51 @@ namespace RFC.Strategy
 
             // what should other robots do? -----------------------------------------------------------
 
-            List<RobotInfo> rest = fieldVision.GetRobotsExcept(team, closestToBall.ID);
+            List<RobotInfo> rest = fieldVision.GetRobotsExceptTwo(team, closestToBall.ID, goalie_id);
+
+            List<QuantifiedPosition> maxima = offenseMap.getLocalMaxima(passMap);
+            maxima.Sort();
+            maxima.Reverse();
+            List<RobotInfo> passerDestinations = new List<RobotInfo>();
+            List<RobotInfo> passerIDs = new List<RobotInfo>();
+            while (rest.Count > 0 && maxima.Count > 0)
+            {
+                // get position of first maximum (which is the greatest remaining maximum)
+                RobotInfo currentStation = maxima[0].position;
+                maxima.RemoveAt(0); // remove this maximum
+
+                // find closest robot to this maximum
+                int closestBot = 0;
+                double closestDist = rest[closestBot].Position.distance(currentStation.Position);
+                for (int i = 1; i < rest.Count; i++)
+                {
+                    if (rest[i].Position.distance(currentStation.Position) < closestDist)
+                    {
+                        closestBot = i;
+                    }
+                }
+
+                // calculate robot facing angle for pass
+                Vector2 goalToStation = Constants.FieldPts.THEIR_GOAL - currentStation.Position;
+                Vector2 ballToStation = ball.Position - currentStation.Position;
+                currentStation.Orientation = BounceKicker.getBounceOrientation(goalToStation, ballToStation);
+
+                // assign the closest robot to go to this maximum
+                passerDestinations.Add(currentStation);
+                passerIDs.Add(rest[closestBot]);
+                rest.RemoveAt(closestBot); // do not assign this robot to anywhere else
+            }
+
+            // now command robot movements
+            DestinationMatcher.SendByCorrespondence(passerIDs, passerDestinations);
+
+            /*
+            // do nothing
             foreach (RobotInfo rob in rest)
             {
                 msngr.SendMessage(new RobotDestinationMessage(rob, true));
             }
+            */
 
             // should be lined up in ideal passing locations
             /*
