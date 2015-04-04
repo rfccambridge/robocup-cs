@@ -157,7 +157,7 @@ namespace RFC.PathPlanning
             // making sure destination is valid
             // approximating the defense areas as two circles of radius .8m
             Vector2 defense_offset = new Vector2(0, .35 / 2);
-            double defense_radius = .9 + Constants.Basic.ROBOT_RADIUS; //changed to .9 to avoid robot getting too close to half circle
+            double defense_radius = .7 + Constants.Basic.ROBOT_RADIUS; //changed to .9 to avoid robot getting too close to half circle
             Vector2 LT = Constants.FieldPts.OUR_GOAL + defense_offset;
             Vector2 LB = Constants.FieldPts.OUR_GOAL - defense_offset;
             Vector2 RT = Constants.FieldPts.THEIR_GOAL + defense_offset;
