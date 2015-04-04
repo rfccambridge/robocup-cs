@@ -16,7 +16,7 @@ namespace RFC.Strategy
         public int ID {get; private set;}
         ServiceManager msngr;
         // increased from 1 to 1.2 for balls just outside semicircle
-        double clearThreshold = 1.1;  
+        double clearThreshold = 1.2;  
         int framesTowardGoal = 0;
         int FRAME_THRESH = 10;
 

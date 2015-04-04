@@ -18,7 +18,7 @@ namespace RFC.Strategy
         OffenseStrategy offenseBehavior;
         MidfieldPlay midfieldBehavior;
 
-        const double defense_threshold = .20;
+        const double defense_threshold = .40;
         const double offense_threshold = .50;
         const double hysteresis = .05;
 
