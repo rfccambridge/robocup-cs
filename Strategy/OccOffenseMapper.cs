@@ -22,6 +22,8 @@ namespace RFC.Strategy
         public const double BOUNCE_ANGLE = 20.0;
         // how far away from the line of sight should we ignore other robots?
         public const double IGN_THRESH = .15;
+        // how important is good line of sight to the goal for our other robots?
+        public const double SHOT_EXP = 2.0;
         Team team;
 
         private double LAT_HSTART;
@@ -99,6 +101,7 @@ namespace RFC.Strategy
                 {
                     
                     Vector2 pos = new Vector2(x, y);
+                    // not needed since we now have ShotOpportunity
                     /*
                     // find angle of opening for position
                     Vector2 vecBotGoal = Constants.FieldPts.THEIR_GOAL_BOTTOM - pos;
@@ -235,7 +238,7 @@ namespace RFC.Strategy
                     if (Avoider.isValid(pos, false))
                         isValid = 1;
 
-                    map[i, j] = normalize(shotMap[i, j] * bounceScore * distSum * distScore * tooClose * isValid * robDistScore);
+                    map[i, j] = normalize(Math.Pow(shotMap[i, j], SHOT_EXP) * bounceScore * distSum * distScore * tooClose * isValid * robDistScore);
 
                     
 
