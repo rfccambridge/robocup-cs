@@ -14,17 +14,17 @@ namespace RFC.Core
             MOVE,                       // Send wheelspeeds for 4 wheels
             KICK,                       // Charge & plunge, regardless of break-beam
             START_CHARGING,             // Start charging to full capacitor voltage (XXX: deprecated)
-            START_VARIABLE_CHARGING,    // Start charging to a set target voltage
-            STOP_CHARGING,              // Stop charging and maintain charge
-            BREAKBEAM_KICK,             // Charge to full voltage & plunge whenever beam broken (XXX: deprecated)
+            //START_VARIABLE_CHARGING,    // Start charging to a set target voltage
+            //STOP_CHARGING,              // Stop charging and maintain charge
+            //BREAKBEAM_KICK,             // Charge to full voltage & plunge whenever beam broken (XXX: deprecated)
             FULL_BREAKBEAM_KICK,        // Charge to target voltage & plunge whenever targetV reached and beam broken
-            MIN_BREAKBEAM_KICK,         // Charge to target voltage & plunge whenever V > minV and beam broken
+            //MIN_BREAKBEAM_KICK,         // Charge to target voltage & plunge whenever V > minV and beam broken
             START_DRIBBLER,             // Start the dribbler with a set speed
             STOP_DRIBBLER,              // Stop the dribbler
-            DISCHARGE,                  // Discharge capacitors without plunging
-            RESET,                      // Reset brushless board PIC
-            SET_PID,                    // Set PID constants for single-speed control (TOOD: check if deprecated?)
-            SET_CFG_FLAGS               // Set configuration flags
+            //DISCHARGE,                  // Discharge capacitors without plunging
+            //RESET,                      // Reset brushless board PIC
+            //SET_PID,                    // Set PID constants for single-speed control (TOOD: check if deprecated?)
+            //SET_CFG_FLAGS               // Set configuration flags
         };
 
         static CRCTool _crcTool;
@@ -172,13 +172,13 @@ namespace RFC.Core
                     source = (byte)'w'; port = (byte)'f';
                     return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port,
                         P, I, D);
-                case Command.SET_CFG_FLAGS:
+                /*case Command.SET_CFG_FLAGS:
                     source = (byte)'w'; port = (byte)'c';
                     return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port,
                         BoardID, Flags);
                 case Command.RESET:
                     source = (byte)'w'; port = (byte)'r';
-                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port);
+                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port);*/
                 #endregion
 
                 #region Aux board commands
@@ -190,33 +190,34 @@ namespace RFC.Core
                     source = (byte)'v'; port = (byte)'d';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
                         (byte)'0');
-                case Command.START_VARIABLE_CHARGING:
+                /*case Command.START_VARIABLE_CHARGING:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
                     source = (byte)'v'; port = (byte)'v';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)KickerStrength);
+                        (byte)KickerStrength);*/
                 case Command.FULL_BREAKBEAM_KICK:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'f';
+                    source = (byte)'v'; port = (byte)'k';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)KickerStrength);
-                case Command.MIN_BREAKBEAM_KICK:
+                        (byte)KickerStrength, (byte)true);
+                /*case Command.MIN_BREAKBEAM_KICK:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
                     if (MinKickerStrength > MAX_KICKER_STRENGTH) MinKickerStrength = MAX_KICKER_STRENGTH;
                     if (MinKickerStrength < MIN_KICKER_STRENGTH) MinKickerStrength = MIN_KICKER_STRENGTH;
                     source = (byte)'v'; port = (byte)'m';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)KickerStrength, (byte)MinKickerStrength);
+                        (byte)KickerStrength, (byte)MinKickerStrength);*/
                 case Command.KICK:
                     source = (byte)'v'; port = (byte)'k';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
+                        (byte)0xff, (byte)false);
                 case Command.START_CHARGING:
                     source = (byte)'v'; port = (byte)'c';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
-                case Command.STOP_CHARGING:
+                /*case Command.STOP_CHARGING:
                     source = (byte)'v'; port = (byte)'s';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
                 case Command.BREAKBEAM_KICK:
@@ -224,7 +225,7 @@ namespace RFC.Core
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
                 case Command.DISCHARGE:
                     source = (byte)'v'; port = (byte)'p';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
+                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);*/
                 default:
                     throw new ApplicationException("Don't know how to package command: " + command.ToString());
                 #endregion
