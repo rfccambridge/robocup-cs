@@ -55,7 +55,8 @@ namespace RFC.Strategy
         // the lower the number, the more likely to make a shot
         // private const double SHOT_THRESH = .05;
         // private const double BSHOT_THRESH = 20;
-        private const double SHOT_THRESH = 0.0;
+        // equivalent to open shot from half field
+        private const double SHOT_THRESH = 0.22;
         private const double BSHOT_THRESH = 20000;
 
         // how long should a play continue before it times out (in milliseconds)?
@@ -289,11 +290,14 @@ namespace RFC.Strategy
                 sc.addRule(toGoal, Constants.Basic.ROBOT_RADIUS * 5);
                 playStartTime = DateTime.Now;
             }
+            /*
             else if (false ) // put conditions to see if we should get rid of the ball ASAP
             {
                 // just get rid of the ball
                 // TODO
             }
+            */
+            /*
             else
             {
                 // shoot on goal
@@ -301,11 +305,11 @@ namespace RFC.Strategy
                 Console.WriteLine("swtiching to shot");
                 playStartTime = DateTime.Now;
             }
-            /*else
+            */
+            else
             {
                 // else just dribble the ball somewhere
-                //TODO good dribbling
-                /*
+                // TODO good dribbling
                 RobotInfo destination = bestDrib.position;
                 double orientation = (Constants.FieldPts.THEIR_GOAL - ball.Position).cartesianAngle();
                 destination.Orientation = orientation;
@@ -313,7 +317,7 @@ namespace RFC.Strategy
                 RobotDestinationMessage destinationMessage = new RobotDestinationMessage(destination, false, false);
                 msngr.SendMessage(destinationMessage);
                  
-            } */
+            }
 
 
             // what should other robots do? -----------------------------------------------------------
