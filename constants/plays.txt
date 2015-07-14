@@ -4,31 +4,31 @@
 #double FIELD_HEIGHT 3.2
 
 # Real field Singapore (2010-06-20)
-double FIELD_WIDTH 6.05
-double FIELD_HEIGHT 4.05
+double FIELD_WIDTH 9.0
+double FIELD_HEIGHT 6.0
 
 #Width of the additional area outside the bounds of the field that robots may enter
 double EXTENDED_BORDER_WIDTH 0.250
 
 #Width of the referree zone, outside of the extra border area
-double REFEREE_ZONE_WIDTH 0.1
+double REFEREE_ZONE_WIDTH 0.450
 
 #Radius of center circle of the field
 double CENTER_CIRCLE_RADIUS 0.50
 
 #Width and height of the goal boxes on each side
 double GOAL_WIDTH 0.18
-double GOAL_HEIGHT 0.70
+double GOAL_HEIGHT 1.0
 
 #Height of the rectangular part of the defense area on each side
-double DEFENSE_RECT_HEIGHT 0.350
+double DEFENSE_RECT_HEIGHT 0.5
 
 #Radius and rectangular width of the defense area on each side
-double DEFENSE_AREA_RADIUS 0.800
+double DEFENSE_AREA_RADIUS 1.0
 
 #Extended defense area radius that kicking-team robots must stay
 #out of when positioning for free kick
-double EXTENDED_DEFENSE_AREA_RADIUS 0.800
+double EXTENDED_DEFENSE_AREA_RADIUS 0.700
 
 
 #------------------------------------------------------------------
