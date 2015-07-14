@@ -45,7 +45,6 @@ namespace RFC.Strategy
         private ServiceManager msngr;
         private Goalie goalie;
 
-        private Vector2[,] zoneList;
         // the radius in meters of a robot's zone
         private const double ZONE_RAD = 0.5;
 
