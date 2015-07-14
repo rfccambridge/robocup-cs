@@ -661,9 +661,7 @@ namespace RFC.Simulator
                         break;
 
                     //TODO: Make the simulator handle these differently/appropriately
-                    case RobotCommand.Command.BREAKBEAM_KICK:
                     case RobotCommand.Command.FULL_BREAKBEAM_KICK:
-                    case RobotCommand.Command.MIN_BREAKBEAM_KICK:
                         break_beam_frames[team][command.ID] = (int)(BREAKBEAM_TIMEOUT / runLoop.GetPeriod());
                         kick_strengths[team][command.ID] = command.KickerStrength;
                         break;

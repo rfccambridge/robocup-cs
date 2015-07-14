@@ -168,10 +168,6 @@ namespace RFC.Core
                     source = (byte)'w'; port = (byte)'w';
                     return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port,
                         (byte)rf, (byte)lf, (byte)lb, (byte)rb);
-                case Command.SET_PID:
-                    source = (byte)'w'; port = (byte)'f';
-                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port,
-                        P, I, D);
                 /*case Command.SET_CFG_FLAGS:
                     source = (byte)'w'; port = (byte)'c';
                     return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port,
@@ -201,7 +197,7 @@ namespace RFC.Core
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
                     source = (byte)'v'; port = (byte)'k';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)KickerStrength, (byte)true);
+                        (byte)KickerStrength, (byte)(1));
                 /*case Command.MIN_BREAKBEAM_KICK:
                     if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
                     if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
@@ -213,7 +209,7 @@ namespace RFC.Core
                 case Command.KICK:
                     source = (byte)'v'; port = (byte)'k';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)0xff, (byte)false);
+                        (byte)0xff, (byte)(0));
                 case Command.START_CHARGING:
                     source = (byte)'v'; port = (byte)'c';
                     return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
@@ -262,22 +258,8 @@ namespace RFC.Core
                                              (buff[6] & 0x80) > 0 ? -1 * (buff[6] & 0x7F) : buff[6],
                                              (buff[7] & 0x80) > 0 ? -1 * (buff[7] & 0x7F) : buff[7]);
                     break;
-                case Command.SET_PID:
-                    P = buff[4];
-                    I = buff[5];
-                    D = buff[6];
-                    break;
-                case Command.SET_CFG_FLAGS:
-                    BoardID = buff[4];
-                    Flags = buff[5];
-                    break;
                 case Command.FULL_BREAKBEAM_KICK:
-                case Command.START_VARIABLE_CHARGING:
                     KickerStrength = buff[4];
-                    break;
-                case Command.MIN_BREAKBEAM_KICK:
-                    KickerStrength = buff[4];
-                    MinKickerStrength = buff[5];
                     break;
                 case Command.START_DRIBBLER:
                     DribblerSpeed = buff[4];
@@ -304,22 +286,8 @@ namespace RFC.Core
                     buff[6] = (byte)(Speeds.lb < 0 ? (byte)Math.Abs(lb) | 0x80 : (byte)lb);
                     buff[7] = (byte)(Speeds.rb < 0 ? (byte)Math.Abs(rb) | 0x80 : (byte)rb);
                     break;
-                case Command.SET_PID:
-                    buff[4] = P;
-                    buff[5] = I;
-                    buff[6] = D;
-                    break;
-                case Command.SET_CFG_FLAGS:
-                    buff[4] = BoardID;
-                    buff[5] = Flags;
-                    break;
                 case Command.FULL_BREAKBEAM_KICK:
-                case Command.START_VARIABLE_CHARGING:
                     buff[4] = KickerStrength;
-                    break;
-                case Command.MIN_BREAKBEAM_KICK:
-                    buff[4] = KickerStrength;
-                    buff[5] = MinKickerStrength;
                     break;
                 case Command.START_DRIBBLER:
                     buff[4] = DribblerSpeed;

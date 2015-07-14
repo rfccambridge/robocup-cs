@@ -41,6 +41,7 @@ namespace RFC.Logging
             }
             catch (IOException ex)
             {
+                Console.WriteLine("Exception: " + ex);
             }
         }
 

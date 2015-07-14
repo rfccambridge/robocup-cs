@@ -24,7 +24,7 @@ namespace RFC.Logging
                 // this happens when two ControlForms are being used
                 // should probably not make rest of code dependent on there being a log...
                 logger = new System.IO.StreamWriter(@"match_history2.txt", true);
-                
+                logger.WriteLine("Exception: " + e);
             }
         }
 
