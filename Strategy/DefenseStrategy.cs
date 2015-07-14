@@ -77,7 +77,7 @@ namespace RFC.Strategy
             // adding positions for man to man defense
             List<RobotInfo> destinations = new List<RobotInfo>();
             //assigns positions based on threats (normal defense)
-
+            /*
             for (int i = 0; destinations.Count() < fieldPlayers.Count - playersOnBall; i++)
             {
             // man to man
@@ -88,13 +88,14 @@ namespace RFC.Strategy
                     difference = difference.normalizeToLength(3 * Constants.Basic.ROBOT_RADIUS);
                     destinations.Add(new RobotInfo(totalThreats[i].position + difference, 0, myTeam, 0));
                 }
-             }  
+             }
+             */
             // dealing with ball, either by blitz or by wall
 
              if (blitz && playersOnBall > 0)
                 {
                     destinations.Insert(0,new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
-                    playersOnBall -= 1;
+                    // playersOnBall -= 1;
                 }
 
                 // rest of the robots on ball make a wall
@@ -102,13 +103,13 @@ namespace RFC.Strategy
                 double incrementAngle = .6;
                 double centerAngle = goalToBall.cartesianAngle();
 
-                for (int i = 0; i < playersOnBall; i++)
+                for (int i = 0; i < fieldPlayers.Count - playersOnBall; i++)
                 {
                     double positionAngle = centerAngle + incrementAngle * (i - (playersOnBall - 1.0) / 2.0);
                     Vector2 unNormalizedDirection = new Vector2(positionAngle);
                     Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
                     Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
-                    destinations.Insert(0,new RobotInfo(robotPosition, positionAngle + Math.PI, myTeam, 0)); //adds positions behind ball after ball in List
+                    destinations.Add(new RobotInfo(robotPosition, positionAngle + Math.PI, myTeam, 0)); //adds positions behind ball after ball in List
                 }
             //truncate destinations to match fieldPlayers
                 destinations.RemoveRange(fieldPlayers.Count, destinations.Count - fieldPlayers.Count);

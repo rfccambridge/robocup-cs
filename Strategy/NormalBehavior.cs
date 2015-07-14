@@ -18,7 +18,7 @@ namespace RFC.Strategy
         OffenseStrategy offenseBehavior;
         MidfieldPlay midfieldBehavior;
 
-        const double defense_threshold = .40;
+        const double defense_threshold = .20;
         const double offense_threshold = .50;
         const double hysteresis = .05;
 
@@ -34,7 +34,7 @@ namespace RFC.Strategy
         public NormalBehavior(Team team, int goalie_id)
         {
             this.team = team;
-            this.state = State.Defense;
+            this.state = State.Midfield;
 
             this.msngr = ServiceManager.getServiceManager();
             this.fieldRating = new HowOffensive(team);

@@ -14,38 +14,29 @@ namespace RFC.Strategy
         Team team;
         int goalie_id;
         ServiceManager msngr;
-        Goalie goalieBehave;
-        DefenseStrategy positionHelper;
+        DefenseStrategy defense;
+        OffenseStrategy offense;
 
         public MidfieldPlay(Team t, int g)
         {
             team = t;
             goalie_id = g;
-            positionHelper = new DefenseStrategy(t,g, DefenseStrategy.PlayType.MidField);
+            defense = new DefenseStrategy(t,g, DefenseStrategy.PlayType.MidField);
+            offense = new OffenseStrategy(t, g);
             msngr = ServiceManager.getServiceManager();
         }
 
         public void doMidfield(FieldVisionMessage message)
-        {
-            int count = message.GetRobots(team).Count();
-            
-            if (message.Ball.Position.X>0)
+        {            
+            if (message.Ball.Velocity.X >= 2.0)
             {
-                Console.WriteLine("Midfield: wall defense");
-                if (count - 1 >= 3)
-                {
-                    positionHelper.DefenseCommand(message, 3, true);
-                }
-                else
-                {
-                    positionHelper.DefenseCommand(message, count - 1, true);
-                }
-
+                Console.WriteLine("Midfield: offensive");
+                offense.Handle(message);
             }
             else
             {
-                Console.WriteLine("Midfield: clearing");
-                positionHelper.DefenseCommand(message, 1, true);
+                Console.WriteLine("Midfield: defensive");
+                defense.DefenseCommand(message, 1, true);
             }    
         }
     }
