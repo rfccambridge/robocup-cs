@@ -21,6 +21,7 @@ namespace RFC.Strategy
         }
 
         Team team;
+        FieldDrawer.FieldDrawer fd;
         PlayType play;
         object lockObject;
         int max_robots;
@@ -36,9 +37,10 @@ namespace RFC.Strategy
         ServiceManager msngr;
         MatchRecorder recorder;
 
-        public PlaySwitcher(Team our_team, int goalie_id)
+        public PlaySwitcher(Team our_team, int goalie_id, FieldDrawer.FieldDrawer fd)
         {
             team = our_team;
+            this.fd = fd;
             lockObject = new object();
             this.max_robots = 12;
             this.goalie_id = goalie_id;
@@ -73,10 +75,13 @@ namespace RFC.Strategy
                 play = PlayType.NormalPlay;
                 Console.WriteLine("switched to normal");
             }
-            switch(play)
+            fd.UpdateTeam(team);
+            fd.UpdatePlayType(play);
+            NormalBehavior.State currentState = NormalBehavior.State.Unknown;
+            switch (play)
             {
                 case PlayType.NormalPlay:
-                    normalBehavior.Play(msg);
+                    currentState = normalBehavior.Play(msg);
                     break;
                 case PlayType.Halt:
                     waitBehavior.Halt(msg);
@@ -122,8 +127,24 @@ namespace RFC.Strategy
                     kickOffBehavior.Theirs(msg);
                     break;
             }
+            string playName;
+            switch (currentState)
+            {
+                case NormalBehavior.State.Offense:
+                    playName = "Offense";
+                    break;
+                case NormalBehavior.State.Midfield:
+                    playName = "Midfield";
+                    break;
+                case NormalBehavior.State.Defense:
+                    playName = "Defense";
+                    break;
+                default:
+                    playName = "Special";
+                    break;
+            }
+            fd.UpdatePlayName(team, 0, playName);
             recorder.Handle(msg);
-
         }
     }
 }

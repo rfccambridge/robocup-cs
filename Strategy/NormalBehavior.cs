@@ -22,11 +22,12 @@ namespace RFC.Strategy
         const double offense_threshold = .50;
         const double hysteresis = .05;
 
-        private enum State
+        public enum State
         {
             Offense,
             Midfield,
-            Defense
+            Defense,
+            Unknown
         }
         State state;
 
@@ -43,22 +44,27 @@ namespace RFC.Strategy
             midfieldBehavior = new MidfieldPlay(team, goalie_id);
         }
 
-        public void Play(FieldVisionMessage msg)
+        public State Play(FieldVisionMessage msg)
         {
             state_switcher(fieldRating.Evaluate(msg));
             Console.WriteLine("NormalBehavior: " + state);
+            State currentState = State.Unknown;
             switch(state)
             {
                 case State.Offense:
                     offenseBehavior.Handle(msg);
+                    currentState = State.Offense;
                     break;
                 case State.Midfield:
                     midfieldBehavior.doMidfield(msg);
+                    currentState = State.Midfield;
                     break;
                 case State.Defense:
                     defenseBehavior.DefenseCommand(msg, 1, true);
+                    currentState = State.Defense;
                     break;
             }
+            return currentState;
         }
 
         // switched state with some hysteresis

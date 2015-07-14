@@ -101,6 +101,7 @@
             this.lblPlayName.Size = new System.Drawing.Size(25, 13);
             this.lblPlayName.TabIndex = 17;
             this.lblPlayName.Text = "<?>";
+            this.lblPlayName.Visible = false;
             // 
             // lblControllerDuration
             // 
@@ -111,6 +112,7 @@
             this.lblControllerDuration.Size = new System.Drawing.Size(32, 16);
             this.lblControllerDuration.TabIndex = 16;
             this.lblControllerDuration.Text = "<?>";
+            this.lblControllerDuration.Visible = false;
             // 
             // label8
             // 
@@ -120,6 +122,7 @@
             this.label8.Size = new System.Drawing.Size(97, 13);
             this.label8.TabIndex = 15;
             this.label8.Text = "Controller Duration:";
+            this.label8.Visible = false;
             // 
             // lblLapDuration
             // 
@@ -130,6 +133,7 @@
             this.lblLapDuration.Size = new System.Drawing.Size(32, 16);
             this.lblLapDuration.TabIndex = 14;
             this.lblLapDuration.Text = "<?>";
+            this.lblLapDuration.Visible = false;
             // 
             // label4
             // 
@@ -139,6 +143,7 @@
             this.label4.Size = new System.Drawing.Size(71, 13);
             this.label4.TabIndex = 13;
             this.label4.Text = "Lap Duration:";
+            this.label4.Visible = false;
             // 
             // lblMarker
             // 
@@ -148,6 +153,7 @@
             this.lblMarker.Name = "lblMarker";
             this.lblMarker.Size = new System.Drawing.Size(15, 15);
             this.lblMarker.TabIndex = 12;
+            this.lblMarker.Visible = false;
             this.lblMarker.Click += new System.EventHandler(this.lblMarker_Click);
             this.lblMarker.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblMarker_MouseDown);
             // 
@@ -160,6 +166,7 @@
             this.lblInterpretDuration.Size = new System.Drawing.Size(32, 16);
             this.lblInterpretDuration.TabIndex = 10;
             this.lblInterpretDuration.Text = "<?>";
+            this.lblInterpretDuration.Visible = false;
             // 
             // label6
             // 
@@ -169,6 +176,7 @@
             this.label6.Size = new System.Drawing.Size(101, 13);
             this.label6.TabIndex = 9;
             this.label6.Text = "Interpreter Duration:";
+            this.label6.Visible = false;
             // 
             // lblInterpretFreq
             // 
@@ -179,6 +187,7 @@
             this.lblInterpretFreq.Size = new System.Drawing.Size(32, 16);
             this.lblInterpretFreq.TabIndex = 8;
             this.lblInterpretFreq.Text = "<?>";
+            this.lblInterpretFreq.Visible = false;
             // 
             // label2
             // 
@@ -188,6 +197,7 @@
             this.label2.Size = new System.Drawing.Size(82, 13);
             this.label2.TabIndex = 7;
             this.label2.Text = "Interpreter Freq:";
+            this.label2.Visible = false;
             // 
             // lblRefBoxCmd
             // 
@@ -198,6 +208,7 @@
             this.lblRefBoxCmd.Size = new System.Drawing.Size(32, 16);
             this.lblRefBoxCmd.TabIndex = 4;
             this.lblRefBoxCmd.Text = "<?>";
+            this.lblRefBoxCmd.Visible = false;
             // 
             // lblPlayType
             // 
@@ -208,6 +219,7 @@
             this.lblPlayType.Size = new System.Drawing.Size(32, 16);
             this.lblPlayType.TabIndex = 6;
             this.lblPlayType.Text = "<?>";
+            this.lblPlayType.Visible = false;
             // 
             // label3
             // 
@@ -218,6 +230,7 @@
             this.label3.Size = new System.Drawing.Size(37, 13);
             this.label3.TabIndex = 3;
             this.label3.Text = "Team:";
+            this.label3.Visible = false;
             // 
             // label1
             // 
@@ -228,6 +241,7 @@
             this.label1.Size = new System.Drawing.Size(66, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "RefBoxCmd:";
+            this.label1.Visible = false;
             // 
             // lblTeam
             // 
@@ -238,6 +252,7 @@
             this.lblTeam.Size = new System.Drawing.Size(32, 16);
             this.lblTeam.TabIndex = 2;
             this.lblTeam.Text = "<?>";
+            this.lblTeam.Visible = false;
             // 
             // label5
             // 
@@ -248,6 +263,7 @@
             this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 5;
             this.label5.Text = "PlayType:";
+            this.label5.Visible = false;
             // 
             // FieldDrawerForm
             // 

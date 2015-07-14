@@ -78,6 +78,10 @@
       <Project>{2a163721-de91-4ad9-a7c7-29573095a2b3}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FieldDrawer\FieldDrawer.csproj">
+      <Project>{27f07d1c-2d92-442a-b283-5cc23507e9c1}</Project>
+      <Name>FieldDrawer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Geometry\Geometry.csproj">
       <Project>{8e0fd38e-7e9d-4ca3-b187-b254f858ccdf}</Project>
       <Name>Geometry</Name>

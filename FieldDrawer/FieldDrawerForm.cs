@@ -38,6 +38,8 @@ namespace RFC.FieldDrawer
             {
                 lblTeam.Text = team.ToString();
                 lblTeam.ForeColor = team == Team.Yellow ? Color.Yellow : Color.Blue;
+                label3.Visible = true;
+                lblTeam.Visible = true;
             }));
         }
 
@@ -46,6 +48,8 @@ namespace RFC.FieldDrawer
             this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblRefBoxCmd.Text = refBoxCmd;
+                label1.Visible = true;
+                lblRefBoxCmd.Visible = true;
             }));
         }
 
@@ -54,6 +58,7 @@ namespace RFC.FieldDrawer
             this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblPlayType.Text = playType.ToString();
+                lblPlayType.Visible = true;
             }));
         }
 
