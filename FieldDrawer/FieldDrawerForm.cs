@@ -67,6 +67,7 @@ namespace RFC.FieldDrawer
             this.BeginInvoke(new VoidDelegate(delegate
             {
                 lblPlayName.Text = name;
+                lblPlayName.Visible = true;
             }));
         }
 
