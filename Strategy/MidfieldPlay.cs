@@ -30,12 +30,12 @@ namespace RFC.Strategy
         {            
             if (message.Ball.Velocity.X >= 2.0)
             {
-                Console.WriteLine("Midfield: offensive");
+                // Console.WriteLine("Midfield: offensive");
                 offense.Handle(message);
             }
             else
             {
-                Console.WriteLine("Midfield: defensive");
+                // Console.WriteLine("Midfield: defensive");
                 defense.DefenseCommand(message, 1, true);
             }    
         }

@@ -271,7 +271,7 @@ namespace RFC.Strategy
             {
                 // shoot on goal
                 state = State.Shot;
-                Console.WriteLine("swtiching to shot");
+                // Console.WriteLine("swtiching to shot");
                 playStartTime = DateTime.Now;
             }
             else if (shootingRobot != null && bounce_op.potential > adjust_thresh(BSHOT_THRESH))
@@ -281,7 +281,7 @@ namespace RFC.Strategy
                 bouncingRobot = bounce_op.position; 
                 state = State.BounceShot;
                 bounceKicker.reset(bounce_op.position.Position);
-                Console.WriteLine("switching to bounce shot");
+                // Console.WriteLine("switching to bounce shot");
                 LineSegment between = new LineSegment(shootingRobot.Position, (bouncingRobot.Position - shootingRobot.Position).cartesianAngle());
                 LineSegment toGoal = new LineSegment(bouncingRobot.Position, Shot1.evaluate(fieldVision, team, bouncingRobot.Position).target - bouncingRobot.Position);
                 sc = new StateChecker();
@@ -515,7 +515,7 @@ namespace RFC.Strategy
         public void Handle(FieldVisionMessage fieldVision)
         {
             if (stopped) return;
-            Console.WriteLine("Offense: " + state);
+            // Console.WriteLine("Offense: " + state);
             // handling goalie outside of state
             goalie.getGoalie(fieldVision);
             switch (state)

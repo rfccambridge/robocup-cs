@@ -47,7 +47,7 @@ namespace RFC.Strategy
         public State Play(FieldVisionMessage msg)
         {
             state_switcher(fieldRating.Evaluate(msg));
-            Console.WriteLine("NormalBehavior: " + state);
+            // Console.WriteLine("NormalBehavior: " + state);
             State currentState = State.Unknown;
             switch(state)
             {
@@ -99,7 +99,7 @@ namespace RFC.Strategy
                         state = State.Midfield;
                     break;
             }
-            Console.WriteLine(state);
+            // Console.WriteLine(state);
         }
     }
 }
