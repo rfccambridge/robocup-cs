@@ -515,7 +515,7 @@ namespace RFC.Simulator
                 Vector2 newVel = robotFaceDir * getKickSpeed(kickerStrength);
                 LastTouched = robot.Team;
                 UpdateBall(new BallInfo(ball.Position, newVel + reflection));
-                Console.WriteLine("Kick ! " + kickerStrength);
+                // Console.WriteLine("Kick ! " + kickerStrength);
                 return true;
             }
             return false;

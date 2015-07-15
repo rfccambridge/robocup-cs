@@ -56,7 +56,7 @@ namespace RFC.Strategy
         // private const double BSHOT_THRESH = 20;
         // equivalent to open shot from half field
         private const double SHOT_THRESH = 0.22;
-        private const double BSHOT_THRESH = 20000;
+        private const double BSHOT_THRESH = Double.MaxValue;
 
         // how long should a play continue before it times out (in milliseconds)?
         private const int SHOT_TIMEOUT = 2000;

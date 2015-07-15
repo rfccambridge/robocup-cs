@@ -113,7 +113,7 @@ namespace RFC.Strategy
             Vector2 radVec = new Vector2(bounce.Orientation);
             radVec = radVec.normalizeToLength(Constants.Basic.ROBOT_FRONT_RADIUS);
             bounce.Position = bounce_loc - radVec;
-            Console.WriteLine(progress);
+            // Console.WriteLine(progress);
             
             switch(progress)
             {
