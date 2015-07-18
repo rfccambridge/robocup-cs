@@ -29,7 +29,7 @@ namespace RFC.Strategy
         Goalie goalieBehavior;
         List<RobotInfo> midFieldPositions; //for MidFieldPlayOnly: list of positions including shadowBall
         public PlayType playType;
-        const double default_radius = .35;
+        const double default_radius = .6;
         const double ball_avoid_radius = .6;
         const double kickoff_boundary = -.1;
 
@@ -94,25 +94,36 @@ namespace RFC.Strategy
 
              if (blitz && playersOnBall > 0)
                 {
-                    destinations.Insert(0,new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
+                    for (int i = 0; i < playersOnBall; i++ )
+                    {
+                        destinations.Insert(0, new RobotInfo(msg.Ball.Position, 0, myTeam, 0));
+                    }
                     // playersOnBall -= 1;
                 }
+             else
+             {
+                 playersOnBall = 0;
+             }
 
                 // rest of the robots on ball make a wall
                 Vector2 goalToBall = Constants.FieldPts.OUR_GOAL - msg.Ball.Position;
-                double incrementAngle = .6;
+                double incrementAngle = .3;
                 double centerAngle = goalToBall.cartesianAngle();
 
                 for (int i = 0; i < fieldPlayers.Count - playersOnBall; i++)
                 {
-                    double positionAngle = centerAngle + incrementAngle * (i - (playersOnBall - 1.0) / 2.0);
+                    double positionAngle = centerAngle + Math.Pow(-1,i) * incrementAngle * i;//(i - (playersOnBall - 1.0)/2.0);
+
                     Vector2 unNormalizedDirection = new Vector2(positionAngle);
                     Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
                     Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
                     destinations.Add(new RobotInfo(robotPosition, positionAngle + Math.PI, myTeam, 0)); //adds positions behind ball after ball in List
                 }
             //truncate destinations to match fieldPlayers
+            if (destinations.Count > fieldPlayers.Count)
+            {
                 destinations.RemoveRange(fieldPlayers.Count, destinations.Count - fieldPlayers.Count);
+            }
            
 
             
