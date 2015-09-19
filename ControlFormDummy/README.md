@@ -1,0 +1,1 @@
+This is a hack to allow two copies of ControlForm to be run simultaneously, for running the code against itself.

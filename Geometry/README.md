@@ -1,0 +1,4 @@
+Geometry
+========
+
+Geometric math utilities
