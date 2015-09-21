@@ -10,19 +10,13 @@ namespace RFC.Geometry
     /// </summary>
     public class RobotShape : Geom
     {
-        private Arc arc;
-        private LineSegment segment;
-
-        public Arc Arc
-        { get { return arc; } }
-
-        public LineSegment Segment
-        { get { return segment; } }
+        public Arc Arc { get; private set; }
+        public LineSegment Segment { get; private set; }
 
         private RobotShape(Arc arc, LineSegment segment)
         {
-            this.arc = arc;
-            this.segment = segment;
+            this.Arc = arc;
+            this.Segment = segment;
         }
 
         /// <summary>
@@ -32,8 +26,8 @@ namespace RFC.Geometry
         {
             double angle = Math.Acos(frontPlateRadius / radius);
 
-            this.arc = new Arc(center, radius, orientation - angle, orientation + angle);
-            this.segment = new LineSegment(arc.StartPt, arc.StopPt);
+            this.Arc = new Arc(center, radius, orientation - angle, orientation + angle);
+            this.Segment = new LineSegment(Arc.StartPt, Arc.StopPt);
         }
 
         /// <summary>
@@ -41,7 +35,7 @@ namespace RFC.Geometry
         /// </summary>
         public static RobotShape operator +(RobotShape rs, Vector2 v)
         {
-            return new RobotShape(rs.arc + v, rs.segment + v);
+            return new RobotShape(rs.Arc + v, rs.Segment + v);
         }
 
         /// <summary>
@@ -49,7 +43,7 @@ namespace RFC.Geometry
         /// </summary>
         public static RobotShape operator +(Vector2 v, RobotShape rs)
         {
-            return new RobotShape(v + rs.arc, v + rs.segment);
+            return new RobotShape(v + rs.Arc, v + rs.Segment);
         }
 
         /// <summary>
@@ -57,7 +51,7 @@ namespace RFC.Geometry
         /// </summary>
         public static RobotShape operator -(RobotShape rs, Vector2 v)
         {
-            return new RobotShape(rs.arc - v, rs.segment - v);
+            return new RobotShape(rs.Arc - v, rs.Segment - v);
         }
 
         /// <summary>
@@ -76,7 +70,7 @@ namespace RFC.Geometry
         /// </summary>
         public RobotShape rotateAroundPoint(Vector2 p, double angle)
         {
-            return new RobotShape(arc.rotateAroundPoint(p, angle), segment.rotateAroundPoint(p, angle));
+            return new RobotShape(Arc.rotateAroundPoint(p, angle), Segment.rotateAroundPoint(p, angle));
         }
         Geom Geom.rotateAroundPoint(Vector2 p, double angle)
         { return rotateAroundPoint(p, angle); }
@@ -84,7 +78,7 @@ namespace RFC.Geometry
 
         public override string ToString()
         {
-            return "RobotShape[" + arc + ", " + segment + "]";
+            return "RobotShape[" + Arc + ", " + Segment + "]";
         }
     }
 }

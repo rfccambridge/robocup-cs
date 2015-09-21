@@ -11,16 +11,23 @@ namespace RFC.Geometry
     /// </summary>
     public class Line : Geom
     {
-        private Vector2 p0;
-        private Vector2 p1;
+        /// <summary>
+        /// The starting point defining this line
+        /// </summary>
+        public Vector2 P0 { get; private set; }
+
+        /// <summary>
+        /// The ending point defining this line
+        /// </summary>
+        public Vector2 P1 { get; private set; }
 
         /// <summary>
         /// Creates a line extending from p0 to p1
         /// </summary>
         public Line(Vector2 p0, Vector2 p1)
         {
-            this.p0 = p0;
-            this.p1 = p1;
+            this.P0 = p0;
+            this.P1 = p1;
         }
 
         /// <summary>
@@ -28,27 +35,16 @@ namespace RFC.Geometry
         /// </summary>
         public Line(Vector2 p0, double direction)
         {
-            this.p0 = p0;
-            this.p1 = p0 + Vector2.GetUnitVector(direction);
+            this.P0 = p0;
+            this.P1 = p0 + Vector2.GetUnitVector(direction);
         }
 
-        /// <summary>
-        /// The starting point defining this line
-        /// </summary>
-        public Vector2 P0
-        { get { return p0; } }
-
-        /// <summary>
-        /// The ending point defining this line
-        /// </summary>
-        public Vector2 P1
-        { get { return p1; } }
 
         /// <summary>
         /// The vector from the starting point to the ending point of this line
         /// </summary>
         public Vector2 Direction
-        { get { return p1 - p0; } }
+        { get { return P1 - P0; } }
 
         /// <summary>
         /// The finite line segment defined by the same points as this line
@@ -61,7 +57,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Line operator -(Line l)
         {
-            return new Line(l.p1, l.p0);
+            return new Line(l.P1, l.P0);
         }
 
         /// <summary>
@@ -69,7 +65,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Line operator +(Line l, Vector2 v)
         {
-            return new Line(l.p0 + v, l.p1 + v);
+            return new Line(l.P0 + v, l.P1 + v);
         }
 
         /// <summary>
@@ -77,7 +73,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Line operator +(Vector2 v, Line l)
         {
-            return new Line(v + l.p0, v + l.p1);
+            return new Line(v + l.P0, v + l.P1);
         }
 
         /// <summary>
@@ -85,7 +81,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Line operator -(Line l, Vector2 v)
         {
-            return new Line(l.p0 - v, l.p1 - v);
+            return new Line(l.P0 - v, l.P1 - v);
         }
 
         /// <summary>
@@ -93,8 +89,8 @@ namespace RFC.Geometry
         /// </summary>
         public double distance(Vector2 p)
         {
-            double mag = p1.distance(p0);
-            double crossp = Vector2.crossproduct(p0, p1, p);
+            double mag = P1.distance(P0);
+            double crossp = Vector2.crossproduct(P0, P1, p);
             double dist = crossp / mag;
             return Math.Abs(dist);
         }
@@ -106,8 +102,8 @@ namespace RFC.Geometry
         /// </summary>
         public double signedDistance(Vector2 p)
         {
-            double mag = p1.distance(p0);
-            double crossp = Vector2.crossproduct(p1, p0, p);
+            double mag = P1.distance(P0);
+            double crossp = Vector2.crossproduct(P1, P0, p);
             double dist = crossp / mag;
             return dist;
         }
@@ -126,9 +122,9 @@ namespace RFC.Geometry
         /// </summary>
         public Vector2 projectionOntoLine(Vector2 p)
         {
-            Vector2 tangent = (p1 - p0).normalize();
-            double dotp = tangent * (p - p0);
-            return p0 + dotp * tangent;
+            Vector2 tangent = (P1 - P0).normalize();
+            double dotp = tangent * (p - P0);
+            return P0 + dotp * tangent;
         }
 
         /// <summary>
@@ -136,7 +132,7 @@ namespace RFC.Geometry
         /// </summary>
         public double distanceAlongLine(Vector2 p)
         {
-            return (p - p0).projectionLength(Direction);
+            return (p - P0).projectionLength(Direction);
         }
 
         /// <summary>
@@ -155,7 +151,7 @@ namespace RFC.Geometry
         /// </summary>
         public Line rotateAroundPoint(Vector2 p, double angle)
         {
-            return new Line(p0.rotateAroundPoint(p, angle), p1.rotateAroundPoint(p, angle));
+            return new Line(P0.rotateAroundPoint(p, angle), P1.rotateAroundPoint(p, angle));
         }
         Geom Geom.rotateAroundPoint(Vector2 p, double angle)
         { return rotateAroundPoint(p, angle); }
@@ -183,7 +179,7 @@ namespace RFC.Geometry
 
         public override string ToString()
         {
-            return "Line(" + p0 + ", " + p1 + ")";
+            return "Line(" + P0 + ", " + P1 + ")";
         }
     }
 

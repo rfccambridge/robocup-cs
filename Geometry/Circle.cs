@@ -6,22 +6,16 @@ namespace RFC.Geometry
 {
     public class Circle : Geom
     {
-        private double radius;
-        private Vector2 center;
-
-        public Vector2 Center
-        {get { return center; }}
-
-        public double Radius
-        {get { return radius; }}
+        public Vector2 Center { get; private set; }
+        public double Radius { get; private set; }
 
         /// <summary>
         /// Creates a circle with the given center and radius
         /// </summary>
         public Circle(double xCenter, double yCenter, double radius)
         {
-            this.center = new Vector2(xCenter,yCenter);
-            this.radius = radius;
+            this.Center = new Vector2(xCenter,yCenter);
+            this.Radius = radius;
         }
 
         /// <summary>
@@ -29,8 +23,8 @@ namespace RFC.Geometry
         /// </summary>
         public Circle(Vector2 center, double radius)
         {
-            this.center = center;
-            this.radius = radius;
+            this.Center = center;
+            this.Radius = radius;
         }
 
         /// <summary>
@@ -38,8 +32,8 @@ namespace RFC.Geometry
         /// </summary>
         public Circle()
         {
-            this.center = new Vector2();
-            this.radius = 1.0;
+            this.Center = new Vector2();
+            this.Radius = 1.0;
         }
 
         /// <summary>
@@ -47,7 +41,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Circle operator +(Circle c, Vector2 v)
         {
-            return new Circle(c.center + v, c.radius);
+            return new Circle(c.Center + v, c.Radius);
         }
 
         /// <summary>
@@ -55,7 +49,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Circle operator +(Vector2 v, Circle c)
         {
-            return new Circle(v + c.center, c.radius);
+            return new Circle(v + c.Center, c.Radius);
         }
 
         /// <summary>
@@ -63,7 +57,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Circle operator -(Circle c, Vector2 v)
         {
-            return new Circle(c.center - v, c.radius);
+            return new Circle(c.Center - v, c.Radius);
         }
 
         /// <summary>
@@ -82,7 +76,7 @@ namespace RFC.Geometry
         /// </summary>
         public Circle rotateAroundPoint(Vector2 p, double angle)
         {
-            return new Circle(center.rotateAroundPoint(p, angle), radius);
+            return new Circle(Center.rotateAroundPoint(p, angle), Radius);
         }
         Geom Geom.rotateAroundPoint(Vector2 p, double angle)
         { return rotateAroundPoint(p, angle); }
@@ -92,13 +86,13 @@ namespace RFC.Geometry
         /// </summary>
         public bool contains(Vector2 p)
         {
-            return p.distanceSq(center) <= radius * radius;
+            return p.distanceSq(Center) <= Radius * Radius;
         }
 
 
         public override string ToString()
         {
-            return "Circle(" + center + ", " + radius + ")";
+            return "Circle(" + Center + ", " + Radius + ")";
         }
 
     }

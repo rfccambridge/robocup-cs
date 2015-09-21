@@ -14,71 +14,54 @@ namespace RFC.Geometry
     {
         const double TWOPI = Geometry.Angle.TWOPI;
 
-        private Vector2 center;
-        private double radius;
- 
-        private double angleStart;
-        private double angleStop;
-
-        private Vector2 startPt;
-        private Vector2 stopPt;
-
         /// <summary>
         /// The center around which this arc revolves
         /// </summary>
-        public Vector2 Center
-        {get { return center; }}
+        public Vector2 Center { get; private set; }
 
         /// <summary>
         /// The radius around of this arc around the center
         /// </summary>
-        public double Radius
-        {get { return radius; }}
+        public double Radius { get; private set; }
 
         /// <summary>
         /// The cartesian angle at which this arc starts
         /// </summary>
-        public double AngleStart
-        {get { return angleStart; }}
+        public double AngleStart { get; private set; }
 
         /// <summary>
         /// The cartesian angle at which this arc stops
         /// </summary>
-        public double AngleStop
-        {get { return angleStop; }}
+        public double AngleStop { get; private set; }
 
         /// <summary>
         /// The SIGNED angle of this arc, positive if counterclockwise, negative if clockwise 
         /// </summary>
-        public double Angle
-        {get { return angleStop - angleStart; }}
+        public double Angle { get { return AngleStop - AngleStart; } }
 
         /// <summary>
         /// The point where this arc starts
         /// </summary>
-        public Vector2 StartPt
-        {get { return startPt; }}
+        public Vector2 StartPt { get; private set; }
 
         /// <summary>
         /// The point where this arc stops
         /// </summary>
-        public Vector2 StopPt
-        {get { return stopPt; }}
+        public Vector2 StopPt { get; private set; }
 
         /// <summary>
         /// The circle that this arc is a segment of
         /// </summary>
-        public Circle Circle
-        { get { return new Circle(center, radius); } }
+        public Circle Circle { get { return new Circle(Center, Radius); } }
 
         private Arc(Vector2 center, double radius, double angleStart, double angleStop, Vector2 startPt, Vector2 stopPt)
         {
-            this.center = center;
-            this.radius = radius;
-            this.angleStart = angleStart;
-            this.angleStop = angleStop;
-            this.startPt = startPt;
-            this.stopPt = stopPt;
+            this.Center = center;
+            this.Radius = radius;
+            this.AngleStart = angleStart;
+            this.AngleStop = angleStop;
+            this.StartPt = startPt;
+            this.StopPt = stopPt;
         }
 
         /// <summary>
@@ -87,14 +70,14 @@ namespace RFC.Geometry
         /// </summary>
         public Arc(Vector2 center, double radius, double angleStart, double angleStop)
         {
-            this.center = center;
-            this.radius = radius;
+            this.Center = center;
+            this.Radius = radius;
 
-            this.angleStart = angleStart;
-            this.angleStop = angleStop;
+            this.AngleStart = angleStart;
+            this.AngleStop = angleStop;
 
-            this.startPt = center + radius * Vector2.GetUnitVector(angleStart);
-            this.stopPt = center + radius * Vector2.GetUnitVector(angleStop);
+            this.StartPt = center + radius * Vector2.GetUnitVector(angleStart);
+            this.StopPt = center + radius * Vector2.GetUnitVector(angleStop);
         }
 
         /// <summary>
@@ -104,14 +87,14 @@ namespace RFC.Geometry
         /// </summary>
         public Arc(Vector2 center, Vector2 pt, double angle)
         {
-            this.center = center;
-            this.radius = pt.distance(center);
+            this.Center = center;
+            this.Radius = pt.distance(center);
 
-            this.angleStart = (pt-center).cartesianAngle();
-            this.angleStop = angleStart + angle;
+            this.AngleStart = (pt-center).cartesianAngle();
+            this.AngleStop = AngleStart + angle;
 
-            this.startPt = pt;
-            this.stopPt = pt.rotateAroundPoint(center, angle);
+            this.StartPt = pt;
+            this.StopPt = pt.rotateAroundPoint(center, angle);
         }
                
         /// <summary>
@@ -119,7 +102,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Arc operator +(Arc a, Vector2 v)
         {
-            return new Arc(a.center + v, a.radius, a.angleStart, a.angleStop, a.startPt + v, a.stopPt + v);
+            return new Arc(a.Center + v, a.Radius, a.AngleStart, a.AngleStop, a.StartPt + v, a.StopPt + v);
         }
 
         /// <summary>
@@ -127,7 +110,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Arc operator +(Vector2 v, Arc a)
         {
-            return new Arc(v + a.center, a.radius, a.angleStart, a.angleStop, v + a.startPt, v + a.stopPt);
+            return new Arc(v + a.Center, a.Radius, a.AngleStart, a.AngleStop, v + a.StartPt, v + a.StopPt);
         }
 
         /// <summary>
@@ -135,7 +118,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Arc operator -(Arc a, Vector2 v)
         {
-            return new Arc(a.center - v, a.radius, a.angleStart, a.angleStop, a.startPt - v, a.stopPt - v);
+            return new Arc(a.Center - v, a.Radius, a.AngleStart, a.AngleStop, a.StartPt - v, a.StopPt - v);
         }
 
         /// <summary>
@@ -154,9 +137,9 @@ namespace RFC.Geometry
         /// </summary>
         public Arc rotateAroundPoint(Vector2 p, double angle)
         {
-            return new Arc(center.rotateAroundPoint(p,angle), radius, 
-                angleStart + angle, angleStop + angle, 
-                startPt.rotateAroundPoint(p,angle), stopPt.rotateAroundPoint(p,angle));
+            return new Arc(Center.rotateAroundPoint(p,angle), Radius, 
+                AngleStart + angle, AngleStop + angle, 
+                StartPt.rotateAroundPoint(p,angle), StopPt.rotateAroundPoint(p,angle));
         }
         Geom Geom.rotateAroundPoint(Vector2 p, double angle)
         { return rotateAroundPoint(p, angle); }
@@ -176,7 +159,7 @@ namespace RFC.Geometry
         public bool angleIsInArc(double angle)
         {
             double arcAngle = this.Angle;
-            double dAngle = angle - this.angleStart;
+            double dAngle = angle - this.AngleStart;
             dAngle = ((dAngle % TWOPI) + TWOPI) % TWOPI; //Mathematical modulus, ensures positive
             if (arcAngle > 0 && dAngle <= arcAngle)
                 return true;
@@ -187,7 +170,7 @@ namespace RFC.Geometry
 
         public override string ToString()
         {
-            return "Arc(" + center + ", " + radius + "," + (angleStart/TWOPI) + "*2pi, " + (angleStop/TWOPI) + "*2pi)";
+            return "Arc(" + Center + ", " + Radius + "," + (AngleStart/TWOPI) + "*2pi, " + (AngleStop/TWOPI) + "*2pi)";
         }
 
     }

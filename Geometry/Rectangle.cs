@@ -12,20 +12,35 @@ namespace RFC.Geometry
     /// </summary>
     public class Rectangle : Geom
     {
-        double xMin;
-        double xMax;
-        double yMin;
-        double yMax;
+        /// <summary>
+        /// The left boundary of this rectangle
+        /// </summary>
+        public double XMin { get; private set; }
+
+        /// <summary>
+        /// The right boundary of this rectangle
+        /// </summary>
+        public double XMax { get; private set; }
+
+        /// <summary>
+        /// The bottom boundary of this rectangle
+        /// </summary>
+        public double YMin { get; private set; }
+
+        /// <summary>
+        /// The top boundary of this rectangle
+        /// </summary>
+        public double YMax { get; private set; }
 
         /// <summary>
         /// Constructs the rectangle with the given boundaries
         /// </summary>
         public Rectangle(double xMin, double xMax, double yMin, double yMax)
         {
-            this.xMin = xMin;
-            this.xMax = xMax;
-            this.yMin = yMin;
-            this.yMax = yMax;
+            this.XMin = xMin;
+            this.XMax = xMax;
+            this.YMin = yMin;
+            this.YMax = yMax;
         }
 
         /// <summary>
@@ -35,78 +50,59 @@ namespace RFC.Geometry
         {
             if (width >= 0)
             {
-                xMin = p.X;
-                xMax = p.X + width;
+                XMin = p.X;
+                XMax = p.X + width;
             }
             else
             {
-                xMin = p.X + width;
-                xMax = p.X;
+                XMin = p.X + width;
+                XMax = p.X;
             }
 
             if (height >= 0)
             {
-                yMin = p.Y;
-                yMax = p.Y + height;
+                YMin = p.Y;
+                YMax = p.Y + height;
             }
             else
             {
-                yMin = p.Y + height;
-                yMax = p.Y;
+                YMin = p.Y + height;
+                YMax = p.Y;
             }
         }
 
-        /// <summary>
-        /// Gets the left boundary of this rectangle
-        /// </summary>
-        public double XMin { get { return xMin; } }
-
-        /// <summary>
-        /// Gets the right boundary of this rectangle
-        /// </summary>
-        public double XMax { get { return xMax; } }
-
-        /// <summary>
-        /// Gets the bottom boundary of this rectangle
-        /// </summary>
-        public double YMin { get { return yMin; } }
-
-        /// <summary>
-        /// Gets the top boundary of this rectangle
-        /// </summary>
-        public double YMax { get { return yMax; } }
 
         /// <summary>
         /// Gets the bottom left point of this rectangle
         /// </summary>
-        public Vector2 BL { get { return new Vector2(xMin,yMin); } }
+        public Vector2 BL { get { return new Vector2(XMin,YMin); } }
 
         /// <summary>
         /// Gets the bottom right point of this rectangle
         /// </summary>
-        public Vector2 BR { get { return new Vector2(xMax, yMin); } }
+        public Vector2 BR { get { return new Vector2(XMax, YMin); } }
 
         /// <summary>
         /// Gets the top left point of this rectangle
         /// </summary>
-        public Vector2 TL { get { return new Vector2(xMin, yMax); } }
+        public Vector2 TL { get { return new Vector2(XMin, YMax); } }
 
         /// <summary>
         /// Gets the top right point of this rectangle
         /// </summary>
-        public Vector2 TR { get { return new Vector2(xMax, yMax); } }
+        public Vector2 TR { get { return new Vector2(XMax, YMax); } }
 
         /// <summary>
         /// Gets the center point of this rectangle
         /// </summary>
-        public Vector2 Center { get { return new Vector2((xMin+xMax)/2.0, (yMin+yMax)/2.0); } }
+        public Vector2 Center { get { return new Vector2((XMin+XMax)/2.0, (YMin+YMax)/2.0); } }
 
         /// <summary>
         /// Tests if the given point lies within this rectangle. Points on the boundary are considered contained.
         /// </summary>
         public bool contains(Vector2 p)
         {
-            return p.X >= xMin && p.X <= xMax && p.Y >= yMin && p.Y <= yMax;
+            return p.X >= XMin && p.X <= XMax && p.Y >= YMin && p.Y <= YMax;
         }
 
         /// <summary>
@@ -114,7 +110,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Rectangle operator +(Rectangle r, Vector2 v)
         {
-            return new Rectangle(r.xMin + v.X, r.yMax + v.X, r.yMin + v.Y, r.yMax + v.Y);
+            return new Rectangle(r.XMin + v.X, r.YMax + v.X, r.YMin + v.Y, r.YMax + v.Y);
         }
 
         /// <summary>
@@ -122,7 +118,7 @@ namespace RFC.Geometry
         /// </summary>
         public static Rectangle operator +(Vector2 v, Rectangle r)
         {
-            return new Rectangle(r.xMin + v.X, r.yMax + v.X, r.yMin + v.Y, r.yMax + v.Y);
+            return new Rectangle(r.XMin + v.X, r.YMax + v.X, r.YMin + v.Y, r.YMax + v.Y);
         }
 
         /// <summary>
@@ -161,17 +157,17 @@ namespace RFC.Geometry
         {
             bool minXLeft;
             double minXDist;
-            if (p.X - xMin < xMax - p.X)
-            { minXLeft = true; minXDist = p.X - xMin; }
+            if (p.X - XMin < XMax - p.X)
+            { minXLeft = true; minXDist = p.X - XMin; }
             else
-            { minXLeft = false; minXDist = xMax - p.X; }
+            { minXLeft = false; minXDist = XMax - p.X; }
 
             bool minYDown;
             double minYDist;
-            if (p.Y - yMin < yMax - p.Y)
-            { minYDown = true; minYDist = p.Y - yMin; }
+            if (p.Y - YMin < YMax - p.Y)
+            { minYDown = true; minYDist = p.Y - YMin; }
             else
-            { minYDown = false; minYDist = yMax - p.Y; }
+            { minYDown = false; minYDist = YMax - p.Y; }
 
             if (minXDist < minYDist)
                 return minXLeft ? new Vector2(-1, 0) : new Vector2(1, 0);
