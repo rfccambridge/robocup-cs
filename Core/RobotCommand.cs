@@ -28,8 +28,6 @@ namespace RFC.Core
         };
 
         static CRCTool _crcTool;
-        static Command[] _iToCommand;
-        static Dictionary<Command, byte> _commandToI;
 
         public static byte DribblerSpeed = 5;
         // Equal to capacitor voltage we charge to / 10
@@ -51,12 +49,6 @@ namespace RFC.Core
         {
             _crcTool = new CRCTool();
             _crcTool.Init(CRCTool.CRCCode.CRC8);
-
-            // I couldn't find a built-in way to convert between enums and corresponding numbers
-            _iToCommand = (Command[])Enum.GetValues(typeof(Command));
-            _commandToI = new Dictionary<Command, byte>();
-            for (byte i = 0; i < _iToCommand.Length; i++)
-                _commandToI.Add(_iToCommand[i], i);
         }
 
         public RobotCommand()
@@ -247,8 +239,7 @@ namespace RFC.Core
                 throw new ApplicationException(String.Format("RobotCommand.Deserialize: read {0:G} " +
                     "but expecting {1:G}.", read, buff.Length));
             }
-
-            command = _iToCommand[buff[0]];
+            command = (Command) buff[0];
             ID = buff[1];
             switch (command)
             {
@@ -271,7 +262,7 @@ namespace RFC.Core
         {
             buff.Initialize(); // Clear
 
-            buff[0] = _commandToI[command];
+            buff[0] = (byte)command;
             buff[1] = (byte)ID;
             switch (command)
             {
