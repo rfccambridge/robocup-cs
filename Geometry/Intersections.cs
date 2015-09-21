@@ -331,7 +331,7 @@ namespace RFC.Geometry
             Vector2 p1 = c1.Center;
 
             if (whichintersection == 0)
-                throw new ApplicationException("CircleCircleIntersection.getPoint() called, but the direction to find the point is not defined");
+                throw new ArgumentException("CircleCircleIntersection.getPoint() called, but the direction to find the point is not defined", "whichintersection");
 
             int sign = anglesign(p1, p0, bothpoints[0]);
             if (sign == whichintersection)
