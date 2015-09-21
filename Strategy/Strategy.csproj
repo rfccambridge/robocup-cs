@@ -43,9 +43,7 @@
     <Compile Include="AlexTest.cs" />
     <Compile Include="AssessThreats.cs" />
     <Compile Include="BounceKicker.cs" />
-    <Compile Include="BounceTest.cs" />
     <Compile Include="KickOffBehaviorTester.cs" />
-    <Compile Include="ClearBall.cs" />
     <Compile Include="DefenseStrategy.cs" />
     <Compile Include="DestinationMatcher.cs" />
     <Compile Include="DribbleTest.cs" />
