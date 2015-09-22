@@ -137,7 +137,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(284, 261);
             this.Controls.Add(this.goalieLabel);
             this.Controls.Add(this.GoalieNumberChooser);
             this.Controls.Add(this.simulatorCheckBox);
@@ -148,8 +148,10 @@
             this.Controls.Add(this.ComNumberChooser);
             this.Controls.Add(this.ComLabel);
             this.Controls.Add(this.RunButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "ControlForm";
-            this.Text = "Form1";
+            this.Text = "Control";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ControlForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.ComNumberChooser)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GoalieNumberChooser)).EndInit();
