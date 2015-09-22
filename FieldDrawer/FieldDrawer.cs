@@ -209,17 +209,14 @@ namespace RFC.FieldDrawer
         }
 
         public void Init(int w, int h)
-        {
-            _glControlWidth = w;
-            _glControlHeight = h;
-
+        {            
             GL.ClearColor(Color.DarkGreen);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-            GL.Ortho(FIELD_FULL_XMIN, FIELD_FULL_XMAX, FIELD_FULL_YMIN, FIELD_FULL_YMAX, -1, 1);
-            GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
+
+            Resize(w, h);
 
             _ballQuadric = OpenTK.Graphics.Glu.NewQuadric();
             OpenTK.Graphics.Glu.QuadricDrawStyle(_ballQuadric, OpenTK.Graphics.QuadricDrawStyle.Fill);
@@ -305,11 +302,39 @@ namespace RFC.FieldDrawer
             UpdateRefBoxCmd(msg.PlayType.ToString());
         }
 
+        private void updateProjection()
+        {
+            double actualAspect = _glControlWidth / _glControlHeight;
+            double desiredW = FIELD_FULL_XMAX - FIELD_FULL_XMIN;
+            double desiredH = FIELD_FULL_YMAX - FIELD_FULL_YMIN;
+            double desiredAspect = desiredW / desiredH;
+
+            double marginX = 0, marginY = 0;
+
+            if (actualAspect > desiredAspect)
+            {
+                // render window is wider than field
+                marginX = (desiredH * actualAspect - desiredW) / 2;
+            }
+            else
+            {
+                // render window is taller than field
+                marginY = (desiredW / actualAspect - desiredH) / 2;
+            }
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(
+                FIELD_FULL_XMIN - marginX, FIELD_FULL_XMAX + marginX,
+                FIELD_FULL_YMIN - marginY, FIELD_FULL_YMAX + marginY,
+                -1, 1
+            );
+        }
+
         public void Resize(int w, int h)
         {
             _glControlWidth = w;
-            _glControlHeight = h;            
-            GL.Viewport(0, 0, w, h);
+            _glControlHeight = h;
+            GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
         }       
 
         public void Show()
@@ -448,7 +473,8 @@ namespace RFC.FieldDrawer
         public void Paint()
         {
             lock (_stateLock)
-            {                
+            {
+                updateProjection();
                 drawField();
                 foreach (Marker marker in _state.Markers.Values)
                 {
@@ -867,6 +893,21 @@ namespace RFC.FieldDrawer
             return screen;
         }
 
+        private OpenTK.Vector3 screenToWorld(OpenTK.Vector3 screen)
+        {
+            screen.Y = _viewport[3] - screen.Y;
+            OpenTK.Vector3 world;
+
+            GL.GetInteger(GetPName.Viewport, _viewport);
+            GL.GetDouble(GetPName.ModelviewMatrix, _modelViewMatrix);
+            GL.GetDouble(GetPName.ProjectionMatrix, _projectionMatrix);
+
+            OpenTK.Graphics.Glu.UnProject(screen, _modelViewMatrix, _projectionMatrix, _viewport,
+                                        out world);
+
+            return world;
+        }
+
         private void renderString(string s, Vector2 location, Color color, float size)
         {
             OpenTK.Vector3 screen = worldToScreen(new OpenTK.Vector3((float)location.X, (float)location.Y, 0.0f));            
@@ -886,7 +927,7 @@ namespace RFC.FieldDrawer
 
             for (int i = 0; i < 360; i++)
             {
-                double degInRad = i * 3.1416 / 180;
+                double degInRad = i * Math.PI / 180;
                 GL.Vertex2(Math.Cos(degInRad) * radius, Math.Sin(degInRad) * radius);
             }
             GL.End();
@@ -906,7 +947,7 @@ namespace RFC.FieldDrawer
 
             for (int i = startAngle; i < endAngle; i++)
             {
-                double degInRad = i * 3.1416 / 180;
+                double degInRad = i * Math.PI / 180;
                 GL.Vertex2(Math.Cos(degInRad) * radius, Math.Sin(degInRad) * radius);
             }
             GL.End();
@@ -914,12 +955,8 @@ namespace RFC.FieldDrawer
 
         private Vector2 controlToFieldCoords(Point loc)
         {
-            double viewWidth = FIELD_FULL_XMAX - FIELD_FULL_XMIN;
-            double viewHeight = FIELD_FULL_YMAX - FIELD_FULL_YMIN;
-            double translateX = FIELD_FULL_XMIN;
-            double translateY = FIELD_FULL_YMIN;
-            return new Vector2((double)loc.X / _glControlWidth * viewWidth + translateX, 
-                               (1 - (double)loc.Y / _glControlHeight) * viewHeight + translateY);
+            OpenTK.Vector3 world = screenToWorld(new OpenTK.Vector3(loc.X, loc.Y, 0));
+            return new Vector2(world.X, world.Y);
         }
 
         private void BuildTestScene()
