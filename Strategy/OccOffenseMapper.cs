@@ -13,53 +13,83 @@ using System.Collections;
 
 namespace RFC.Strategy
 {
+    public class LatticeSpec
+    {
+        public readonly Geometry.Rectangle Bounds;
+        public readonly int Samples;
+
+        /// <returns>the index of the cell containing v</returns>
+        public void vectorToIndex(Vector2 v, out int x, out int y)
+        {
+            double relx = (v.X - Bounds.XMin) / Bounds.Width;
+            double rely = (v.Y - Bounds.YMin) / Bounds.Height;
+
+            if (relx < 0 || relx > 1 || rely < 0 || rely > 1) throw new IndexOutOfRangeException();
+
+            x = (int)Math.Floor(relx * Samples);
+            y = (int)Math.Floor(rely * Samples);
+
+            // this deals with the case where the vector lies on the edge
+            if (x >= Samples) x = Samples - 1;
+            if (y >= Samples) y = Samples - 1;
+        }
+
+        /// <returns>the vector at the center of the cell (x,y)</returns>
+        public Vector2 indexToVector(int x, int y)
+        {
+            // return a vector in the center of sample
+            return new Vector2(
+                this.Bounds.XMin + (x + 0.5) / Samples * this.Bounds.Width,
+                this.Bounds.YMin + (y + 0.5) / Samples * this.Bounds.Height
+            );
+        }
+
+
+        public LatticeSpec(Geometry.Rectangle bounds, int samples)
+        {
+            this.Bounds = bounds;
+            this.Samples = samples;
+        }
+
+
+        /// <summary>
+        /// Calls a function over all points in the lattice
+        /// </summary>
+        /// <param name="filler"></param>
+        public Lattice<T> Create<T>(Func<Vector2, T> filler)
+        {
+            Lattice<T> lattice = new Lattice<T>(this);
+            for (int i = 0; i < Samples; i++)
+            {
+                for (int j = 0; j < Samples; j++)
+                {
+                    Vector2 v = indexToVector(i, j);
+                    lattice.data[i, j] = filler(v);
+                }
+            }
+            return lattice;
+        }
+    }
+
     /// <summary>
     /// A class representing a lattice of T values calculated over a vector grid
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Lattice<T> : IEnumerable<T>
     {
-        public readonly Geometry.Rectangle bounds;
-        public readonly int samples;
 
-        private T[,] data;
+        internal T[,] data;
+        public readonly LatticeSpec Spec;
 
         /// <summary>
         /// Construct a lattice within a <paramref name="bounds"/>, with <paramref name="samples"/> cells in each axis
         /// </summary>
-        public Lattice(Geometry.Rectangle bounds, int samples)
+        public Lattice(LatticeSpec spec)
         {
-            this.bounds = bounds;
-            this.samples = samples;
-           
-            this.data = new T[samples, samples];
+            this.Spec = spec;
+            this.data = new T[spec.Samples, spec.Samples];
         }
 
-        /// <returns>the index of the cell containing v</returns>
-        private void vectorToIndex(Vector2 v, out int x, out int y)
-        {
-            double relx = (v.X - bounds.XMin) / bounds.Width;
-            double rely = (v.Y - bounds.YMin) / bounds.Height;
-
-            if (relx < 0 || relx > 1 || rely < 0 || rely > 1) throw new IndexOutOfRangeException();
-
-            x = (int) Math.Floor(relx * samples);
-            y = (int) Math.Floor(rely * samples);
-
-            // this deals with the case where the vector lies on the edge
-            if (x >= samples) x = samples - 1;
-            if (y >= samples) y = samples - 1;
-        }
-
-        /// <returns>the vector at the center of the cell (x,y)</returns>
-        private Vector2 indexToVector(int x, int y)
-        {
-            // return a vector in the center of sample
-            return new Vector2(
-                this.bounds.XMin + (x + 0.5) / samples * this.bounds.Width,
-                this.bounds.YMin + (y + 0.5) / samples * this.bounds.Height
-            );
-        }
 
 
         public T this[Vector2 pos]
@@ -67,31 +97,15 @@ namespace RFC.Strategy
             get
             {
                 int x, y;
-                vectorToIndex(pos, out x, out y);
+                Spec.vectorToIndex(pos, out x, out y);
                 return data[x, y];
             }
 
             set
             {
                 int x, y;
-                vectorToIndex(pos, out x, out y);
+                Spec.vectorToIndex(pos, out x, out y);
                 data[x, y] = value;
-            }
-        }
-
-        /// <summary>
-        /// Calls a function over all points in the lattice
-        /// </summary>
-        /// <param name="filler"></param>
-        public void fill(Func<Vector2, T> filler)
-        {
-            for(int i = 0; i < samples; i++)
-            {
-                for(int j = 0; j < samples; j++)
-                {
-                    Vector2 v = indexToVector(i, j);
-                    data[i, j] = filler(v);
-                }
             }
         }
 
