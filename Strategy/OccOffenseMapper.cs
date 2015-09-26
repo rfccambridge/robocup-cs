@@ -9,9 +9,107 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Collections;
 
 namespace RFC.Strategy
 {
+    /// <summary>
+    /// A class representing a lattice of T values calculated over a vector grid
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class Lattice<T> : IEnumerable<T>
+    {
+        public readonly Geometry.Rectangle bounds;
+        public readonly int samples;
+
+        private T[,] data;
+
+        /// <summary>
+        /// Construct a lattice within a <paramref name="bounds"/>, with <paramref name="samples"/> cells in each axis
+        /// </summary>
+        public Lattice(Geometry.Rectangle bounds, int samples)
+        {
+            this.bounds = bounds;
+            this.samples = samples;
+           
+            this.data = new T[samples, samples];
+        }
+
+        /// <returns>the index of the cell containing v</returns>
+        private void vectorToIndex(Vector2 v, out int x, out int y)
+        {
+            double relx = (v.X - bounds.XMin) / bounds.Width;
+            double rely = (v.Y - bounds.YMin) / bounds.Height;
+
+            if (relx < 0 || relx > 1 || rely < 0 || rely > 1) throw new IndexOutOfRangeException();
+
+            x = (int) Math.Floor(relx * samples);
+            y = (int) Math.Floor(rely * samples);
+
+            // this deals with the case where the vector lies on the edge
+            if (x >= samples) x = samples - 1;
+            if (y >= samples) y = samples - 1;
+        }
+
+        /// <returns>the vector at the center of the cell (x,y)</returns>
+        private Vector2 indexToVector(int x, int y)
+        {
+            // return a vector in the center of sample
+            return new Vector2(
+                this.bounds.XMin + (x + 0.5) / samples * this.bounds.Width,
+                this.bounds.YMin + (y + 0.5) / samples * this.bounds.Height
+            );
+        }
+
+
+        public T this[Vector2 pos]
+        {
+            get
+            {
+                int x, y;
+                vectorToIndex(pos, out x, out y);
+                return data[x, y];
+            }
+
+            set
+            {
+                int x, y;
+                vectorToIndex(pos, out x, out y);
+                data[x, y] = value;
+            }
+        }
+
+        /// <summary>
+        /// Calls a function over all points in the lattice
+        /// </summary>
+        /// <param name="filler"></param>
+        public void fill(Func<Vector2, T> filler)
+        {
+            for(int i = 0; i < samples; i++)
+            {
+                for(int j = 0; j < samples; j++)
+                {
+                    Vector2 v = indexToVector(i, j);
+                    data[i, j] = filler(v);
+                }
+            }
+        }
+
+        // For ease of iteration / backwards compatibility
+        public IEnumerator<T> GetEnumerator()
+        {
+            return data.Cast<T>().GetEnumerator();
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        public static explicit operator T[,] (Lattice<T> l)
+        {
+            return l.data;
+        }
+    }
+
     public class OccOffenseMapper
     {
         // normalize map to this number
