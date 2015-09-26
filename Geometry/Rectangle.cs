@@ -72,30 +72,33 @@ namespace RFC.Geometry
         }
 
 
+        public double Width => XMax - XMin;
+        public double Height => YMax - YMin;
+
         /// <summary>
         /// Gets the bottom left point of this rectangle
         /// </summary>
-        public Vector2 BL { get { return new Vector2(XMin,YMin); } }
+        public Vector2 BL => new Vector2(XMin,YMin);
 
         /// <summary>
         /// Gets the bottom right point of this rectangle
         /// </summary>
-        public Vector2 BR { get { return new Vector2(XMax, YMin); } }
+        public Vector2 BR => new Vector2(XMax, YMin);
 
         /// <summary>
         /// Gets the top left point of this rectangle
         /// </summary>
-        public Vector2 TL { get { return new Vector2(XMin, YMax); } }
+        public Vector2 TL => new Vector2(XMin, YMax);
 
         /// <summary>
         /// Gets the top right point of this rectangle
         /// </summary>
-        public Vector2 TR { get { return new Vector2(XMax, YMax); } }
+        public Vector2 TR => new Vector2(XMax, YMax);
 
         /// <summary>
         /// Gets the center point of this rectangle
         /// </summary>
-        public Vector2 Center { get { return new Vector2((XMin+XMax)/2.0, (YMin+YMax)/2.0); } }
+        public Vector2 Center => new Vector2((XMin+XMax)/2.0, (YMin+YMax)/2.0);
 
         /// <summary>
         /// Tests if the given point lies within this rectangle. Points on the boundary are considered contained.
