@@ -99,14 +99,14 @@ namespace ControlForm
                 //new DribblerControler(team);
 
 
-                //new NormalTester(team, goalieNumber, fd);
+                new NormalTester(team, goalieNumber, fd);
                 //new AlexTest(team, goalieNumber);
                 //new MovementTest(team);
                 //new OffenseTester(team, goalieNumber);
                 //new SetupTest(team, goalieNumber);
                 //new GoalieTest(team, goalieNumber);
                 //new SetupTest1(team, goalieNumber);
-                new PlaySwitcher(team, goalieNumber, fd);
+                //new PlaySwitcher(team, goalieNumber, fd);
                 //new SetupTest(team, goalieNumber);
                 //new KickTester(team, goalieNumber);
                 //new TimeoutBehavior(team, goalieNumber);
