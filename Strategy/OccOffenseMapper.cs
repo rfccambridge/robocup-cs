@@ -75,7 +75,7 @@ namespace RFC.Strategy
     /// A class representing a lattice of T values calculated over a vector grid
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Lattice<T> : IEnumerable<T>
+    public class Lattice<T> : IEnumerable<KeyValuePair<Vector2, T>>
     {
 
         internal T[,] data;
@@ -108,9 +108,11 @@ namespace RFC.Strategy
         }
 
         // For ease of iteration / backwards compatibility
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<KeyValuePair<Vector2, T>> GetEnumerator()
         {
-            return data.Cast<T>().GetEnumerator();
+            for (int i = 0; i < Spec.Samples; i++)
+                for (int j = 0; j < Spec.Samples; j++)
+                    yield return new KeyValuePair<Vector2, T>(Spec.indexToVector(i, j), data[i, j]);
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
