@@ -18,6 +18,7 @@ using RFC.Messaging;
 using RFC.Simulator;
 using RFC.FieldDrawer;
 using System.IO;
+using RFC.InterProcessMessaging;
 
 namespace ControlForm
 {
@@ -66,7 +67,15 @@ namespace ControlForm
 
                 if (simulator)
                 {
-                    new SimulatorSender();
+                    try
+                    {
+                        new SimulatorSender();
+                    }
+                    catch (ConnectionRefusedException ex)
+                    {
+                        MessageBox.Show("Is the simulator running?", "Could not connect");
+                        return false;
+                    }
                 }
                 else
                 {
@@ -76,8 +85,7 @@ namespace ControlForm
                     }
                     catch (IOException ex)
                     {
-                        MessageBox.Show("Could not open given serial port.");
-
+                        MessageBox.Show("Could not open given serial port.", "Could not connect");
                         return false;
                     }
                 }
