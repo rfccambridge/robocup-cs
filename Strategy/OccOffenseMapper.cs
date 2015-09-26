@@ -242,18 +242,18 @@ namespace RFC.Strategy
 
         // dribble to better place--doesn't depend on bounce angle
         // should only depend on how good shot is?
-        public double[,] getDrib(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
+        public Lattice<double> getDrib(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball)
         {
-            return (double[,]) shotLattice;
+            return shotLattice;
             // distance from ball to pos?
         }
 
         // within bounce angle -> good
         // make sure pass between ball and position is good
         // make sure position has good shot
-        public double[,] getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
+        public Lattice<double> getPass(List<RobotInfo> ourTeam, List<RobotInfo> theirTeam, BallInfo ball, FieldVisionMessage fmsg)
         {
-            return (double[,]) latticeSpec.Create(pos =>
+            return latticeSpec.Create(pos =>
             {
                 Vector2 currToBall = ball.Position - pos;
                 Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
@@ -377,31 +377,34 @@ namespace RFC.Strategy
         }
 
         // get list from Nonmax supression
-        public List<QuantifiedPosition> getLocalMaxima(double[,] map)
+        public List<QuantifiedPosition> getLocalMaxima(Lattice<double> map)
         {
+            double[,] rawMap = (double[,])map;
+
             List<QuantifiedPosition> maxima = new List<QuantifiedPosition>();
             //msngr.vdbClear();
-            for (int i = 1; i < map.GetLength(0) - 1; i++)
+            for (int i = 1; i < rawMap.GetLength(0) - 1; i++)
             {
-                for (int j = 1; j < map.GetLength(1) - 1; j++)
+                for (int j = 1; j < rawMap.GetLength(1) - 1; j++)
                 {
-                    if (map[i, j] <= map[i - 1, j])
+                    double curr = rawMap[i, j];
+                    if (curr <= rawMap[i - 1, j])
                         continue;
-                    if (map[i, j] <= map[i + 1, j])
+                    if (curr <= rawMap[i + 1, j])
                         continue;
-                    if (map[i, j] <= map[i - 1, j - 1])
+                    if (curr <= rawMap[i - 1, j - 1])
                         continue;
-                    if (map[i, j] <= map[i - 0, j - 1])
+                    if (curr <= rawMap[i - 0, j - 1])
                         continue;
-                    if (map[i, j] <= map[i + 1, j - 1])
+                    if (curr <= rawMap[i + 1, j - 1])
                         continue;
-                    if (map[i, j] <= map[i - 1, j + 1])
+                    if (curr <= rawMap[i - 1, j + 1])
                         continue;
-                    if (map[i, j] <= map[i - 0, j + 1])
+                    if (curr <= rawMap[i - 0, j + 1])
                         continue;
-                    if (map[i, j] <= map[i + 1, j + 1])
+                    if (curr <= rawMap[i + 1, j + 1])
                         continue;
-                    maxima.Add(new QuantifiedPosition(new RobotInfo(indToVec(i, j), 0, team, 0), map[i, j]));
+                    maxima.Add(new QuantifiedPosition(new RobotInfo(map.Spec.indexToVector(i, j), 0, team, 0), curr));
                     //msngr.vdb(indToVec(i, j), Color.White);
 
                 }

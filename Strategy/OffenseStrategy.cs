@@ -123,24 +123,25 @@ namespace RFC.Strategy
 
         }
 
-        private QuantifiedPosition goodBounceShot(List<RobotInfo> ourTeam, RobotInfo ballCarrier, double[,] map)
+        private QuantifiedPosition goodBounceShot(List<RobotInfo> ourTeam, RobotInfo ballCarrier, Lattice<double> map)
         {
             if (ballCarrier == null) return null;
-            RobotInfo bestRob = null;
-            double bestVal = 0.0;
-            foreach (RobotInfo rob in ourTeam)
-            {
-                if (ballCarrier.ID != rob.ID)
+
+            return ourTeam
+                .Where(rob => ballCarrier.ID != rob.ID)
+                .Select(rob =>
                 {
-                    int[] inds = offenseMap.vecToInd(rob.Position);
-                    if (inds[0] >= 0 && inds[0] < map.GetLength(0) && inds[1] >= 0 && inds[1] < map.GetLength(1) && map[inds[0], inds[1]] > bestVal)
+                    try
                     {
-                        bestRob = rob;
-                        bestVal = map[inds[0], inds[1]];
+                        return new QuantifiedPosition(rob, map[rob.Position]);
                     }
-                }
-            }
-            return new QuantifiedPosition(bestRob, bestVal);
+                    catch (IndexOutOfRangeException e)
+                    {
+                        return null;
+                    }
+                })
+                .Where(qp => qp != null)
+                .Max();
         }
 
         private void pickUpBall(RobotInfo rob, BallInfo ball)
@@ -151,28 +152,14 @@ namespace RFC.Strategy
         }
 
 
-        private QuantifiedPosition getBestPos(double[,] map)
+        private QuantifiedPosition getBestPos(Lattice<double> map)
         {
-            double best = 0.0;
-            int best_x = 0;
-            int best_y = 0;
+            var bestPair = map.Aggregate((l1, l2) => l1.Value > l2.Value ? l1 : l2);
 
-            // looping over zone
-            for (int xi = 0; xi < map.GetLength(0); xi++)
-            {
-                for (int yi = 0; yi < map.GetLength(1); yi++)
-                {
-                    if (map[xi, yi] > best)
-                    {
-                        best = map[xi, yi];
-                        best_x = xi;
-                        best_y = yi;
-                    }
-                }
-            }
-
-            RobotInfo optimal_position = new RobotInfo(offenseMap.indToVec(best_x, best_y), 0, team, -1);
-            return new QuantifiedPosition(optimal_position, best);
+            return new QuantifiedPosition(
+                new RobotInfo(bestPair.Key, 0, team, -1),
+                bestPair.Value
+            );
         }
 
         // get best position within zone xi,yi
@@ -226,8 +213,8 @@ namespace RFC.Strategy
 
             // have offenseMap recalculate position fitness for goal shots
             offenseMap.update(ourTeam, theirTeam, ball, fieldVision);
-            double[,] dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball); // map: how good a position is to make a goal shot "where to dribble the ball"
-            double[,] passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision); // goal shot map accounting for bounce angle, distance, etc. "where to pass the ball"
+            var dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball); // map: how good a position is to make a goal shot "where to dribble the ball"
+            var passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision); // goal shot map accounting for bounce angle, distance, etc. "where to pass the ball"
 
             // offenseMap.drawMap(passMap);
 
