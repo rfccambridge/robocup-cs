@@ -209,7 +209,7 @@ namespace RFC.Geometry
         
         /// <summary>
         /// Returns the distance between this point and another point.
-        /// Returns the same value (within tolerance) as (p1-p2).magnitudeSq()
+        /// Returns the same value (within tolerance) as (p1-p2).magnitude()
         /// </summary>
         public double distance(Vector2 p2)
         {
