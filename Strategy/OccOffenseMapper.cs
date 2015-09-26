@@ -253,7 +253,7 @@ namespace RFC.Strategy
         {
             return (double[,]) latticeSpec.Create(pos =>
             {
-                Vector2 vecToBall = ball.Position - pos;
+                Vector2 currToBall = ball.Position - pos;
                 Vector2 vecToGoal = Constants.FieldPts.THEIR_GOAL - pos;
 
 
@@ -265,8 +265,10 @@ namespace RFC.Strategy
                 {
 
                     Vector2 dist = (rob.Position - pos);
-                    double perpdist = dist.perpendicularComponent(vecToBall).magnitude();
-                    if (perpdist < IGN_THRESH && (ball.Position - rob.Position).cosineAngleWith(vecToBall) > 0 && Vector2.dotproduct(pos, ball.Position, rob.Position) > Vector2.dotproduct(rob.Position, ball.Position, rob.Position))
+                    double perpdist = dist.perpendicularComponent(currToBall).magnitude();
+                    Vector2 robotToBall = ball.Position - rob.Position;
+                    
+                    if (perpdist < IGN_THRESH && currToBall.cosineAngleWith(currToBall) > 0 && currToBall * robotToBall > robotToBall * robotToBall)
                     {
                         distSum -= 1 * Math.Exp(-perpdist);
                     }
@@ -282,8 +284,8 @@ namespace RFC.Strategy
                 }
 
                 // account for distance to ball
-                double distScore = Math.Atan2(1, vecToBall.magnitude());
-                if (Constants.Basic.ROBOT_RADIUS * 4 > vecToBall.magnitude())
+                double distScore = Math.Atan2(1, currToBall.magnitude());
+                if (Constants.Basic.ROBOT_RADIUS * 4 > currToBall.magnitude())
                     distScore = 0;
 
                 // account for distance to our robots
@@ -298,7 +300,7 @@ namespace RFC.Strategy
 
                 // calculate bounce score
                 // make .5(1+cos)
-                double currentBounceAngle = 180 * Math.Acos(vecToBall.cosineAngleWith(vecToGoal)) / Math.PI;
+                double currentBounceAngle = 180 * Math.Acos(currToBall.cosineAngleWith(vecToGoal)) / Math.PI;
                 if (double.IsNaN(currentBounceAngle))
                     currentBounceAngle = 0;
                 double bounceScore = 180 - currentBounceAngle;
