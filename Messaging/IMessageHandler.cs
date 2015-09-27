@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RFC.Messaging
 {
-    public interface IMessageHandler<T> where T : Message
+    public interface IMessageHandler<in T> where T : Message
     {
         void HandleMessage(T message);
     }
