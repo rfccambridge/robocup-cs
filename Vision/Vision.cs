@@ -31,7 +31,7 @@ namespace RFC.Vision
 			_client = new SSLVisionClient();
 			_client.Connect(hostname, port);
 			_clientOpen = true;
-            new QueuedMessageHandler<BallVisionMessage>(HandleMessage, new object());
+            new QueuedMessageHandler<BallVisionMessage>(this, new object());
 		}
 
 		public void Disconnect()

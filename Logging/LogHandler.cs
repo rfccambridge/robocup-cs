@@ -29,15 +29,15 @@ namespace RFC.Logging
                 // messages to be recorded
                 //new QueuedMessageHandler<VisionMessage>(recordMessage, new object());
                 //new QueuedMessageHandler<RobotVisionMessage>(recordMessage, new object());
-                new QueuedMessageHandler<CommandMessage>(HandleMessage, new object());
-                new QueuedMessageHandler<RobotDestinationMessage>(HandleMessage, new object());
-                new QueuedMessageHandler<RobotPathMessage>(HandleMessage, new object());
-                new QueuedMessageHandler<RefboxStateMessage>(HandleMessage, new object());
+                new QueuedMessageHandler<CommandMessage>(this, new object());
+                new QueuedMessageHandler<RobotDestinationMessage>(this, new object());
+                new QueuedMessageHandler<RobotPathMessage>(this, new object());
+                new QueuedMessageHandler<RefboxStateMessage>(this, new object());
                 //new QueuedMessageHandler<BallMarkMessage>(recordMessage, new object());
                 //new QueuedMessageHandler<BallMovedMessage>(recordMessage, new object());
                 //new QueuedMessageHandler<BallVisionMessage>(recordMessage, new object());
-                new QueuedMessageHandler<KickMessage>(HandleMessage, new object());
-                new QueuedMessageHandler<FieldVisionMessage>(HandleMessage, new object());
+                new QueuedMessageHandler<KickMessage>(this, new object());
+                new QueuedMessageHandler<FieldVisionMessage>(this, new object());
             }
             catch (IOException ex)
             {

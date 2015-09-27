@@ -46,7 +46,7 @@ namespace RFC.Vision
             LoadConstants();
             messenger = ServiceManager.getServiceManager();
             // register handler to receive messages
-            new QueuedMessageHandler<VisionMessage>(HandleMessage, listenerLock);
+            new QueuedMessageHandler<VisionMessage>(this, listenerLock);
 
             filter = new JitterFilter();
             r = new Random();

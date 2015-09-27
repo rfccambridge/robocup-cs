@@ -57,8 +57,8 @@ namespace RFC.Strategy
             this.play = PlayType.Stopped;
             this.kick_id = 2;
 
-            new QueuedMessageHandler<RefboxStateMessage>(HandleMessage, lockObject);
-            new QueuedMessageHandler<FieldVisionMessage>(HandleMessage, lockObject);
+            new QueuedMessageHandler<RefboxStateMessage>(this, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
         }
 
         public void HandleMessage(RefboxStateMessage msg)

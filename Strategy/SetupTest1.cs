@@ -21,7 +21,7 @@ namespace RFC.Strategy
             this.goalie_id = goalie_id;
             this.msngr = ServiceManager.getServiceManager();
             object lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(HandleMessage, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
 
             behave = new MidfieldPlay(team,goalie_id);
         }

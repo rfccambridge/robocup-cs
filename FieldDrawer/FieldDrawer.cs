@@ -205,12 +205,12 @@ namespace RFC.FieldDrawer
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
             msngr = ServiceManager.getServiceManager();
-            new QueuedMessageHandler<RobotVisionMessage>(HandleMessage, new object());
-            new QueuedMessageHandler<BallVisionMessage>(HandleMessage, new object());
-            new QueuedMessageHandler<VisualDebugMessage>(HandleMessage, new object());
-            new QueuedMessageHandler<RobotPathMessage>(HandleMessage, new object());
-            new QueuedMessageHandler<RobotDestinationMessage>(HandleMessage, new object());
-            new QueuedMessageHandler<RefboxStateMessage>(HandleMessage, new object());
+            new QueuedMessageHandler<RobotVisionMessage>(this, new object());
+            new QueuedMessageHandler<BallVisionMessage>(this, new object());
+            new QueuedMessageHandler<VisualDebugMessage>(this, new object());
+            new QueuedMessageHandler<RobotPathMessage>(this, new object());
+            new QueuedMessageHandler<RobotDestinationMessage>(this, new object());
+            new QueuedMessageHandler<RefboxStateMessage>(this, new object());
         }
 
         public void Init(int w, int h)

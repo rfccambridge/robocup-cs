@@ -24,6 +24,12 @@ namespace RFC.Messaging
             ServiceManager.getServiceManager().RegisterListener<T>(handleMessage, null);
         }
 
+        public QueuedMessageHandler(IMessageHandler<T> handler, object lockObject) : this(handler.HandleMessage, lockObject)
+        {
+            
+        }
+
+
         public void handleMessage(T message)
         {
             if (Interlocked.Exchange(ref handling, 1) == 0)

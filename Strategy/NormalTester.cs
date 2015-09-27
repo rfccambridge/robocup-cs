@@ -29,10 +29,10 @@ namespace RFC.Strategy
             this.currentState = NormalBehavior.State.Unknown;
             this.fd = fd;
             this.lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
         }
 
-        public void Handle(FieldVisionMessage msg)
+        public void HandleMessage(FieldVisionMessage msg)
         {
             NormalBehavior.State currentState = normal.Play(msg);
             fd.UpdateTeam(team);
