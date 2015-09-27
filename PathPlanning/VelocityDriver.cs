@@ -46,32 +46,32 @@ namespace RFC.PathPlanning
         private double CURRENT_ANG_SPEED_CORRECTION;
 
         //Scaling for speed based on distance from goal
-        private Pair<double, double>[] SCALE_BY_DISTANCE;
+        private Tuple<double, double>[] SCALE_BY_DISTANCE;
         //Slow version
         //private Pair<double, double>[] SCALE_BY_DISTANCE_SLOW;
         //Scaling for speed based on distance from obstacle
-        private Pair<double, double>[] SCALE_BY_OBSTACLE_DISTANCE;
+        private Tuple<double, double>[] SCALE_BY_OBSTACLE_DISTANCE;
         //Scaling for distance from obstacle based on cosine of angle
-        private Pair<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR;
+        private Tuple<double, double>[] AGREEMENT_EFFECTIVE_DISTANCE_FACTOR;
 
         Dictionary<int, RobotPath> lastPaths = new Dictionary<int, RobotPath>();
 
         bool stopped = false;
         Stopwatch sw;
 
-        private static double interp(Pair<double, double>[] pairs, double d)
+        private static double interp(Tuple<double, double>[] pairs, double d)
         {
             for (int i = 0; i < pairs.Length; i++)
             {
-                if (pairs[i].First >= d)
+                if (pairs[i].Item1 >= d)
                 {
                     if (i == 0)
-                        return pairs[0].Second;
-                    double lambda = (d - pairs[i - 1].First) / (pairs[i].First - pairs[i - 1].First);
-                    return pairs[i - 1].Second + lambda * (pairs[i].Second - pairs[i - 1].Second);
+                        return pairs[0].Item2;
+                    double lambda = (d - pairs[i - 1].Item1) / (pairs[i].Item1 - pairs[i - 1].Item1);
+                    return pairs[i - 1].Item2 + lambda * (pairs[i].Item2 - pairs[i - 1].Item2);
                 }
             }
-            return pairs[pairs.Length - 1].Second;
+            return pairs[pairs.Length - 1].Item2;
         }
 
         public VelocityDriver()
@@ -119,10 +119,10 @@ namespace RFC.PathPlanning
             stopped = true;
         }
 
-        private Pair<double, double>[] readDoublePairArray(string numPrefix, string prefix)
+        private Tuple<double, double>[] readDoublePairArray(string numPrefix, string prefix)
         {
             int numPairs = ConstantsRaw.get<int>("control", numPrefix);
-            Pair<double, double>[] pairs = new Pair<double, double>[numPairs];
+            Tuple<double, double>[] pairs = new Tuple<double, double>[numPairs];
 
             for (int i = 0; i < numPairs; i++)
             {
@@ -131,7 +131,7 @@ namespace RFC.PathPlanning
                 //Remove spaces and split
                 str = str.Replace(" ", "");
                 string[] entries = str.Split(new char[] { ',' });
-                pairs[i] = new Pair<double, double>(Convert.ToDouble(entries[0]), Convert.ToDouble(entries[1]));
+                pairs[i] = new Tuple<double, double>(Convert.ToDouble(entries[0]), Convert.ToDouble(entries[1]));
             }
 
             return pairs;

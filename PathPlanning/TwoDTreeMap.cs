@@ -44,18 +44,18 @@ namespace RFC.PathPlanning
         }
 
         //Get the nearest neighbor to vec, if one exists, else returns a pair of (null, default(T)).
-        public Pair<Vector2, T> NearestNeighbor(Vector2 vec)
+        public Tuple<Vector2, T> NearestNeighbor(Vector2 vec)
         {
             Vector2 bestVec = null;
             T bestT = default(T);
             double nearestDistSq = double.PositiveInfinity;
             _root.NearestNeighbor(vec, ref bestVec, ref bestT, ref nearestDistSq);
-            return new Pair<Vector2, T>(bestVec, bestT);
+            return new Tuple<Vector2, T>(bestVec, bestT);
         }
 
         //Get the nearest k neighbors. If fewer than k neighbors exist, returns all of them.
         //Neighbors are NOT guaranteed to be sorted by distance.
-        public Pair<List<Vector2>, List<T>> NearestK(Vector2 vec, int k)
+        public Tuple<List<Vector2>, List<T>> NearestK(Vector2 vec, int k)
         {
             List<Vector2> bestVecs = new List<Vector2>();
             List<T> bestTs = new List<T>();
@@ -63,7 +63,7 @@ namespace RFC.PathPlanning
             int numVecs = 0;
             int worstVecId = -1;
             _root.NearestK(vec, k, ref bestVecs, ref bestTs, ref worstDistSqSoFar, ref numVecs, ref worstVecId);
-            return new Pair<List<Vector2>, List<T>>(bestVecs, bestTs);
+            return new Tuple<List<Vector2>, List<T>>(bestVecs, bestTs);
         }
 
         //Print this tree down to the specified depth
@@ -369,7 +369,7 @@ namespace RFC.PathPlanning
                 {
                     Vector2 vec = new Vector2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10);
                     Vector2 result = map.NearestNeighbor(vec);
-                    //System.Console.WriteLine(vec + " " + result.First + " " + result.Second);
+                    //System.Console.WriteLine(vec + " " + result.First + " " + result.Item2);
                 }
                 */
 
@@ -383,8 +383,8 @@ namespace RFC.PathPlanning
                 for (int i = 0; i < 200; i++)
                 {
                     Vector2 vec = new Vector2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10);
-                    Pair<Vector2, int> result = map.NearestNeighbor(vec);
-                    System.Console.WriteLine(vec + " " + result.First + " " + result.Second);
+                    Tuple<Vector2, int> result = map.NearestNeighbor(vec);
+                    System.Console.WriteLine(vec + " " + result.Item1 + " " + result.Item2);
                 }
 
 

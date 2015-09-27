@@ -35,7 +35,7 @@ namespace RFC.Simulator
     {
         private char command;
         private Object commandLock = new Object();
-        private Queue<Pair<char, int>> commandQueue = new Queue<Pair<char, int>>();
+        private Queue<Tuple<char, int>> commandQueue = new Queue<Tuple<char, int>>();
         private System.Threading.Timer commandQueueTimer;
 
         public SimpleReferee()
@@ -85,7 +85,7 @@ namespace RFC.Simulator
         {
             lock (commandLock)
             {
-                commandQueue.Enqueue(new Pair<char, int>(command, delay));
+                commandQueue.Enqueue(new Tuple<char, int>(command, delay));
 
                 // If adding to head, enable queue timier
                 if (commandQueue.Count == 1)
@@ -98,10 +98,10 @@ namespace RFC.Simulator
             lock (commandLock)
             {
                 if (commandQueue.Count > 0)
-                    command = commandQueue.Dequeue().First;
+                    command = commandQueue.Dequeue().Item1;
 
                 if (commandQueue.Count > 0)
-                    commandQueueTimer.Change(commandQueue.Peek().Second, System.Threading.Timeout.Infinite);
+                    commandQueueTimer.Change(commandQueue.Peek().Item2, System.Threading.Timeout.Infinite);
                 else
                     commandQueueTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             }

@@ -73,12 +73,12 @@ namespace RFC.Simulator
             return robotVel.rotate(Math.PI / 4 + orientation);
         }
 
-        public Pair<Vector2, double> GetInfoFromWheel(WheelSpeeds Wheel, double orientation)
+        public Tuple<Vector2, double> GetInfoFromWheel(WheelSpeeds Wheel, double orientation)
         {
             double AngularVelocity = GetAngularVelocityFromWheel(Wheel);
             Vector2 newVelocity = GetVelocityFromWheel(Wheel, orientation);
 
-            return new Pair<Vector2, double>(newVelocity, AngularVelocity);
+            return new Tuple<Vector2, double>(newVelocity, AngularVelocity);
         }
 
         /// <summary>
@@ -97,8 +97,8 @@ namespace RFC.Simulator
             double newAngularVelocity = GetAngularVelocityFromWheel(newWheel);
             double angle = info.Orientation + (info.AngularVelocity + newAngularVelocity) / 2 * dt;
 
-            Pair<Vector2, double> vwpair = GetInfoFromWheel(newWheel, angle);
-            Vector2 newVelocity = vwpair.First;
+            Tuple<Vector2, double> vwpair = GetInfoFromWheel(newWheel, angle);
+            Vector2 newVelocity = vwpair.Item1;
             Vector2 newPosition = info.Position + 0.5 * dt * (newVelocity + info.Velocity);
 
             return new RobotInfo(newPosition, newVelocity, newAngularVelocity, angle, info.Team, info.ID);

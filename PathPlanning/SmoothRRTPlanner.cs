@@ -612,7 +612,7 @@ namespace RFC.PathPlanning
 
                         doRandomAgain = true;
                         currentTarget = GetRandomPoint(desiredPosition, currentState.Position, closestSoFar);
-                        activeNode = map.NearestNeighbor(currentTarget).Second;
+                        activeNode = map.NearestNeighbor(currentTarget).Item2;
                         stepsLeft = 1;
                         tryAgain = false;
                     }
@@ -670,7 +670,7 @@ namespace RFC.PathPlanning
             //If we didn't succeed, take the closest node anyways
             if (!(map.Size() < MAX_TREE_SIZE && tries < MAX_PATH_TRIES))
             {
-                successNode = map.NearestNeighbor(desiredPosition).Second;
+                successNode = map.NearestNeighbor(desiredPosition).Item2;
                 List<Vector2> path = GetPathFrom(successNode);
                 return path;
             }
