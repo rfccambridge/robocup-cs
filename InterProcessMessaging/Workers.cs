@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
 using System.Threading;
+using System.Reflection;
 
 namespace RFC.InterProcessMessaging
 {
@@ -63,12 +64,14 @@ namespace RFC.InterProcessMessaging
         public delegate void DoneHandler(BasicMessageSender<T> doneItem);
         public event DoneHandler OnDone;
     }
-    class BasicMessageReceiver<T> : IMessageReceiver<T> where T : IByteSerializable<T>, new()
+    class BasicMessageReceiver<T> : IMessageReceiver<T> where T : IByteSerializable<T>
     {
         public event ReceiveMessageDelegate<T> MessageReceived;
         readonly TcpClient client;
         readonly Thread thread;
         readonly NetworkStream stream;
+
+        private MethodInfo deserializer;
 
         public BasicMessageReceiver(TcpClient client)
         {
@@ -76,6 +79,19 @@ namespace RFC.InterProcessMessaging
             stream = client.GetStream();
             thread = new Thread(Run);
             thread.IsBackground = true;
+
+            deserializer = typeof(T).GetMethod(
+                name: "Deserialize",
+                binder: null,
+                bindingAttr: BindingFlags.Public | BindingFlags.Static,
+                callConvention: CallingConventions.Any,
+                types: new Type[] { },
+                modifiers: null
+            );
+
+            if(deserializer == null) {
+                throw new System.MissingMethodException(typeof(T).Name, "Deserialize")
+            }
         }
         public void Start()
         {
@@ -87,10 +103,13 @@ namespace RFC.InterProcessMessaging
 
             while (true)
             {
-                T obj = new T();
+                T obj;
                 try
                 {
-                    obj.Deserialize(stream);
+                    obj = (T)typeof(T).GetMethod(
+                        name: "Deserialize",
+                        types: new Type[] {}
+                    ).Invoke(null, new object[] { });
                 }
                 catch (System.IO.IOException e)
                 {

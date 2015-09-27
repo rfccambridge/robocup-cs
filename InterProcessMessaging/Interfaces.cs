@@ -7,7 +7,7 @@ namespace RFC.InterProcessMessaging
 {
     public interface IByteSerializable<T>
     {
-        void Deserialize(NetworkStream stream);
+        // static T Deserialize(NetworkStream stream); - enforced by reflection
         void Serialize(NetworkStream stream);
     }
 

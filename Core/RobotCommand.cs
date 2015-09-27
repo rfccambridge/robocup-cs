@@ -4,10 +4,11 @@ using System.Text;
 using RFC.Utilities;
 using RFC.Core;
 using RFC.InterProcessMessaging;
+using System.Linq;
 
 namespace RFC.Core
 {
-    public class RobotCommand : IByteSerializable<RobotCommand>
+    public abstract class RobotCommand : IByteSerializable<RobotCommand>
     {
         public enum Command
         {
@@ -29,76 +30,276 @@ namespace RFC.Core
 
         static CRCTool _crcTool;
 
-        public static byte DribblerSpeed = 5;
         // Equal to capacitor voltage we charge to / 10
-        public byte KickerStrength = MAX_KICKER_STRENGTH;
-        public byte MinKickerStrength = 10; // XXX: SK: This should be calibrated
 
         public const int MAX_KICKER_STRENGTH = 25;
         public const int MIN_KICKER_STRENGTH = 1;
 
-        public WheelSpeeds Speeds;
         public int ID;
-        public Command command;
-        public byte P, I, D;
-        public byte BoardID;
-        public byte Flags;
+        public abstract byte Source { get; }
+        public abstract byte Port { get; }
 
+        protected byte serialId => (byte)('0' + ID);
+
+        static private Dictionary<Command, Type> enumToTypeMap;
+
+
+        #region Brushless board commands
+        public abstract class OtherBoardCommand : RobotCommand
+        {
+            public override byte Source => (byte)'w';
+            public OtherBoardCommand(int ID) : base(ID) { }
+            public override byte[] ToPacket()
+            {
+                return base.createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, serialId, Source, Port);
+            }
+        }
+
+        public sealed class MoveCommand : OtherBoardCommand
+        {
+            public override byte Port => (byte)'w';
+            public static readonly Command command = Command.MOVE;
+
+            public WheelSpeeds Speeds;
+
+            public MoveCommand(int ID, WheelSpeeds speeds) : base(ID)
+            {
+                Speeds = speeds;
+            }
+
+            private int clampWheelSpeed(double speed)
+            {
+                const int MAXSPEED = 127;
+                int s = (int)Math.Round((double)speed);
+                if (s > MAXSPEED)
+                    s = MAXSPEED;
+                if (s < -MAXSPEED)
+                    s = -MAXSPEED;
+                return s;
+            }
+
+            protected override void serializeData(ref byte[] buff)
+            {
+                int lf = clampWheelSpeed(Speeds.lf),
+                           rf = clampWheelSpeed(Speeds.rf),
+                           lb = clampWheelSpeed(Speeds.lb),
+                           rb = clampWheelSpeed(Speeds.rb);
+
+                buff[4] = (byte)(Speeds.rf < 0 ? (byte)Math.Abs(rf) | 0x80 : (byte)rf);
+                buff[5] = (byte)(Speeds.lf < 0 ? (byte)Math.Abs(lf) | 0x80 : (byte)lf);
+                buff[6] = (byte)(Speeds.lb < 0 ? (byte)Math.Abs(lb) | 0x80 : (byte)lb);
+                buff[7] = (byte)(Speeds.rb < 0 ? (byte)Math.Abs(rb) | 0x80 : (byte)rb);
+            }
+
+            protected override void deserializeData(ref byte[] buff)
+            {
+                Speeds = new WheelSpeeds((buff[4] & 0x80) > 0 ? -1 * (buff[4] & 0x7F) : buff[4],
+                                         (buff[5] & 0x80) > 0 ? -1 * (buff[5] & 0x7F) : buff[5],
+                                         (buff[6] & 0x80) > 0 ? -1 * (buff[6] & 0x7F) : buff[6],
+                                         (buff[7] & 0x80) > 0 ? -1 * (buff[7] & 0x7F) : buff[7]);
+            }
+
+            public override byte[] ToPacket()
+            {
+                int lf = clampWheelSpeed(Speeds.lf),
+                        rf = clampWheelSpeed(Speeds.rf),
+                        lb = clampWheelSpeed(Speeds.lb),
+                        rb = clampWheelSpeed(Speeds.rb);
+
+                // board bugs out if we send an unescaped slash
+                if (lb == '\\') lb++;
+                if (lf == '\\') lf++;
+                if (rf == '\\') rf++;
+                if (rb == '\\') rb++;
+
+                //Console.WriteLine("id " + ID + ": setting speeds to: " + Speeds.ToString());
+
+                //robots expect wheel powers in this order:
+                //rf lf lb rb                                       
+                
+                return createPacket(
+                    Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, serialId, Source, Port,
+                    (byte)rf, (byte)lf, (byte)lb, (byte)rb);
+            }
+        }
+
+        /*
+        public sealed class SetCfgFlagsCommand : OtherBoardCommand
+        {
+            public static readonly Command command = Command.SET_CFG_FLAGS;
+            public override byte Port => (byte)'c';
+
+            public readonly byte BoardID;
+            public readonly byte Flags;
+            public SetCfgFlagsCommand(int ID, byte boardID, byte flags) : base(ID)
+            {
+                Flags = flags;
+                BoardID = boardID;
+            }
+            
+            public override byte[] ToPacket() => createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, serialId, Source, Port,
+                BoardID, Flags);
+        }
+        public sealed class ResetCommand : OtherBoardCommand
+        {
+            public static readonly Command command = Command.RESET;
+            public override byte Port => (byte)'r';
+
+            public ResetCommand(int ID) : base(ID) { }
+        }
+        */
+        #endregion
+
+        #region Aux board commands
+        public abstract class AuxBoardCommand : RobotCommand
+        {
+            public override byte Source => (byte)'v';
+            public AuxBoardCommand(int ID) : base(ID) { }
+            public override byte[] ToPacket()
+            {
+                return base.createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port);
+            }
+        }
+
+        public sealed class KickCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.KICK;
+            public override byte Port => (byte)'k';
+
+            public KickCommand(int ID) : base(ID) { }
+            public override byte[] ToPacket() =>
+                createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port, (byte)0xff, (byte)0);
+        }
+
+        public sealed class StartDribblerCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.START_DRIBBLER;
+            public override byte Port => (byte)'d';
+
+            public byte DribblerSpeed;
+            public StartDribblerCommand(int ID, byte dribblerSpeed = 5) : base(ID) { DribblerSpeed = dribblerSpeed; }
+            public override byte[] ToPacket() => createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port, (byte)('0' + DribblerSpeed));
+
+            protected override void serializeData(ref byte[] buff)   { buff[4] = DribblerSpeed; }
+            protected override void deserializeData(ref byte[] buff) { DribblerSpeed = buff[4]; }
+        }
+        public sealed class StopDribblerCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.STOP_DRIBBLER;
+            public override byte Port => (byte)'d';
+
+            public StopDribblerCommand(int ID) : base(ID) { }
+            public override byte[] ToPacket() => createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port, (byte)'0');
+        }
+        /*
+        public sealed class StartVariableChargingCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.START_VARIABLE_CHARGING;
+            public override byte Port => (byte)'v';
+
+            public StartVariableChargingCommand(int ID) : base(ID) { }
+            public override byte[] ToPacket()
+            {
+                if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
+                if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
+                return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port, (byte)KickerStrength);
+            }
+        }
+        */
+        public sealed class FullBreakbeamKickCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.FULL_BREAKBEAM_KICK;
+            public override byte Port => (byte)'k';
+
+            public byte KickerStrength;
+
+            public FullBreakbeamKickCommand(int ID, byte kickerStrength = MAX_KICKER_STRENGTH) : base(ID)
+            {
+                KickerStrength = kickerStrength;
+            }
+            public override byte[] ToPacket()
+            {
+                if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
+                if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
+
+                return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port, (byte)KickerStrength, (byte)(1));
+            }
+
+            protected override void serializeData(ref byte[] buff) { buff[4] = KickerStrength; }
+            protected override void deserializeData(ref byte[] buff) { KickerStrength = buff[4]; }
+        }
+
+        /*
+        public sealed class MinBreakBeamKickCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.MIN_BREAKBEAM_KICK;
+            public override byte Port => (byte)'m';
+
+            public MinBreakBeamKickCommand(int ID) : base(ID) { }
+            public override byte[] ToPacket()
+            {
+                if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
+                if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
+                if (MinKickerStrength > MAX_KICKER_STRENGTH) MinKickerStrength = MAX_KICKER_STRENGTH;
+                if (MinKickerStrength < MIN_KICKER_STRENGTH) MinKickerStrength = MIN_KICKER_STRENGTH;
+
+                return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port, (byte)KickerStrength, (byte)MinKickerStrength);
+            }
+        }
+        public sealed class StartChargingCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.MIN_BREAKBEAM_KICK;
+            public override byte Port => (byte)'c';
+
+            public StartChargingCommand(int ID) : base(ID) { }
+        }
+
+        public sealed class StopChargingCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.STOP_CHARGING_COMMAND;
+            public override byte Port => (byte)'s';
+
+            public StopChargingCommand(int ID) : base(ID) { }
+        }
+        public sealed class BreakbeamKickCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.BREAKBEAM_KICK;
+            public override byte Port => (byte)'b';
+
+            public BreakbeamKickCommand(int ID) : base(ID) { }
+            public override byte[] ToPacket() => createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port);
+        }
+        public sealed class DischargeCommand : AuxBoardCommand
+        {
+            public static readonly Command command = Command.DISCHARGE;
+            public override byte Port => (byte)'p';
+
+            public DischargeCommand(int ID) : base(ID) { }
+            public override byte[] ToPacket() => createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, serialId, Source, Port);
+        }*/
+        #endregion
 
         static RobotCommand()
         {
             _crcTool = new CRCTool();
             _crcTool.Init(CRCTool.CRCCode.CRC8);
+
+            
+            enumToTypeMap = (
+                 from domainAssembly in AppDomain.CurrentDomain.GetAssemblies()
+                 from assemblyType in domainAssembly.GetTypes()
+                 where typeof(RobotCommand).IsAssignableFrom(assemblyType) && assemblyType.IsSealed
+                 select assemblyType
+            ).ToDictionary(
+                x => (Command) x.GetField("command", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public).GetValue(null),
+                x => x
+            );
+
         }
 
-        public RobotCommand()
+        protected RobotCommand(int ID)
         {
-            // Used for serialization. 
-            // Deserialize() method populates the object created by this constructor.
-        }
-
-        public RobotCommand(int ID, Command command)
-        {
-            init(ID, command, null);
-        }
-        public RobotCommand(int ID, WheelSpeeds speeds)
-        {
-            init(ID, Command.MOVE, speeds);
-        }
-        public RobotCommand(int ID, Command command, byte P, byte I, byte D)
-        {
-            this.P = P;
-            this.I = I;
-            this.D = D;
-            init(ID, command, null);
-        }
-        public RobotCommand(int ID, Command command, byte boardID, byte flags)
-        {
-            this.BoardID = boardID;
-            this.Flags = flags;
-            init(ID, command, null);
-        }
-        public RobotCommand(int ID, Command command, WheelSpeeds speeds)
-        {
-            init(ID, command, speeds);
-        }
-
-        private void init(int ID, Command command, WheelSpeeds speeds)
-        {
-            this.Speeds = speeds;
             this.ID = ID;
-            this.command = command;
-        }
-
-        private int clampWheelSpeed(double speed)
-        {
-            const int MAXSPEED = 127;
-            int s = (int)Math.Round((double)speed);
-            if (s > MAXSPEED)
-                s = MAXSPEED;
-            if (s < -MAXSPEED)
-                s = -MAXSPEED;
-            return s;
         }
 
         /// <summary>
@@ -131,94 +332,7 @@ namespace RFC.Core
             return curr_packet.ToArray();
         }
 
-        public byte[] ToPacket()
-        {
-            byte id = (byte)('0' + ID);
-            byte source, port; // source: w for brushless board, v for kicker board
-
-            switch (command)
-            {
-                #region Brushless board commands
-                case Command.MOVE:
-
-                    int lf = clampWheelSpeed(Speeds.lf),
-                        rf = clampWheelSpeed(Speeds.rf),
-                        lb = clampWheelSpeed(Speeds.lb),
-                        rb = clampWheelSpeed(Speeds.rb);
-
-                    // board bugs out if we send an unescaped slash
-                    if (lb == '\\') lb++;
-                    if (lf == '\\') lf++;
-                    if (rf == '\\') rf++;
-                    if (rb == '\\') rb++;
-
-                    //Console.WriteLine("id " + ID + ": setting speeds to: " + Speeds.ToString());
-
-                    //robots expect wheel powers in this order:
-                    //rf lf lb rb                                       
-
-                    source = (byte)'w'; port = (byte)'w';
-                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port,
-                        (byte)rf, (byte)lf, (byte)lb, (byte)rb);
-                /*case Command.SET_CFG_FLAGS:
-                    source = (byte)'w'; port = (byte)'c';
-                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port,
-                        BoardID, Flags);
-                case Command.RESET:
-                    source = (byte)'w'; port = (byte)'r';
-                    return createPacket(Constants.RadioProtocol.SEND_BRUSHLESSBOARD_CHECKSUM, id, source, port);*/
-                #endregion
-
-                #region Aux board commands
-                case Command.START_DRIBBLER:
-                    source = (byte)'v'; port = (byte)'d';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)('0' + (byte)DribblerSpeed));
-                case Command.STOP_DRIBBLER:
-                    source = (byte)'v'; port = (byte)'d';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)'0');
-                /*case Command.START_VARIABLE_CHARGING:
-                    if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
-                    if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'v';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)KickerStrength);*/
-                case Command.FULL_BREAKBEAM_KICK:
-                    if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
-                    if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'k';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)KickerStrength, (byte)(1));
-                /*case Command.MIN_BREAKBEAM_KICK:
-                    if (KickerStrength > MAX_KICKER_STRENGTH) KickerStrength = MAX_KICKER_STRENGTH;
-                    if (KickerStrength < MIN_KICKER_STRENGTH) KickerStrength = MIN_KICKER_STRENGTH;
-                    if (MinKickerStrength > MAX_KICKER_STRENGTH) MinKickerStrength = MAX_KICKER_STRENGTH;
-                    if (MinKickerStrength < MIN_KICKER_STRENGTH) MinKickerStrength = MIN_KICKER_STRENGTH;
-                    source = (byte)'v'; port = (byte)'m';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)KickerStrength, (byte)MinKickerStrength);*/
-                case Command.KICK:
-                    source = (byte)'v'; port = (byte)'k';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port,
-                        (byte)0xff, (byte)(0));
-                case Command.START_CHARGING:
-                    source = (byte)'v'; port = (byte)'c';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
-                /*case Command.STOP_CHARGING:
-                    source = (byte)'v'; port = (byte)'s';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
-                case Command.BREAKBEAM_KICK:
-                    source = (byte)'v'; port = (byte)'b';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);
-                case Command.DISCHARGE:
-                    source = (byte)'v'; port = (byte)'p';
-                    return createPacket(Constants.RadioProtocol.SEND_AUXBOARD_CHECKSUM, id, source, port);*/
-                default:
-                    throw new ApplicationException("Don't know how to package command: " + command.ToString());
-                #endregion
-            }
-        }
+        public abstract byte[] ToPacket();
 
         #region IByteSerializable<RobotCommand> Members
 
@@ -228,62 +342,36 @@ namespace RFC.Core
         // Byte 2-3: <unused>
         // Byte 4-7: Data
 
-        private const int SERIALIZED_LENGTH = 8; // bytes
-        private byte[] buff = new byte[SERIALIZED_LENGTH]; // I don't think we need to lock this
 
-        public void Deserialize(System.Net.Sockets.NetworkStream stream)
+        const int SERIALIZED_LENGTH = 8; // bytes
+        protected virtual void deserializeData(ref byte[] buff) { };
+        public RobotCommand Deserialize(System.Net.Sockets.NetworkStream stream)
         {
+            byte[] buff = new byte[SERIALIZED_LENGTH]; // I don't think we need to lock this
+  
             int read = stream.Read(buff, 0, buff.Length);
             if (read > 0 && read != buff.Length)
             {
                 throw new ApplicationException(String.Format("RobotCommand.Deserialize: read {0:G} " +
                     "but expecting {1:G}.", read, buff.Length));
             }
-            command = (Command) buff[0];
-            ID = buff[1];
-            switch (command)
-            {
-                case Command.MOVE:
-                    Speeds = new WheelSpeeds((buff[4] & 0x80) > 0 ? -1 * (buff[4] & 0x7F) : buff[4],
-                                             (buff[5] & 0x80) > 0 ? -1 * (buff[5] & 0x7F) : buff[5],
-                                             (buff[6] & 0x80) > 0 ? -1 * (buff[6] & 0x7F) : buff[6],
-                                             (buff[7] & 0x80) > 0 ? -1 * (buff[7] & 0x7F) : buff[7]);
-                    break;
-                case Command.FULL_BREAKBEAM_KICK:
-                    KickerStrength = buff[4];
-                    break;
-                case Command.START_DRIBBLER:
-                    DribblerSpeed = buff[4];
-                    break;
-            }
+            Command command = (Command) buff[0];
+            byte ID = buff[1];
+            RobotCommand c = (RobotCommand) enumToTypeMap[command].GetConstructor(new Type[] { typeof(int) }).Invoke(new object[] { ID });
+
+            c.deserializeData(ref buff);
+            return c;
         }
 
+        protected virtual void serializeData(ref byte[] buff) { };
         public void Serialize(System.Net.Sockets.NetworkStream stream)
         {
+            byte[] buff = new byte[SERIALIZED_LENGTH]; // I don't think we need to lock this
             buff.Initialize(); // Clear
 
             buff[0] = (byte)command;
             buff[1] = (byte)ID;
-            switch (command)
-            {
-                case Command.MOVE:
-                    int lf = clampWheelSpeed(Speeds.lf),
-                        rf = clampWheelSpeed(Speeds.rf),
-                        lb = clampWheelSpeed(Speeds.lb),
-                        rb = clampWheelSpeed(Speeds.rb);
-
-                    buff[4] = (byte)(Speeds.rf < 0 ? (byte)Math.Abs(rf) | 0x80 : (byte)rf);
-                    buff[5] = (byte)(Speeds.lf < 0 ? (byte)Math.Abs(lf) | 0x80 : (byte)lf);
-                    buff[6] = (byte)(Speeds.lb < 0 ? (byte)Math.Abs(lb) | 0x80 : (byte)lb);
-                    buff[7] = (byte)(Speeds.rb < 0 ? (byte)Math.Abs(rb) | 0x80 : (byte)rb);
-                    break;
-                case Command.FULL_BREAKBEAM_KICK:
-                    buff[4] = KickerStrength;
-                    break;
-                case Command.START_DRIBBLER:
-                    buff[4] = DribblerSpeed;
-                    break;
-            }
+            serializeData(ref buff);
 
             stream.Write(buff, 0, buff.Length);
         }
