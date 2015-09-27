@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RFC.Strategy
 {
-    public class TimeoutBehavior
+    public class TimeoutBehavior : IMessageHandler<FieldVisionMessage>
     {
         private enum State { Timeout, Victory };
         private DateTime startTime;
@@ -28,7 +28,7 @@ namespace RFC.Strategy
             this.goalie_id = goalie_id;
             this.msngr = ServiceManager.getServiceManager();
             this.lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(HandleMessage, lockObject);
         }
 
         private void timeoutHandle(FieldVisionMessage fieldVision)
@@ -60,7 +60,7 @@ namespace RFC.Strategy
             }
         }
 
-        public void Handle(FieldVisionMessage fieldVision)
+        public void HandleMessage(FieldVisionMessage fieldVision)
         {
             switch (STATE)
             {

@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IMessageHandler.cs" />
     <Compile Include="CommandMessage.cs" />
     <Compile Include="FieldVisionMessage.cs" />
     <Compile Include="KickMessage.cs" />

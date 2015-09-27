@@ -10,7 +10,7 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class NormalTester
+    public class NormalTester : IMessageHandler<FieldVisionMessage>
     {
         Team team;
         ServiceManager msngr;

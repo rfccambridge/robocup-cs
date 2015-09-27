@@ -10,7 +10,7 @@ using RFC.Utilities;
 
 namespace RFC.Vision
 {
-	public class Vision
+	public class Vision : IMessageHandler<BallVisionMessage>
 	{
 		public event EventHandler ErrorOccured;
 
@@ -31,7 +31,7 @@ namespace RFC.Vision
 			_client = new SSLVisionClient();
 			_client.Connect(hostname, port);
 			_clientOpen = true;
-            new QueuedMessageHandler<BallVisionMessage>(handleBallVisionMessage, new object());
+            new QueuedMessageHandler<BallVisionMessage>(HandleMessage, new object());
 		}
 
 		public void Disconnect()
@@ -67,7 +67,7 @@ namespace RFC.Vision
 			_running = false;
 		}
 
-        public void handleBallVisionMessage(BallVisionMessage msg)
+        public void HandleMessage(BallVisionMessage msg)
         {
             this.last_ball = msg.Ball;
         }

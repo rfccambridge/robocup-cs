@@ -8,7 +8,7 @@ using System.IO;
 
 namespace RFC.Logging
 {
-    public class LogHandler
+    public class LogHandler : IMessageHandler<Message>
     {
         private bool use_console = false;
 
@@ -29,15 +29,15 @@ namespace RFC.Logging
                 // messages to be recorded
                 //new QueuedMessageHandler<VisionMessage>(recordMessage, new object());
                 //new QueuedMessageHandler<RobotVisionMessage>(recordMessage, new object());
-                new QueuedMessageHandler<CommandMessage>(recordMessage, new object());
-                new QueuedMessageHandler<RobotDestinationMessage>(recordMessage, new object());
-                new QueuedMessageHandler<RobotPathMessage>(recordMessage, new object());
-                new QueuedMessageHandler<RefboxStateMessage>(recordMessage, new object());
+                new QueuedMessageHandler<CommandMessage>(HandleMessage, new object());
+                new QueuedMessageHandler<RobotDestinationMessage>(HandleMessage, new object());
+                new QueuedMessageHandler<RobotPathMessage>(HandleMessage, new object());
+                new QueuedMessageHandler<RefboxStateMessage>(HandleMessage, new object());
                 //new QueuedMessageHandler<BallMarkMessage>(recordMessage, new object());
                 //new QueuedMessageHandler<BallMovedMessage>(recordMessage, new object());
                 //new QueuedMessageHandler<BallVisionMessage>(recordMessage, new object());
-                new QueuedMessageHandler<KickMessage>(recordMessage, new object());
-                new QueuedMessageHandler<FieldVisionMessage>(recordMessage, new object());
+                new QueuedMessageHandler<KickMessage>(HandleMessage, new object());
+                new QueuedMessageHandler<FieldVisionMessage>(HandleMessage, new object());
             }
             catch (IOException ex)
             {
@@ -53,7 +53,7 @@ namespace RFC.Logging
                 Console.WriteLine(LM.getMessage());
         }
 
-        public void recordMessage(Message m)
+        public void HandleMessage(Message m)
         {
             lock (secretaryLock)
             {

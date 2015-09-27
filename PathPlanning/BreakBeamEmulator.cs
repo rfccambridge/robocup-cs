@@ -8,7 +8,7 @@ using RFC.Geometry;
 
 namespace RFC.PathPlanning
 {
-    public class BreakBeamEmulator
+    public class BreakBeamEmulator : IMessageHandler<CommandMessage>, IMessageHandler<FieldVisionMessage>
     {
         private Dictionary<int, bool> beamKicking;
         private Dictionary<int, DateTime> timeOuts;
@@ -24,11 +24,11 @@ namespace RFC.PathPlanning
             this.timeOuts = new Dictionary<int, DateTime>();
             this.team = team;
             object lockObj = new object();
-            new QueuedMessageHandler<CommandMessage>(handleRobotCommandMessage, lockObj);
-            new QueuedMessageHandler<FieldVisionMessage>(handleFieldVisionMessage, lockObj);
+            new QueuedMessageHandler<CommandMessage>(HandleMessage, lockObj);
+            new QueuedMessageHandler<FieldVisionMessage>(HandleMessage, lockObj);
         }
 
-        public void handleRobotCommandMessage(CommandMessage msg)
+        public void HandleMessage(CommandMessage msg)
         {
             if (msg.Command.command == RobotCommand.Command.FULL_BREAKBEAM_KICK)
             {
@@ -37,7 +37,7 @@ namespace RFC.PathPlanning
             }
         }
 
-        public void handleFieldVisionMessage(FieldVisionMessage msg)
+        public void HandleMessage(FieldVisionMessage msg)
         {
             int[] keys = beamKicking.Keys.ToArray();
             foreach (int i in keys)

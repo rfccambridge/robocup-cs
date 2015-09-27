@@ -7,7 +7,7 @@ using RFC.Messaging;
 
 namespace RFC.Strategy
 {
-    public class PenaltyKickTester
+    public class PenaltyKickTester : IMessageHandler<FieldVisionMessage>
     {
         Team team;
         int goalie_id;
@@ -21,10 +21,10 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             penaltyKickBehavior = new PenaltyKickBehavior(this.team, this.goalie_id);
             object lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(HandleMessage, lockObject);
         }
 
-        public void Handle(FieldVisionMessage msg)
+        public void HandleMessage(FieldVisionMessage msg)
         {
             //penaltyKickBehavior.OursSetup(msg);
             penaltyKickBehavior.Ours(msg);

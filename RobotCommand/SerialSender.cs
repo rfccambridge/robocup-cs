@@ -10,7 +10,7 @@ using RFC.Core;
 
 namespace RFC.Commands
 {
-    public class SerialSender
+    public class SerialSender : IMessageHandler<CommandMessage>
     {
         SerialPort _comPort;
         private int[,] timesSent;
@@ -23,7 +23,7 @@ namespace RFC.Commands
         {
             string port = "COM" + comNumber;
             _comPort = SerialPortManager.OpenSerialPort(port);
-            new QueuedMessageHandler<CommandMessage>(handleRobotCommandMessage, new object());
+            new QueuedMessageHandler<CommandMessage>(HandleMessage, new object());
             // indexed [command, robot]
             timesSent = new int[Enum.GetNames(typeof(RobotCommand.Command)).Length,RFC.Core.Constants.Basic.NUM_ROBOTS];
             msSent = new DateTime[Enum.GetNames(typeof(RobotCommand.Command)).Length,RFC.Core.Constants.Basic.NUM_ROBOTS];
@@ -37,7 +37,7 @@ namespace RFC.Commands
             }
         }
 
-        public void handleRobotCommandMessage(CommandMessage message)
+        public void HandleMessage(CommandMessage message)
         {
             sendCommand(message.Command);
         }

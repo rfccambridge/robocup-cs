@@ -12,7 +12,7 @@ namespace RFC.Vision
     /// <summary>
     /// A basic implementation of IPredictor that averages values from multiple cameras
     /// </summary>
-    public class AveragingPredictor
+    public class AveragingPredictor : IMessageHandler<VisionMessage>
     {
         const int NUM_CAMERAS = 2;
 
@@ -46,7 +46,7 @@ namespace RFC.Vision
             LoadConstants();
             messenger = ServiceManager.getServiceManager();
             // register handler to receive messages
-            new QueuedMessageHandler<VisionMessage>(Update, listenerLock);
+            new QueuedMessageHandler<VisionMessage>(HandleMessage, listenerLock);
 
             filter = new JitterFilter();
             r = new Random();
@@ -61,6 +61,10 @@ namespace RFC.Vision
                     info.Orientation + Math.PI, info.Team, info.ID);
         }
 
+        public void HandleMessage(VisionMessage message)
+        {
+            Update(message);
+        }
         // update robot positions with new vision data
         public void Update(VisionMessage msg)
         {
