@@ -329,19 +329,27 @@ namespace RFC.Strategy
         }
 
         // used for debugging drawn maps
-        public void drawMap(double[,] map)
+        public void drawMap(Lattice<double> map)
         {
-            double max = map.Cast<double>().Max();
-            double min = map.Cast<double>().Min();
+            int min = 101;
+            int max = -1;
 
-            msngr.vdbClear();
-            for (int i = 0; i < map.GetLength(0); i++)
+            foreach (var pair in map)
             {
-                for (int j = 0; j < map.GetLength(1); j++)
+                if (pair.Value < min)
                 {
-                    //Console.WriteLine("min: " + min + " max: " + max + " map: " + map[i, j]);
-                    msngr.vdb(indToVec(i, j), RFC.Utilities.ColorUtils.numToColor(map[i, j], min, max));
+                    min = (int)(pair.Value);
                 }
+                if (pair.Value > max)
+                {
+                    max = (int)(pair.Value);
+                }
+            }
+
+            foreach (var pair in map)
+            {
+                //Console.WriteLine("min: " + min + " max: " + max + " map: " + map[i, j]);
+                msngr.vdb(pair.Key, RFC.Utilities.ColorUtils.numToColor(pair.Value, min, max));
             }
         }
 

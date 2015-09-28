@@ -481,10 +481,18 @@ namespace RFC.FieldDrawer
             {
                 updateProjection();
                 drawField();
-                foreach (Marker marker in _state.Markers.Values)
+                // TODO actually fix instead of ignore errors--probably fine since this is only used for debugging offense mapping
+                try
                 {
-                    drawMarker(marker);
+                    foreach (Marker marker in _state.Markers.Values)
+                    {
+                        drawMarker(marker);
 
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Markers already changed--cannot draw.");
                 }
                 
                 foreach (Team team in Enum.GetValues(typeof(Team)))
