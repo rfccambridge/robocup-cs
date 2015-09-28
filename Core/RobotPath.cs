@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using RFC.Geometry;
 
 namespace RFC.Core
@@ -10,32 +11,29 @@ namespace RFC.Core
     /// </summary>
     public class RobotPath
     {
-        // Store team and id
-        Team _team;
-        int _id;
-        bool empty;
+        // Public interface for variables
+        public int ID { get; private set; }
+        public Team Team { get; private set; }
+        public List<RobotInfo> Waypoints { get; private set; }
+        public bool Slow { get; set; }
 
         // Store final goal for planners that do not store it as a waypoint
         RobotInfo _finalState;
-
-        // Store path as a list of robot info objects
-        List<RobotInfo> _path;
 
         // Can be constructed multiple ways, depending on how the path is determined
 
         public RobotPath()
         {
             // Create empty path
-            _path = new List<RobotInfo>();
+            Waypoints = new List<RobotInfo>();
         }
 
         public RobotPath(Team team, int id)
         {
             // Create empty path with id
-            _team = team;
-            _id = id;
-            empty = true;
-            _path = new List<RobotInfo>();
+            Team = team;
+            ID = id;
+            Waypoints = new List<RobotInfo>();
         }
 
         /// <summary>
@@ -48,11 +46,10 @@ namespace RFC.Core
             if (waypoints.Count == 0)
                 throw new Exception("Empty path given to path constructor");
 
-            _team = waypoints[0].Team;
-            _id = waypoints[0].ID;
+            Team = waypoints[0].Team;
+            ID = waypoints[0].ID;
 
-            _path = waypoints;
-            empty = false;
+            Waypoints = waypoints;
         }
 
         /// <summary>
@@ -61,14 +58,13 @@ namespace RFC.Core
         /// <param name="waypoints"></param>
         public RobotPath(Team team, int id, Vector2 waypoint)
         {
-            _team = team;
-            _id = id;
+            Team = team;
+            ID = id;
 
             List<RobotInfo> waypoints = new List<RobotInfo>();
             waypoints.Add(new RobotInfo(waypoint, 0, team, id));
 
-            _path = waypoints;
-            empty = false;
+            Waypoints = waypoints;
         }
 
         /// <summary>
@@ -77,14 +73,13 @@ namespace RFC.Core
         /// <param name="waypoint"></param>
         public RobotPath(Team team, int id, RobotInfo waypoint)
         {
-            _team = team;
-            _id = id;
+            Team = team;
+            ID = id;
 
             List<RobotInfo> waypoints = new List<RobotInfo>();
             waypoints.Add(waypoint);
 
-            _path = waypoints;
-            empty = false;
+            Waypoints = waypoints;
         }
 
         /// <summary>
@@ -94,13 +89,12 @@ namespace RFC.Core
         /// <param name="waypoints2">Vector2 ending list of waypoints</param>
         public RobotPath(List<RobotInfo> waypoints1, List<Vector2> waypoints2)
         {
-            _team = waypoints1[0].Team;
-            _id = waypoints1[0].ID;
+            Team = waypoints1[0].Team;
+            ID = waypoints1[0].ID;
 
             // Combine paths into a single waypoints list
-            _path = waypoints1;
-            _path.AddRange(makeRobotInfoList(_id, waypoints2));
-            empty = false;
+            Waypoints = waypoints1;
+            Waypoints.AddRange(makeRobotInfoList(ID, waypoints2));
         }
 
         /// <summary>
@@ -111,33 +105,11 @@ namespace RFC.Core
         /// <param name="waypoints">Vector2 list of waypoints along path</param>
         public RobotPath(Team team, int id, List<Vector2> waypoints)
         {
-            _team = team;
-            _id = id;
-            _path = makeRobotInfoList(_id, waypoints);
-            empty = false;
+            Team = team;
+            ID = id;
+            Waypoints = makeRobotInfoList(ID, waypoints);
         }
 
-
-        // Public interface for variables
-        public int ID
-        {
-            get { return _id; }
-        }
-        public Team Team
-        {
-            get { return _team; }
-        }
-
-        public List<RobotInfo> Waypoints
-        {
-            get { return _path; }
-        }
-
-        public bool Slow
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Turn a list of Vector2 into a list of RobotInfo objects- each is oriented towards next waypoint.
@@ -156,7 +128,7 @@ namespace RFC.Core
                 {
                     orientation = (waypoints[i + 1] - waypoints[i]).cartesianAngle();
                 }
-                retlst.Add(new RobotInfo(waypoints[i], orientation, _team, id));
+                retlst.Add(new RobotInfo(waypoints[i], orientation, Team, id));
             }
 
             return retlst;
@@ -172,28 +144,14 @@ namespace RFC.Core
         public RobotInfo findNextNearestWaypoint(RobotInfo point)
         {
             // brute force over the waypoints to find the nearest
-            int closestWaypointIndex = 0;
-            double minDistSq = double.MaxValue;
-
-            for (int i = 0; i < _path.Count; i++)
-            {
-                RobotInfo waypoint = _path[i];
-                double distSq = waypoint.Position.distanceSq(point.Position);
-                if (distSq < minDistSq)
-                {
-                    closestWaypointIndex = i;
-                    minDistSq = distSq;
-                }
-            }
+            int closestWaypointIndex = findNearestWaypointIndex(point);
 
             //Skip the nearest in the direction closer to the goal
-            closestWaypointIndex += 1;
-
             //But make sure we're still inside the path boundary
-            if (closestWaypointIndex >= _path.Count)
-                closestWaypointIndex = _path.Count - 1;
+            if (closestWaypointIndex < Waypoints.Count - 1)
+                closestWaypointIndex += 1;
 
-            return _path[closestWaypointIndex];
+            return Waypoints[closestWaypointIndex];
         }
 
         /// <summary>
@@ -203,8 +161,7 @@ namespace RFC.Core
         /// <returns></returns>
         public RobotInfo findNearestWaypoint(RobotInfo point)
         {
-            //Call findNearestWaypointIndex
-            return _path[findNearestWaypointIndex(point)];
+            return Waypoints[findNearestWaypointIndex(point)];
         }
 
         /// <summary>
@@ -212,16 +169,16 @@ namespace RFC.Core
         /// </summary>
         /// <param name="point">A RobotInfo representing the current position</param>
         /// <returns></returns>
-        public int findNearestWaypointIndex(RobotInfo point)
+        private int findNearestWaypointIndex(RobotInfo point)
         {
             // for now, brute force search
 
             int closestWaypointIndex = 0;
-            double minDistSq = double.MaxValue;
+            double minDistSq = double.PositiveInfinity;
 
-            for (int i = 0; i < _path.Count; i++)
+            for (int i = 0; i < Waypoints.Count; i++)
             {
-                RobotInfo waypoint = _path[i];
+                RobotInfo waypoint = Waypoints[i];
                 double distSq = waypoint.Position.distanceSq(point.Position);
                 if (distSq < minDistSq)
                 {
@@ -240,7 +197,7 @@ namespace RFC.Core
         /// <returns></returns>
         public RobotInfo getWaypoint(int index)
         {
-            return _path[index];
+            return Waypoints[index];
         }
 
         /// <summary>
@@ -248,14 +205,11 @@ namespace RFC.Core
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public RobotInfo this[int i]
-        {
-            get { return _path[i]; }
-        }
+        public RobotInfo this[int i] => Waypoints[i];
 
         public static implicit operator List<RobotInfo>(RobotPath _this)
         {
-            return _this._path;
+            return _this.Waypoints;
         }
 
         /// <summary>
@@ -273,16 +227,8 @@ namespace RFC.Core
         /// <returns></returns>
         public RobotInfo getFinalState()
         {
-            if (_finalState != null)
-            {
-                return _finalState;
-            }
-
-            if (_path.Count <= 0)
-                return null;
-
             // if none is set, return the last waypoint in the path
-            return _path[_path.Count - 1];
+            return _finalState ?? Waypoints.LastOrDefault();
         }
 
         /// <summary>
@@ -291,13 +237,13 @@ namespace RFC.Core
         /// <returns></returns>
         public bool isEmpty()
         {
-            return empty;
+            return Waypoints.Count == 0;
         }
 
         public override string ToString()
         {
             StringBuilder str = new StringBuilder();
-            foreach(RobotInfo info in _path)
+            foreach(RobotInfo info in Waypoints)
             {
                 str.Append(info.ToString());
                 str.Append(' ');

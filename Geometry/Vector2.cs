@@ -71,15 +71,11 @@ namespace RFC.Geometry
         {
             return new Vector2(p.X, p.Y);
         }
-
-        static private Vector2 zero = new Vector2(0, 0);
+        
         /// <summary>
         /// The Vector (0,0)
         /// </summary>
-        static public Vector2 ZERO
-        {
-            get { return zero; }
-        }
+        static public Vector2 ZERO { get; } = new Vector2(0, 0);
 
         /// <summary>
         /// Gets a unit vector in the desired orientation, in radians
