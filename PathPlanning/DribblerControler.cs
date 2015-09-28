@@ -8,7 +8,7 @@ using RFC.Geometry;
 
 namespace RFC.PathPlanning
 {
-    public class DribblerControler
+    public class DribblerControler : IMessageHandler<FieldVisionMessage>
     {
         private ServiceManager msngr;
         Team team;
@@ -20,13 +20,13 @@ namespace RFC.PathPlanning
             this.msngr = ServiceManager.getServiceManager();
             this.team = team;
             object lockObj = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(handleFieldVisionMessage, lockObj);
+            new QueuedMessageHandler<FieldVisionMessage>(this, lockObj);
             this.threshold = Constants.Basic.ROBOT_RADIUS * 1.5;
             this.threshold = this.threshold * this.threshold;
             this.dists = new Dictionary<int, double>();
         }
 
-        public void handleFieldVisionMessage(FieldVisionMessage msg)
+        public void HandleMessage(FieldVisionMessage msg)
         {
             BallInfo ball = msg.Ball;
             Dictionary<int, double> new_dists = new Dictionary<int,double>();

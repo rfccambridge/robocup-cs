@@ -10,7 +10,7 @@ using RFC.Logging;
 
 namespace RFC.Strategy
 {
-    public class PlaySwitcher
+    public class PlaySwitcher : IMessageHandler<RefboxStateMessage>, IMessageHandler<FieldVisionMessage>
     {
         Vector2 position;
         const double thresholdForBallMove = .03;
@@ -57,17 +57,17 @@ namespace RFC.Strategy
             this.play = PlayType.Stopped;
             this.kick_id = 2;
 
-            new QueuedMessageHandler<RefboxStateMessage>(handle_refbox, lockObject);
-            new QueuedMessageHandler<FieldVisionMessage>(handle_vision, lockObject);
+            new QueuedMessageHandler<RefboxStateMessage>(this, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
         }
 
-        public void handle_refbox(RefboxStateMessage msg)
+        public void HandleMessage(RefboxStateMessage msg)
         {
             play = msg.PlayType;
             position = ServiceManager.getServiceManager().GetLastMessage<BallVisionMessage>().Ball.Position;
         }
         
-        public void handle_vision(FieldVisionMessage msg)
+        public void HandleMessage(FieldVisionMessage msg)
         {
             //System.Threading.Thread.Sleep(100); // this is a complete hack, but things get unstable without it
             if((play == PlayType.Direct_Ours || play == PlayType.Direct_Theirs || play == PlayType.Indirect_Ours || play == PlayType.Indirect_Theirs || play == PlayType.KickOff_Ours || play == PlayType.KickOff_Theirs) && ballIsMoved(msg.Ball.Position))

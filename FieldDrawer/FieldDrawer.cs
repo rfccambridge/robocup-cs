@@ -41,7 +41,12 @@ namespace RFC.FieldDrawer
         }
     }
 
-    public class FieldDrawer
+    public class FieldDrawer : IMessageHandler<RobotVisionMessage>,
+                            IMessageHandler<BallVisionMessage>,
+                            IMessageHandler<VisualDebugMessage>,
+                            IMessageHandler<RobotPathMessage>,
+                            IMessageHandler<RobotDestinationMessage>,
+                            IMessageHandler<RefboxStateMessage>
     {
         public bool debug_motion = true;
 
@@ -200,12 +205,12 @@ namespace RFC.FieldDrawer
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
             msngr = ServiceManager.getServiceManager();
-            new QueuedMessageHandler<RobotVisionMessage>(HandleRobotMessage, new object());
-            new QueuedMessageHandler<BallVisionMessage>(HandleBallMessage, new object());
-            new QueuedMessageHandler<VisualDebugMessage>(HandleVisualDebugMessage, new object());
-            new QueuedMessageHandler<RobotPathMessage>(HandlePathMessage, new object());
-            new QueuedMessageHandler<RobotDestinationMessage>(HandleDestinationMessage, new object());
-            new QueuedMessageHandler<RefboxStateMessage>(HandleRefboxStateMessage, new object());
+            new QueuedMessageHandler<RobotVisionMessage>(this, new object());
+            new QueuedMessageHandler<BallVisionMessage>(this, new object());
+            new QueuedMessageHandler<VisualDebugMessage>(this, new object());
+            new QueuedMessageHandler<RobotPathMessage>(this, new object());
+            new QueuedMessageHandler<RobotDestinationMessage>(this, new object());
+            new QueuedMessageHandler<RefboxStateMessage>(this, new object());
         }
 
         public void Init(int w, int h)
@@ -235,7 +240,7 @@ namespace RFC.FieldDrawer
             //BuildTestScene();
         }
 
-        public void HandleRobotMessage(RobotVisionMessage message)
+        public void HandleMessage(RobotVisionMessage message)
         {
             lock (_stateLock)
             {
@@ -253,7 +258,7 @@ namespace RFC.FieldDrawer
             UpdateState();
         }
 
-        public void HandleBallMessage(BallVisionMessage message)
+        public void HandleMessage(BallVisionMessage message)
         {
             lock (_stateLock)
             {
@@ -261,7 +266,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        public void HandleVisualDebugMessage(VisualDebugMessage msg)
+        public void HandleMessage(VisualDebugMessage msg)
         {
             if (msg.clear)
             {
@@ -273,7 +278,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        public void HandlePathMessage(RobotPathMessage msg)
+        public void HandleMessage(RobotPathMessage msg)
         {
 
             if (debug_motion)
@@ -286,7 +291,7 @@ namespace RFC.FieldDrawer
             
         }
 
-        public void HandleDestinationMessage(RobotDestinationMessage msg)
+        public void HandleMessage(RobotDestinationMessage msg)
         {
             if (debug_motion)
             {
@@ -297,7 +302,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        public void HandleRefboxStateMessage(RefboxStateMessage msg)
+        public void HandleMessage(RefboxStateMessage msg)
         {
             UpdateRefBoxCmd(msg.PlayType.ToString());
         }

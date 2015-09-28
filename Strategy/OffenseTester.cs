@@ -10,7 +10,7 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class OffenseTester
+    public class OffenseTester : IMessageHandler<FieldVisionMessage>
     {
         Team team;
         ServiceManager msngr;
@@ -25,10 +25,10 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             this.offense = new OffenseStrategy(team, goalie_id, Constants.Field.XMIN, 0);
             this.lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
         }
 
-        public void Handle(FieldVisionMessage msg)
+        public void HandleMessage(FieldVisionMessage msg)
         {
             offense.Handle(msg);
             System.Threading.Thread.Sleep(100);

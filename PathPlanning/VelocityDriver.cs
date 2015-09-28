@@ -10,7 +10,7 @@ using RFC.Messaging;
 
 namespace RFC.PathPlanning
 {
-    public class VelocityDriver
+    public class VelocityDriver : IMessageHandler<RobotVisionMessage>, IMessageHandler<RobotPathMessage>
     {
         private ServiceManager msngr;
         static int NUM_ROBOTS = ConstantsRaw.get<int>("default", "NUM_ROBOTS");
@@ -80,14 +80,14 @@ namespace RFC.PathPlanning
 
             object lockObject = new object();
             msngr = ServiceManager.getServiceManager();
-            new QueuedMessageHandler<RobotVisionMessage>(handleRobotVisionMessage, lockObject);
-            new QueuedMessageHandler<RobotPathMessage>(handleRobotPathMessage, lockObject);
+            new QueuedMessageHandler<RobotVisionMessage>(this, lockObject);
+            new QueuedMessageHandler<RobotPathMessage>(this, lockObject);
             ServiceManager.getServiceManager().RegisterListener<StopMessage>(handleStopMessage, lockObject);
 
             sw = Stopwatch.StartNew();
         }
 
-        public void handleRobotVisionMessage(RobotVisionMessage rvm)
+        public void HandleMessage(RobotVisionMessage rvm)
         {
             foreach (RobotInfo robot in rvm.GetRobots()) {
                 WheelSpeeds speeds;
@@ -108,7 +108,7 @@ namespace RFC.PathPlanning
             }
         }
 
-        public void handleRobotPathMessage(RobotPathMessage rpm)
+        public void HandleMessage(RobotPathMessage rpm)
         {
             lastPaths.Remove(rpm.Path.ID);
             lastPaths.Add(rpm.Path.ID, rpm.Path);

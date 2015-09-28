@@ -10,7 +10,7 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class SetupTest
+    public class SetupTest : IMessageHandler<FieldVisionMessage>
     {
         Team team;
         ServiceManager msngr;
@@ -32,10 +32,10 @@ namespace RFC.Strategy
             this.bk.reset(new Vector2(1, 0));
             this.pk = new PenaltyKickBehavior(team, goalie);
             this.dk = new KickInBehavior(team, goalie);
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
+            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
         }
 
-        public void Handle(FieldVisionMessage msg)
+        public void HandleMessage(FieldVisionMessage msg)
         {
             //bk.arrange_kick(msg,1,2);
             //pk.Ours(msg);
