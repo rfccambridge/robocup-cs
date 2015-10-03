@@ -45,7 +45,7 @@ namespace RFC.FieldDrawer
     public class FieldDrawer : IMessageHandler<RobotVisionMessage>,
                             IMessageHandler<BallVisionMessage>,
                             IMessageHandler<VisualDebugMessage>,
-                            IMessageHandler<VisualDebugMessage<Lattice<double>>>,
+                            IMessageHandler<VisualDebugMessage<Lattice<Color>>>,
                             IMessageHandler<RobotPathMessage>,
                             IMessageHandler<RobotDestinationMessage>,
                             IMessageHandler<RefboxStateMessage>
@@ -213,11 +213,11 @@ namespace RFC.FieldDrawer
             new QueuedMessageHandler<RobotDestinationMessage>(this, new object());
             new QueuedMessageHandler<RefboxStateMessage>(this, new object());
             new QueuedMessageHandler<VisualDebugMessage>(this, new object());
-            new QueuedMessageHandler<VisualDebugMessage<Lattice<double>>>(this, new object());
+            new QueuedMessageHandler<VisualDebugMessage<Lattice<Color>>>(this, new object());
         }
 
         public void Init(int w, int h)
-        {            
+        {
             GL.ClearColor(Color.DarkGreen);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
@@ -312,8 +312,8 @@ namespace RFC.FieldDrawer
             UpdateRefBoxCmd(msg.PlayType.ToString());
         }
 
-        Lattice<double> last_lattice = null;
-        public void HandleMessage(VisualDebugMessage<Lattice<double>> message)
+        Lattice<Color> last_lattice = null;
+        public void HandleMessage(VisualDebugMessage<Lattice<Color>> message)
         {
             lock (_stateLock)
             {
@@ -520,25 +520,10 @@ namespace RFC.FieldDrawer
             }
         }
 
-        private void drawLattice(Lattice<double> l)
+        private void drawLattice(Lattice<Color> l)
         {
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-
-            double min = Double.PositiveInfinity;
-            double max = Double.NegativeInfinity;
-            foreach (var pair in l)
-            {
-                if (pair.Value < min)
-                {
-                    min = pair.Value;
-                }
-                if (pair.Value > max)
-                {
-                    max = pair.Value;
-                }
-            }
-
             
             for (int i = 0; i < l.Spec.Samples; i++)
             {
@@ -546,7 +531,7 @@ namespace RFC.FieldDrawer
                 {
                     Geometry.Rectangle cell = l.Spec.indexToRect(i, j);
 
-                    Color c = RFC.Utilities.ColorUtils.numToColor(l.Get(i, j), min, max);
+                    Color c = l.Get(i, j);
                     c = Color.FromArgb(c.A / 2, c);
 
                     GL.Begin(BeginMode.Polygon);

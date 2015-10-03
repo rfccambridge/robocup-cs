@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Collections;
+using RFC.Utilities;
 
 namespace RFC.Strategy
 {
@@ -133,7 +134,7 @@ namespace RFC.Strategy
                     double perpdist = dist.perpendicularComponent(currToBall).magnitude();
                     Vector2 robotToBall = ball.Position - rob.Position;
                     
-                    if (perpdist < IGN_THRESH && currToBall.cosineAngleWith(currToBall) > 0 && currToBall * robotToBall > robotToBall * robotToBall)
+                    if (perpdist < IGN_THRESH && currToBall.cosineAngleWith(currToBall) > 0 && currToBall * robotToBall > robotToBall.magnitudeSq())
                     {
                         distSum -= 1 * Math.Exp(-perpdist);
                     }
@@ -186,9 +187,24 @@ namespace RFC.Strategy
         }
 
         // used for debugging drawn maps
-        public void drawMap(Lattice<double> map)
+        public void drawMap(Lattice<double> map, ColorMap colors = null)
         {
-            msngr.SendMessage(new VisualDebugMessage<Lattice<double>>(map));
+            double min = Double.PositiveInfinity;
+            double max = Double.NegativeInfinity;
+            foreach (var pair in map)
+            {
+                if (pair.Value < min)
+                {
+                    min = pair.Value;
+                }
+                if (pair.Value > max)
+                {
+                    max = pair.Value;
+                }
+            }
+            msngr.SendMessage(new VisualDebugMessage<Lattice<Color>>(
+                map.Map(value => (colors ?? ColorMap.Default).Get(value, min, max))
+            ));
         }
 
         private bool isLocalMax(Lattice<double> map, double val, int i, int j)
