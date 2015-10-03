@@ -27,4 +27,15 @@ namespace RFC.Messaging
             this.clear = true;
         }
     }
+
+
+    public class VisualDebugMessage<T> : Message
+    {
+        public T value;
+
+        public VisualDebugMessage(T value)
+        {
+            this.value = value;
+        }
+    }
 }

@@ -6,6 +6,7 @@ using OpenTK.Graphics.OpenGL;
 using RFC.Core;
 using RFC.Geometry;
 using RFC.Messaging;
+using RFC.Utilities;
 
 //Disable warnings about deprecated objects (the GLU classes)
 #pragma warning disable 0612, 0618
@@ -44,6 +45,7 @@ namespace RFC.FieldDrawer
     public class FieldDrawer : IMessageHandler<RobotVisionMessage>,
                             IMessageHandler<BallVisionMessage>,
                             IMessageHandler<VisualDebugMessage>,
+                            IMessageHandler<VisualDebugMessage<Lattice<double>>>,
                             IMessageHandler<RobotPathMessage>,
                             IMessageHandler<RobotDestinationMessage>,
                             IMessageHandler<RefboxStateMessage>
@@ -207,15 +209,18 @@ namespace RFC.FieldDrawer
             msngr = ServiceManager.getServiceManager();
             new QueuedMessageHandler<RobotVisionMessage>(this, new object());
             new QueuedMessageHandler<BallVisionMessage>(this, new object());
-            new QueuedMessageHandler<VisualDebugMessage>(this, new object());
             new QueuedMessageHandler<RobotPathMessage>(this, new object());
             new QueuedMessageHandler<RobotDestinationMessage>(this, new object());
             new QueuedMessageHandler<RefboxStateMessage>(this, new object());
+            new QueuedMessageHandler<VisualDebugMessage>(this, new object());
+            new QueuedMessageHandler<VisualDebugMessage<Lattice<double>>>(this, new object());
         }
 
         public void Init(int w, int h)
         {            
             GL.ClearColor(Color.DarkGreen);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
@@ -305,6 +310,15 @@ namespace RFC.FieldDrawer
         public void HandleMessage(RefboxStateMessage msg)
         {
             UpdateRefBoxCmd(msg.PlayType.ToString());
+        }
+
+        Lattice<double> last_lattice = null;
+        public void HandleMessage(VisualDebugMessage<Lattice<double>> message)
+        {
+            lock (_stateLock)
+            {
+                last_lattice = message.value;
+            }
         }
 
         private void updateProjection()
@@ -481,6 +495,8 @@ namespace RFC.FieldDrawer
             {
                 updateProjection();
                 drawField();
+                if (last_lattice != null)
+                    drawLattice(last_lattice);
                 // TODO actually fix instead of ignore errors--probably fine since this is only used for debugging offense mapping
                 try
                 {
@@ -497,10 +513,50 @@ namespace RFC.FieldDrawer
                 
                 foreach (Team team in Enum.GetValues(typeof(Team)))
                     foreach (RobotDrawingInfo robot in _state.Robots[team].Values)                
-                        drawRobot(robot);             
+                        drawRobot(robot);
 
                 if (_state.Ball != null)
                     drawBall(_state.Ball);
+            }
+        }
+
+        private void drawLattice(Lattice<double> l)
+        {
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+
+            double min = Double.PositiveInfinity;
+            double max = Double.NegativeInfinity;
+            foreach (var pair in l)
+            {
+                if (pair.Value < min)
+                {
+                    min = pair.Value;
+                }
+                if (pair.Value > max)
+                {
+                    max = pair.Value;
+                }
+            }
+
+            
+            for (int i = 0; i < l.Spec.Samples; i++)
+            {
+                for (int j = 0; j < l.Spec.Samples; j++)
+                {
+                    Vector2 lower = l.Spec.indexToVector(i, j);
+                    Vector2 upper = l.Spec.indexToVector(i + 1, j + 1);
+                    Color c = RFC.Utilities.ColorUtils.numToColor(l.Get(i, j), min, max);
+                    c = (c == Color.Black) ? Color.Transparent : Color.FromArgb(128, c);
+
+                    GL.Begin(BeginMode.Polygon);
+                    GL.Color4(c);
+                    GL.Vertex2(lower.X, lower.Y);
+                    GL.Vertex2(lower.X, upper.Y);
+                    GL.Vertex2(upper.X, upper.Y);
+                    GL.Vertex2(upper.X, lower.Y);
+                    GL.End();
+                }
             }
         }
 

@@ -194,26 +194,7 @@ namespace RFC.Strategy
         // used for debugging drawn maps
         public void drawMap(Lattice<double> map)
         {
-            int min = 101;
-            int max = -1;
-
-            foreach (var pair in map)
-            {
-                if (pair.Value < min)
-                {
-                    min = (int)(pair.Value);
-                }
-                if (pair.Value > max)
-                {
-                    max = (int)(pair.Value);
-                }
-            }
-
-            foreach (var pair in map)
-            {
-                //Console.WriteLine("min: " + min + " max: " + max + " map: " + map[i, j]);
-                msngr.vdb(pair.Key, RFC.Utilities.ColorUtils.numToColor(pair.Value, min, max));
-            }
+            msngr.SendMessage(new VisualDebugMessage<Lattice<double>>(map));
         }
 
         private bool isLocalMax(Lattice<double> map, double val, int i, int j)

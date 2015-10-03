@@ -72,6 +72,10 @@
       <Project>{69ae7f48-fff1-46aa-9cf3-b4a9f5fb2d13}</Project>
       <Name>Messaging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{644cf1d1-4066-4e97-a75c-da16e710443e}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FieldDrawerForm.resx">
