@@ -163,8 +163,10 @@ namespace RFC.Strategy
         }
 
         // get best position within zone xi,yi
-        private QuantifiedPosition getBestPosInZone(double[,] map, int zx, int zy)
+        private QuantifiedPosition getBestPosInZone(Lattice<double> lattice, int zx, int zy)
         {
+            double[,] map = (double[,])lattice;
+
             // finding bounds to look in
             int min_xi = zx * map.GetLength(0) / ZONE_NUM;
             int max_xi = (zx + 1) * map.GetLength(0) / ZONE_NUM;
@@ -188,7 +190,7 @@ namespace RFC.Strategy
                 }
             }
 
-            RobotInfo optimal_bouncer = new RobotInfo(offenseMap.indToVec(best_x, best_y), 0, team,-1);
+            RobotInfo optimal_bouncer = new RobotInfo(lattice.Spec.indexToVector(best_x, best_y), 0, team,-1);
             msngr.vdb(optimal_bouncer, Color.White);
             //Console.WriteLine("zx: " + zx + " zy: " + zy + " best_X: " + best_x + " best_y: " + best_y + " vec: " + optimal_bouncer.Position);
             return new QuantifiedPosition(optimal_bouncer, best);
@@ -216,7 +218,7 @@ namespace RFC.Strategy
             var dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball); // map: how good a position is to make a goal shot "where to dribble the ball"
             var passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision); // goal shot map accounting for bounce angle, distance, etc. "where to pass the ball"
 
-            // offenseMap.drawMap(passMap);
+            offenseMap.drawMap(passMap);
 
             // defining ball carrier
             RobotInfo ballCarrier = null;

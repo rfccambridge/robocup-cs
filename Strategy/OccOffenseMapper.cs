@@ -19,19 +19,27 @@ namespace RFC.Strategy
         public readonly int Samples;
 
         /// <returns>the index of the cell containing v</returns>
-        public void vectorToIndex(Vector2 v, out int x, out int y)
+        public void vectorToIndex(Vector2 v, out int x, out int y, out bool inRange)
         {
             double relx = (v.X - Bounds.XMin) / Bounds.Width;
             double rely = (v.Y - Bounds.YMin) / Bounds.Height;
 
-            if (relx < 0 || relx > 1 || rely < 0 || rely > 1) throw new IndexOutOfRangeException();
+            inRange = !(relx < 0 || relx > 1 || rely < 0 || rely > 1);
 
             x = (int)Math.Floor(relx * Samples);
             y = (int)Math.Floor(rely * Samples);
 
             // this deals with the case where the vector lies on the edge
-            if (x >= Samples) x = Samples - 1;
-            if (y >= Samples) y = Samples - 1;
+            if (inRange) {
+                if (x >= Samples) x = Samples - 1;
+                if (y >= Samples) y = Samples - 1;
+            }
+        }
+        public void vectorToIndex(Vector2 v, out int x, out int y)
+        {
+            bool inRange;
+            vectorToIndex(v, out x, out y, out inRange);
+            if(!inRange) throw new IndexOutOfRangeException();
         }
 
         /// <returns>the vector at the center of the cell (x,y)</returns>
@@ -51,12 +59,9 @@ namespace RFC.Strategy
             this.Samples = samples;
         }
 
-
-        /// <summary>
-        /// Calls a function over all points in the lattice
-        /// </summary>
-        /// <param name="filler"></param>
-        public Lattice<T> Create<T>(Func<Vector2, T> filler)
+        /// <summary> Maps a function over all points in the lattice </summary>
+        public Lattice<T> Create<T>(Func<Vector2, T> filler) => Create<T>((v, x, y) => filler(v));
+        public Lattice<T> Create<T>(Func<Vector2, int, int, T> filler)
         {
             Lattice<T> lattice = new Lattice<T>(this);
             for (int i = 0; i < Samples; i++)
@@ -64,10 +69,29 @@ namespace RFC.Strategy
                 for (int j = 0; j < Samples; j++)
                 {
                     Vector2 v = indexToVector(i, j);
-                    lattice.data[i, j] = filler(v);
+                    lattice.data[i, j] = filler(v, i, j);
                 }
             }
             return lattice;
+        }
+
+        /// <summary> Maps a function over all points in the lattice, passing only the raw indices </summary>
+        public Lattice<T> Create<T>(Func<int, int, T> filler)
+        {
+            Lattice<T> lattice = new Lattice<T>(this);
+            for (int i = 0; i < Samples; i++)
+            {
+                for (int j = 0; j < Samples; j++)
+                {
+                    lattice.data[i, j] = filler(i, j);
+                }
+            }
+            return lattice;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("LatticeSpec({}, {})", Bounds, Samples);
         }
     }
 
@@ -90,6 +114,9 @@ namespace RFC.Strategy
             this.data = new T[spec.Samples, spec.Samples];
         }
 
+        /// <summary>
+        /// Access the nearest lattice value to a coordinate. Gives an out of bounds error if the vector is not in Bounds
+        /// </summary>
         public T this[Vector2 pos]
         {
             get
@@ -107,6 +134,15 @@ namespace RFC.Strategy
             }
         }
 
+        /// <summary>
+        /// Raw accessor for underlying double array, with default value
+        /// </summary>
+        public T Get(int x, int y, T def = default(T))
+        {
+            if (x < 0 || x >= Spec.Samples || y < 0 || y >= Spec.Samples) return def;
+            return data[x, y];
+        }
+
         // For ease of iteration / backwards compatibility
         public IEnumerator<KeyValuePair<Vector2, T>> GetEnumerator()
         {
@@ -122,6 +158,29 @@ namespace RFC.Strategy
         {
             return l.data;
         }
+
+        public override String ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Lattice over ");
+            sb.Append(Spec);
+            sb.AppendLine();
+
+            for (int i = 0; i < data.GetLength(0); i++)
+            {
+                for (int j = 0; j < data.GetLength(1); j++)
+                {
+                    sb.AppendFormat("\t{0}", data[i, j]);
+                }
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
+
+        public Lattice<T2> Map<T2>(Func<T, T2> func) => Spec.Create((x, y) => func(data[x, y]));
+        public Lattice<T2> Map<T2>(Func<T, Vector2, T2> func) => Spec.Create((v, x, y) => func(data[x, y], v));
+        public Lattice<T2> Map<T2>(Func<T, int, int, T2> func) => Spec.Create((x, y) => func(data[x, y], x, y));
     }
 
     public class OccOffenseMapper
@@ -170,33 +229,7 @@ namespace RFC.Strategy
                 LAT_NUM
             );
         }
-
-        [Obsolete]
-        public int[] vecToInd(Vector2 v)
-        {
-            int x, y;
-            latticeSpec.vectorToIndex(v, out x, out y);
-            return new int[] { x, y };
-        }
-
-        [Obsolete]
-        public Vector2 indToVec(int i, int j)
-        {
-            return latticeSpec.indexToVector(i, j);
-        }
-
-        public static void printDoubleMatrix(double[,] a)
-        {
-            for (int i = 0; i < a.GetLength(0); i++)
-            {
-                for (int j = 0; j < a.GetLength(1); j++)
-                {
-                    Console.Write(string.Format("{0} ", a[i, j]));
-                }
-                Console.Write(Environment.NewLine + Environment.NewLine);
-            }
-        }
-
+        
         private static double normalize(double score)
         {
             // values might be too small as Double.MaxValue is super big...
@@ -353,35 +386,31 @@ namespace RFC.Strategy
             }
         }
 
-        // Nonmax suppression
-        public double[,] nonMaxSupression(double[,] map)
+        private bool isLocalMax(Lattice<double> map, double val, int i, int j)
         {
-            double[,] result = new double[map.GetLength(0),map.GetLength(1)];
+            if (val < map.Get(i + 1, j + 0, Double.NegativeInfinity))
+                return false;
+            if (val < map.Get(i + 1, j - 1, Double.NegativeInfinity))
+                return false;
+            if (val < map.Get(i + 0, j - 1, Double.NegativeInfinity))
+                return false;
+            if (val < map.Get(i - 1, j - 1, Double.NegativeInfinity))
+                return false;
+            if (val < map.Get(i - 1, j + 0, Double.NegativeInfinity))
+                return false;
+            if (val < map.Get(i - 1, j + 1, Double.NegativeInfinity))
+                return false;
+            if (val < map.Get(i + 0, j + 1, Double.NegativeInfinity))
+                return false;
+            if (val < map.Get(i + 1, j + 1, Double.NegativeInfinity))
+                return false;
+            return true;
+        }
 
-            for (int i = 1; i < map.GetLength(0) - 1; i++)
-            {
-                for (int j = 1; j < map.GetLength(1) -1; j++)
-                {
-                    if (map[i, j] < map[i - 1, j])
-                        break;
-                    if (map[i, j] < map[i + 1, j])
-                        break;
-                    if (map[i, j] < map[i - 1, j - 1])
-                        break;
-                    if (map[i, j] < map[i - 0, j - 1])
-                        break;
-                    if (map[i, j] < map[i + 1, j - 1])
-                        break;
-                    if (map[i, j] < map[i - 1, j + 1])
-                        break;
-                    if (map[i, j] < map[i - 0, j + 1])
-                        break;
-                    if (map[i, j] < map[i + 1, j + 1])
-                        break;
-                    result[i, j] = map[i, j];
-                }
-            }
-            return result;
+        // Nonmax suppression
+        public Lattice<double> nonMaxSupression(Lattice<double> map)
+        {
+            return map.Map((val, i, j) => isLocalMax(map, val, i, j) ? val : 0);
         }
 
         // get list from Nonmax supression
@@ -396,23 +425,8 @@ namespace RFC.Strategy
                 for (int j = 1; j < rawMap.GetLength(1) - 1; j++)
                 {
                     double curr = rawMap[i, j];
-                    if (curr <= rawMap[i - 1, j])
-                        continue;
-                    if (curr <= rawMap[i + 1, j])
-                        continue;
-                    if (curr <= rawMap[i - 1, j - 1])
-                        continue;
-                    if (curr <= rawMap[i - 0, j - 1])
-                        continue;
-                    if (curr <= rawMap[i + 1, j - 1])
-                        continue;
-                    if (curr <= rawMap[i - 1, j + 1])
-                        continue;
-                    if (curr <= rawMap[i - 0, j + 1])
-                        continue;
-                    if (curr <= rawMap[i + 1, j + 1])
-                        continue;
-                    maxima.Add(new QuantifiedPosition(new RobotInfo(map.Spec.indexToVector(i, j), 0, team, 0), curr));
+                    if(isLocalMax(map, curr, i, j))
+                        maxima.Add(new QuantifiedPosition(new RobotInfo(map.Spec.indexToVector(i, j), 0, team, 0), curr));
                     //msngr.vdb(indToVec(i, j), Color.White);
 
                 }
