@@ -10,7 +10,7 @@ namespace RFC.Utilities
     {
         // from lowest to highest
         private static Color[] colors = {
-            Color.Black,
+            Color.FromArgb(0, 0, 0, 0),
             Color.DarkRed,
             Color.Red,
             Color.OrangeRed,
@@ -26,11 +26,22 @@ namespace RFC.Utilities
         {
             double f = (num - min) / (max - min);
 
-            int idx = (int)(f * colors.Length);
-            if (idx < 0) idx = 0;
-            if (idx >= colors.Length) idx = colors.Length - 1;
+            double didx = f * (colors.Length - 1);
 
-            return colors[idx];
+            int idx = (int) didx;
+            if (idx < 0) idx = 0;
+            if (idx > colors.Length - 2) idx = colors.Length - 2;
+
+            Color c1 = colors[idx];
+            Color c2 = colors[idx + 1];
+            double p = didx - idx;
+
+            return Color.FromArgb(
+                (int)(c1.A * (1 - p) + c2.A * p),
+                (int)(c1.R * (1 - p) + c2.R * p),
+                (int)(c1.G * (1 - p) + c2.G * p),
+                (int)(c1.B * (1 - p) + c2.B * p)
+            );
         }
     }
 }

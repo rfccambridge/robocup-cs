@@ -547,7 +547,7 @@ namespace RFC.FieldDrawer
                     Geometry.Rectangle cell = l.Spec.indexToRect(i, j);
 
                     Color c = RFC.Utilities.ColorUtils.numToColor(l.Get(i, j), min, max);
-                    c = (c == Color.Black) ? Color.Transparent : Color.FromArgb(128, c);
+                    c = Color.FromArgb(c.A / 2, c);
 
                     GL.Begin(BeginMode.Polygon);
                     GL.Color4(c);
