@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.glField = new OpenTK.GLControl();
+            this.glField = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
             this.panGameStatus = new System.Windows.Forms.Panel();
             this.lblPlayName = new System.Windows.Forms.Label();
             this.lblControllerDuration = new System.Windows.Forms.Label();
