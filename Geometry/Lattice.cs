@@ -47,6 +47,18 @@ namespace RFC.Geometry
             );
         }
 
+        /// <returns>the rectangle for the cell (x,y)</returns>
+        public Rectangle indexToRect(int x, int y)
+        {
+            return new Rectangle(
+                this.Bounds.XMin + this.Bounds.Width * (x) / Samples,
+                this.Bounds.XMin + this.Bounds.Width * (x + 1) / Samples,
+                this.Bounds.YMin + this.Bounds.Height * (y) / Samples,
+                this.Bounds.YMin + this.Bounds.Height * (y + 1) / Samples
+            );
+        }
+
+
 
         public LatticeSpec(Rectangle bounds, int samples)
         {

@@ -544,17 +544,17 @@ namespace RFC.FieldDrawer
             {
                 for (int j = 0; j < l.Spec.Samples; j++)
                 {
-                    Vector2 lower = l.Spec.indexToVector(i, j);
-                    Vector2 upper = l.Spec.indexToVector(i + 1, j + 1);
+                    Geometry.Rectangle cell = l.Spec.indexToRect(i, j);
+
                     Color c = RFC.Utilities.ColorUtils.numToColor(l.Get(i, j), min, max);
                     c = (c == Color.Black) ? Color.Transparent : Color.FromArgb(128, c);
 
                     GL.Begin(BeginMode.Polygon);
                     GL.Color4(c);
-                    GL.Vertex2(lower.X, lower.Y);
-                    GL.Vertex2(lower.X, upper.Y);
-                    GL.Vertex2(upper.X, upper.Y);
-                    GL.Vertex2(upper.X, lower.Y);
+                    GL.Vertex2(cell.XMin, cell.YMin);
+                    GL.Vertex2(cell.XMin, cell.YMax);
+                    GL.Vertex2(cell.XMax, cell.YMax);
+                    GL.Vertex2(cell.XMax, cell.YMin);
                     GL.End();
                 }
             }
