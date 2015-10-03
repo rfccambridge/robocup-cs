@@ -10,7 +10,7 @@ namespace RFC.Geometry
     /// of the plane, when facing along the direction of the line. 
     /// A half-plane does not contain the points on the boundary itself.
     /// </summary>
-    public class Rectangle : Geom
+    public class Rectangle : AreaGeom
     {
         /// <summary>
         /// The left boundary of this rectangle

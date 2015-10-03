@@ -21,4 +21,8 @@ namespace RFC.Geometry
         Geom rotateAroundPoint(Vector2 p, double angle);
     }
 
+    public interface AreaGeom : Geom
+    {
+        bool contains(Vector2 p);
+    }
 }
