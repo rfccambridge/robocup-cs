@@ -8,49 +8,29 @@ namespace RFC.Utilities
 {
     public class ColorUtils
     {
+        // from lowest to highest
+        private static Color[] colors = {
+            Color.Black,
+            Color.DarkRed,
+            Color.Red,
+            Color.OrangeRed,
+            Color.Orange,
+            Color.Yellow,
+            Color.GreenYellow,
+            Color.Green,
+            Color.DarkCyan,
+            Color.Blue
+        };
+
         public static Color numToColor(double num, double min, double max)
         {
-            double n = 10.0;
-            if (num < min + (max - min) / n)
-            {
-                return Color.Black;
-            }
-            else if (num < min + 2.0 * (max - min) / n)
-            {
-                return Color.DarkRed;
-            }
-            else if (num < min + 3.0 * (max - min) / n)
-            {
-                return Color.Red;
-            }
-            else if (num < min + 4.0 * (max - min) / n)
-            {
-                return Color.OrangeRed;
-            }
-            else if (num < min + 5.0 * (max - min) / n)
-            {
-                return Color.Orange;
-            }
-            else if (num < min + 6.0 * (max - min) / n)
-            {
-                return Color.Yellow;
-            }
-            else if (num < min + 7.0 * (max - min) / n)
-            {
-                return Color.GreenYellow;
-            }
-            else if (num < min + 8.0 * (max - min) / n)
-            {
-                return Color.Green;
-            }
-            else if (num < min + 9.0 * (max - min) / n)
-            {
-                return Color.DarkCyan;
-            }
-            else
-            {
-                return Color.Blue;
-            }
+            double f = (num - min) / (max - min);
+
+            int idx = (int)(f * colors.Length);
+            if (idx < 0) idx = 0;
+            if (idx >= colors.Length) idx = colors.Length - 1;
+
+            return colors[idx];
         }
     }
 }
