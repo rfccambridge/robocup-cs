@@ -125,6 +125,10 @@ namespace RFC.Messaging
         {
             SendMessage<VisualDebugMessage>(new VisualDebugMessage(r,c));
         }
+        public void vdb(Lattice<Color> latt)
+        {
+            SendMessage<VisualDebugMessage<Lattice<Color>>>(new VisualDebugMessage<Lattice<Color>>(latt));
+        }
         public void vdbClear()
         {
             SendMessage<VisualDebugMessage>(new VisualDebugMessage());

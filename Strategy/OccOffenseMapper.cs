@@ -186,27 +186,6 @@ namespace RFC.Strategy
             });
         }
 
-        // used for debugging drawn maps
-        public void drawMap(Lattice<double> map, ColorMap colors = null)
-        {
-            double min = Double.PositiveInfinity;
-            double max = Double.NegativeInfinity;
-            foreach (var pair in map)
-            {
-                if (pair.Value < min)
-                {
-                    min = pair.Value;
-                }
-                if (pair.Value > max)
-                {
-                    max = pair.Value;
-                }
-            }
-            msngr.SendMessage(new VisualDebugMessage<Lattice<Color>>(
-                map.Map(value => (colors ?? ColorMap.Default).Get(value, min, max))
-            ));
-        }
-
         private bool isLocalMax(Lattice<double> map, double val, int i, int j)
         {
             if (val < map.Get(i + 1, j + 0, Double.NegativeInfinity))

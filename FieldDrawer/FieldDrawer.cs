@@ -530,9 +530,7 @@ namespace RFC.FieldDrawer
                 for (int j = 0; j < l.Spec.Samples; j++)
                 {
                     Geometry.Rectangle cell = l.Spec.indexToRect(i, j);
-
                     Color c = l.Get(i, j);
-                    c = Color.FromArgb(c.A / 2, c);
 
                     GL.Begin(BeginMode.Polygon);
                     GL.Color4(c);

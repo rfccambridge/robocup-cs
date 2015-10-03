@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using RFC.Utilities;
 
 namespace RFC.Strategy
 {
@@ -218,7 +219,15 @@ namespace RFC.Strategy
             var dribMap = offenseMap.getDrib(ourTeam, theirTeam, ball); // map: how good a position is to make a goal shot "where to dribble the ball"
             var passMap = offenseMap.getPass(ourTeam, theirTeam, ball, fieldVision); // goal shot map accounting for bounce angle, distance, etc. "where to pass the ball"
 
-            offenseMap.drawMap(passMap);
+            {
+                // draw one map in red and the other in blue
+                var debugPass = new ColorMap(Color.Red).Get(passMap);
+                var debugDrib = new ColorMap(Color.Blue).Get(dribMap);
+                var debugmap = dribMap.Spec.Create(
+                    (i, j) => ColorUtils.MixAdditive(debugPass.Get(i, j), debugDrib.Get(i, j))
+                );
+                msngr.vdb(debugmap);
+            }
 
             // defining ball carrier
             RobotInfo ballCarrier = null;

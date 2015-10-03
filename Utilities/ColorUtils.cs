@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using RFC.Utilities;
+using RFC.Geometry;
 
 namespace RFC.Utilities
 {
@@ -77,6 +78,24 @@ namespace RFC.Utilities
         {
             return Get((val - min) / (max - min));
         }
+
+        public Lattice<Color> Get(Lattice<double> map)
+        {
+            double min = Double.PositiveInfinity;
+            double max = Double.NegativeInfinity;
+            foreach (var pair in map)
+            {
+                if (pair.Value < min)
+                {
+                    min = pair.Value;
+                }
+                if (pair.Value > max)
+                {
+                    max = pair.Value;
+                }
+            }
+            return map.Map(value => this.Get(value, min, max));
+        }
     }
     
     public static class ColorUtils
@@ -90,8 +109,8 @@ namespace RFC.Utilities
                 (int)(c1.B * (1 - p) + c2.B * p)
             );
         }
-
-        public static Color mix(this Color[] colors)
+        
+        public static Color Mean(params Color[] colors)
         {
             int a = 0, r = 0, g = 0, b = 0;
             foreach(Color c in colors)
@@ -103,6 +122,27 @@ namespace RFC.Utilities
             }
             int n = colors.Count();
             return Color.FromArgb(a / n, r / n, g / n, b / n);
+        }
+
+        public static Color MixAdditive(params Color[] colors)
+        {
+            int a = 0, r = 0, g = 0, b = 0;
+            foreach (Color c in colors)
+            {
+                a += c.A;
+                r += c.R * c.A;
+                g += c.G * c.A;
+                b += c.B * c.A;
+            }
+            int n = colors.Count();
+            int a_mean = a / n;
+            if (a_mean == 0) return Color.Transparent;
+            return Color.FromArgb(
+                Math.Min(a_mean, 255),
+                Math.Min(r / a_mean, 255),
+                Math.Min(g / a_mean, 255),
+                Math.Min(b / a_mean, 255)
+            );
         }
 
         [Obsolete("Use ColorMap.Get instead")]
