@@ -154,13 +154,7 @@ namespace RFC.Strategy
                     distScore = 0;
 
                 // account for distance to our robots
-                double minRobotDist = 100.0;
-                foreach (RobotInfo rob in ourTeam)
-                {
-                    double robotDist = (rob.Position - pos).magnitude();
-                    if (robotDist < minRobotDist)
-                        minRobotDist = robotDist;
-                }
+                double minRobotDist = ourTeam.Min(rob => (rob.Position - pos).magnitude());
                 double robDistScore = Math.Exp(-minRobotDist);
 
                 // calculate bounce score
