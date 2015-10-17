@@ -76,5 +76,10 @@ namespace RFC.Geometry
         {
             return "RobotShape[" + Arc + ", " + Segment + "]";
         }
+        
+        public override double distance(Vector2 p)
+        {
+            return Math.Min(Arc.distance(p), Segment.distance(p));
+        }
     }
 }

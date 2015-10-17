@@ -168,5 +168,9 @@ namespace RFC.Geometry
             return "Arc(" + Center + ", " + Radius + "," + (AngleStart/TWOPI) + "*2pi, " + (AngleStop/TWOPI) + "*2pi)";
         }
 
+        public override double distance(Vector2 p)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RFC.Geometry
 {
-    public class Circle : AreaGeom
+    public class Circle : Geom<Circle>
     {
         public Vector2 Center { get; private set; }
         public double Radius { get; private set; }
@@ -63,32 +63,32 @@ namespace RFC.Geometry
         /// <summary>
         /// Returns the translation of this circle by the given vector.
         /// </summary>
-        public Circle translate(Vector2 v)
+        public override Circle translate(Vector2 v)
         {
             return this + v;
         }
-        Geom Geom.translate(Vector2 v)
-        { return translate(v); }
 
         /// <summary>
         /// Returns a circle that is this circle rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public Circle rotateAroundPoint(Vector2 p, double angle)
+        public override Circle rotateAroundPoint(Vector2 p, double angle)
         {
             return new Circle(Center.rotateAroundPoint(p, angle), Radius);
         }
-        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
-        { return rotateAroundPoint(p, angle); }
 
         /// <summary>
         /// Checks if this circle contains the given point. Points on the boundary are considered contained.
         /// </summary>
-        public bool contains(Vector2 p)
+        public override bool contains(Vector2 p)
         {
             return p.distanceSq(Center) <= Radius * Radius;
         }
 
+        public override double distance(Vector2 p)
+        {
+            return p.distance(Center);
+        }
 
         public override string ToString()
         {

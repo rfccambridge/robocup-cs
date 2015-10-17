@@ -10,7 +10,7 @@ namespace RFC.Geometry
     /// of the plane, when facing along the direction of the line. 
     /// A half-plane does not contain the points on the boundary itself.
     /// </summary>
-    public class Rectangle : AreaGeom
+    public class Rectangle : Geom<Rectangle>
     {
         /// <summary>
         /// The left boundary of this rectangle
@@ -135,22 +135,18 @@ namespace RFC.Geometry
         /// <summary>
         /// Returns the translation of this rectangle by the given vector.
         /// </summary>
-        public Rectangle translate(Vector2 v)
+        public override Rectangle translate(Vector2 v)
         {
             return this + v;
         }
-        Geom Geom.translate(Vector2 v)
-        { return translate(v); }
 
         /// <summary>
         /// Not implemented
         /// </summary>
-        public Rectangle rotateAroundPoint(Vector2 p, double angle)
+        public override Rectangle rotateAroundPoint(Vector2 p, double angle)
         {
             throw new NotImplementedException();
         }
-        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
-        { return rotateAroundPoint(p, angle); }
 
 
         /// <summary>
@@ -176,6 +172,11 @@ namespace RFC.Geometry
                 return minXLeft ? new Vector2(-1, 0) : new Vector2(1, 0);
             else
                 return minYDown ? new Vector2(0, -1) : new Vector2(0, 1);
+        }
+
+        public override double distance(Vector2 p)
+        {
+            throw new NotImplementedException();
         }
     }
 }

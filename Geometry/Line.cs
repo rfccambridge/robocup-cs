@@ -87,7 +87,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Computes the minimum distance between this line and a point
         /// </summary>
-        public double distance(Vector2 p)
+        public override double distance(Vector2 p)
         {
             double mag = P1.distance(P0);
             double crossp = Vector2.crossproduct(P0, P1, p);
@@ -282,7 +282,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Computes the minimum distance between this line segment and a point
         /// </summary>
-        public double distance(Vector2 p)
+        public override double distance(Vector2 p)
         {
             if (Vector2.dotproduct(l.P0, l.P1, p) < 0)
                 return l.P1.distance(p);
