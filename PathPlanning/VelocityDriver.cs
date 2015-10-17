@@ -192,30 +192,33 @@ namespace RFC.PathPlanning
             //Find the point we should head towards
             for (idx = 1; idx < path.Waypoints.Count; idx++)
             {
+                var wA = path.Waypoints[idx-1];
+                var wB = path.Waypoints[idx];
+
                 //End of the path? Then that's where we're going
                 if (idx == path.Waypoints.Count - 1)
                 {
-                    nextWaypoint = path.Waypoints[idx];
+                    nextWaypoint = wB;
                     nextWaypointIdx = idx;
                     break;
                 }
 
                 //Must be different from us
-                if (path.Waypoints[idx].Position.distanceSq(curInfo.Position) <= 1e-10)
+                if (wB.Position.distanceSq(curInfo.Position) <= 1e-10)
                 {
                     continue;
                 }
 
                 //If we're too far along the path to this waypoint from the previous, then move to the next again.
-                double distAlongTimesDistSegment = (curInfo.Position - path.Waypoints[idx - 1].Position) * (path.Waypoints[idx].Position - path.Waypoints[idx - 1].Position);
-                double distSegmentSq = path.Waypoints[idx].Position.distanceSq(path.Waypoints[idx - 1].Position);
+                double distAlongTimesDistSegment = (curInfo.Position - wA.Position) * (wB.Position - wA.Position);
+                double distSegmentSq = wB.Position.distanceSq(wA.Position);
                 if (distAlongTimesDistSegment >= 0.75 * distSegmentSq)
                 {
                     continue;
                 }
 
                 //Otherwise, we stop here
-                nextWaypoint = path.Waypoints[idx];
+                nextWaypoint = wB;
                 nextWaypointIdx = idx;
                 break;
             }
