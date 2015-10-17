@@ -103,7 +103,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Tests if the given point lies within this rectangle. Points on the boundary are considered contained.
         /// </summary>
-        public bool contains(Vector2 p)
+        public override bool contains(Vector2 p)
         {
             return p.X >= XMin && p.X <= XMax && p.Y >= YMin && p.Y <= YMax;
         }
