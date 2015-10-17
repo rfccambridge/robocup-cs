@@ -10,7 +10,7 @@ namespace RFC.Geometry
     /// they will essentially behave like circles, or negative angles, in which case the arc will go clockwise 
     /// instead of counterclockwise.
     /// </summary>
-    public class Arc : Geom
+    public class Arc : Geom<Arc>
     {
         const double TWOPI = Geometry.Angle.TWOPI;
 
@@ -124,25 +124,20 @@ namespace RFC.Geometry
         /// <summary>
         /// Returns the translation of this arc by the given vector.
         /// </summary>
-        public Arc translate(Vector2 v)
+        public override Arc translate(Vector2 v)
         {
             return this + v;
         }
-        Geom Geom.translate(Vector2 v)
-        { return translate(v); }
-
         /// <summary>
         /// Returns an arc that is this arc rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public Arc rotateAroundPoint(Vector2 p, double angle)
+        public override Arc rotateAroundPoint(Vector2 p, double angle)
         {
             return new Arc(Center.rotateAroundPoint(p,angle), Radius, 
                 AngleStart + angle, AngleStop + angle, 
                 StartPt.rotateAroundPoint(p,angle), StopPt.rotateAroundPoint(p,angle));
         }
-        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
-        { return rotateAroundPoint(p, angle); }
 
         /// <summary>
         /// Checks if this arc is essentially a circle (because its angle is >= 2Pi).

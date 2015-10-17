@@ -21,6 +21,12 @@ namespace RFC.Geometry
         Geom rotateAroundPoint(Vector2 p, double angle);
     }
 
+    public abstract class Geom<T> : Geom where T : Geom<T>
+    {
+        public abstract T translate(Vector2 v);
+        public abstract T rotateAroundPoint(Vector2 p, double angle);
+    }
+
     public interface AreaGeom : Geom
     {
         bool contains(Vector2 p);

@@ -9,7 +9,7 @@ namespace RFC.Geometry
     /// for intersections and distances, the line is treated as infinitely extended in both directions.
     /// For a line segment, see LineSegment.
     /// </summary>
-    public class Line : Geom
+    public class Line : Geom<Line>
     {
         /// <summary>
         /// The starting point defining this line
@@ -138,23 +138,19 @@ namespace RFC.Geometry
         /// <summary>
         /// Returns the translation of this line by the given vector.
         /// </summary>
-        public Line translate(Vector2 v)
+        public override Line translate(Vector2 v)
         {
             return this + v;
         }
-        Geom Geom.translate(Vector2 v)
-        {return translate(v);}
 
         /// <summary>
         /// Returns a line that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public Line rotateAroundPoint(Vector2 p, double angle)
+        public override Line rotateAroundPoint(Vector2 p, double angle)
         {
             return new Line(P0.rotateAroundPoint(p, angle), P1.rotateAroundPoint(p, angle));
         }
-        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
-        { return rotateAroundPoint(p, angle); }
 
         /// <summary>
         /// Checks if this line is parallel OR antiparallel to l.
@@ -186,7 +182,7 @@ namespace RFC.Geometry
     /// <summary>
     /// A line segment.
     /// </summary>
-    public class LineSegment : Geom
+    public class LineSegment : Geom<LineSegment>
     {
         private Line l;
 
@@ -300,23 +296,19 @@ namespace RFC.Geometry
         /// <summary>
         /// Returns the translation of this line segment by the given vector.
         /// </summary>
-        public LineSegment translate(Vector2 v)
+        public override LineSegment translate(Vector2 v)
         {
             return this + v;
         }
-        Geom Geom.translate(Vector2 v)
-        { return translate(v); }
 
         /// <summary>
         /// Returns a line segment that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public LineSegment rotateAroundPoint(Vector2 p, double angle)
+        public override LineSegment rotateAroundPoint(Vector2 p, double angle)
         {
             return new LineSegment(l.rotateAroundPoint(p, angle));
         }
-        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
-        { return rotateAroundPoint(p, angle); }
 
 
         public override string ToString()

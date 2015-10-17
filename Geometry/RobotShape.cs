@@ -8,7 +8,7 @@ namespace RFC.Geometry
     /// <summary>
     /// A robot shape. Circular arc, with a flat front part.
     /// </summary>
-    public class RobotShape : Geom
+    public class RobotShape : Geom<RobotShape>
     {
         public Arc Arc { get; private set; }
         public LineSegment Segment { get; private set; }
@@ -57,23 +57,19 @@ namespace RFC.Geometry
         /// <summary>
         /// Returns the translation of this line segment by the given vector.
         /// </summary>
-        public RobotShape translate(Vector2 v)
+        public override RobotShape translate(Vector2 v)
         {
             return this + v;
         }
-        Geom Geom.translate(Vector2 v)
-        { return translate(v); }
 
         /// <summary>
         /// Returns a line segment that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public RobotShape rotateAroundPoint(Vector2 p, double angle)
+        public override RobotShape rotateAroundPoint(Vector2 p, double angle)
         {
             return new RobotShape(Arc.rotateAroundPoint(p, angle), Segment.rotateAroundPoint(p, angle));
         }
-        Geom Geom.rotateAroundPoint(Vector2 p, double angle)
-        { return rotateAroundPoint(p, angle); }
 
 
         public override string ToString()
