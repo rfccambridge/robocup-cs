@@ -47,7 +47,6 @@
     <Compile Include="KickPlanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmoothRRTPlanner.cs" />
-    <Compile Include="StateChecker.cs" />
     <Compile Include="TwoDTreeMap.cs" />
     <Compile Include="VelocityDriver.cs" />
   </ItemGroup>

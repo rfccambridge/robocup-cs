@@ -33,7 +33,7 @@ namespace RFC.Strategy
 
     public class OffenseStrategy
     {
-        public StateChecker sc;
+        public List<Geom> stateCheck;
         public enum State { Normal, Shot, BounceShot };
         private State state;
 
@@ -282,9 +282,9 @@ namespace RFC.Strategy
                 // Console.WriteLine("switching to bounce shot");
                 LineSegment between = new LineSegment(shootingRobot.Position, (bouncingRobot.Position - shootingRobot.Position).cartesianAngle());
                 LineSegment toGoal = new LineSegment(bouncingRobot.Position, Shot1.evaluate(fieldVision, team, bouncingRobot.Position).target - bouncingRobot.Position);
-                sc = new StateChecker();
-                sc.addRule(between, Constants.Basic.ROBOT_RADIUS * 5);
-                sc.addRule(toGoal, Constants.Basic.ROBOT_RADIUS * 5);
+                stateCheck = new List<Geom>();
+                stateCheck.Add(between.offset(Constants.Basic.ROBOT_RADIUS * 5));
+                stateCheck.Add(toGoal.offset(Constants.Basic.ROBOT_RADIUS * 5));
                 playStartTime = DateTime.Now;
             }
             /*
@@ -490,9 +490,10 @@ namespace RFC.Strategy
         public void bounceShotPlay(FieldVisionMessage fieldVision)
         {
             // escape back to normal play
-            if ((int)(DateTime.Now - playStartTime).TotalMilliseconds >= BSHOT_TIMEOUT || !sc.check(fieldVision.Ball.Position))
+            bool ballInRange = stateCheck.contains(fieldVision.Ball.Position);
+            if ((DateTime.Now - playStartTime).TotalMilliseconds >= BSHOT_TIMEOUT || !ballInRange)
             {
-                if (!sc.check(fieldVision.Ball.Position)) Console.WriteLine("TOO FAR");
+                if (!ballInRange) Console.WriteLine("TOO FAR");
                 state = State.Normal;
                 Console.WriteLine("timed out of bounce shot");
                 this.playStartTime = DateTime.Now;
