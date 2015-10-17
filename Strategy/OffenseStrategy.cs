@@ -60,9 +60,9 @@ namespace RFC.Strategy
         private const double BSHOT_THRESH = Double.MaxValue;
 
         // how long should a play continue before it times out (in milliseconds)?
-        private const int SHOT_TIMEOUT = 2000;
-        private const int BSHOT_TIMEOUT = 10000;
-        private const int NORMAL_TIMEOUT = 10000; // then start decreasing thresholds
+        private const double SHOT_TIMEOUT = 2000;
+        private const double BSHOT_TIMEOUT = 10000;
+        private const double NORMAL_TIMEOUT = 10000; // then start decreasing thresholds
 
         // when did the current play start executing?
         private DateTime playStartTime;
@@ -199,7 +199,7 @@ namespace RFC.Strategy
 
         private double adjust_thresh(double thresh)
         {
-            int time = (int)(DateTime.Now - playStartTime).TotalMilliseconds;
+            double time = (DateTime.Now - playStartTime).TotalMilliseconds;
             double ratio = (NORMAL_TIMEOUT - time) / NORMAL_TIMEOUT;
             return ratio * thresh;
         }
@@ -466,7 +466,7 @@ namespace RFC.Strategy
         public void shotPlay(FieldVisionMessage fieldVision)
         {
             // escaping back to normal play
-            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN || (int)(DateTime.Now - playStartTime).TotalMilliseconds >= SHOT_TIMEOUT)
+            if (shootingRobot.Position.distance(fieldVision.Ball.Position) > BALL_HANDLE_MIN || (DateTime.Now - playStartTime).TotalMilliseconds >= SHOT_TIMEOUT)
             {
                 Console.WriteLine("timed out of shotplay");
                 state = State.Normal;
