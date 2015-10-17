@@ -37,6 +37,7 @@
     <Compile Include="Geom.cs" />
     <Compile Include="Intersections.cs" />
     <Compile Include="Line.cs" />
+    <Compile Include="OffsetGeom.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="RobotShape.cs" />
     <Compile Include="Test.cs" />

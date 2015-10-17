@@ -47,11 +47,22 @@ namespace RFC.Geometry
         }
     }
 
-    public static class GeomExtensions
+    public static partial class GeomExtensions
     {
+        /// <summary>
+        /// Returns the shortest distance to any geometry in the list
+        /// </summary>
         public static double distance(this IEnumerable<Geom> list, Vector2 p)
         {
             return list.Min(g => g.distance(p));
+        }
+
+        /// <summary>
+        /// Returns whether any geometry in the list contains the point
+        /// </summary>
+        public static bool contains(this IEnumerable<Geom> list, Vector2 p)
+        {
+            return list.Any(g => g.contains(p));
         }
     }
 }
