@@ -8,29 +8,25 @@ using RFC.Core;
 
 namespace RFC.Strategy
 {
-    /*
-     * A StateChecker is used to determine whether the field is still within a given configuration
-     * It is initialized with some geometric constraints, and the position of the ball is checked
-     * against those constraints. If at least one condition is met, it returns true, else false.
-     * 
-     * Currently supports circles and line segments
-     */
+    /// <summary>
+    /// A StateChecker is used to determine whether the field is still within a given configuration
+    /// It is initialized with some geometric constraints, and the position of the ball is checked
+    /// against those constraints. If at least one condition is met, it returns true, else false.
+    ///
+    /// Currently supports circles and line segments
+    /// </summary>
     public class StateChecker
     {
         List<Geom> rules;
         List<double> ranges;
 
-        public StateChecker(Circle rule)
+        public StateChecker(Circle rule) : this()
         {
-            this.rules = new List<Geom>();
-            this.ranges = new List<double>();
             addRule(rule);
         }
 
-        public StateChecker(LineSegment line, double range)
+        public StateChecker(LineSegment line, double range) : this()
         {
-            this.rules = new List<Geom>();
-            this.ranges = new List<double>();
             addRule(line, range);
         }
 
