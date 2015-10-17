@@ -9,7 +9,7 @@ namespace RFC.Geometry
     /// An immutable class that represents a point in 2D space, or a vector in 2D space.
     /// </summary>
     [Serializable]
-    public class Vector2
+    public class Vector2 : IEquatable<Vector2>
     {
         private readonly double x;
 
