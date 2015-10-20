@@ -22,7 +22,7 @@ namespace RFC.InterProcessMessaging
                     throw new ConnectionRefusedException("the connection was refused", e);
                 }
                 else
-                    throw e;
+                    throw;
             }
         }
         public void Post(T t)
@@ -65,7 +65,7 @@ namespace RFC.InterProcessMessaging
                     throw new ConnectionRefusedException("the connection was refused", e);
                 }
                 else
-                    throw e;
+                    throw;
             }
         }
         object receive_lock = new object();

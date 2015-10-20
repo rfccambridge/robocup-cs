@@ -32,7 +32,7 @@ namespace RFC.InterProcessMessaging
                     {
                         SocketException se = e.InnerException as SocketException;
                         if (se == null)
-                            throw e;
+                            throw;
                         if (se.SocketErrorCode == SocketError.ConnectionReset
                              || se.SocketErrorCode == SocketError.ConnectionAborted)
                         {
@@ -41,7 +41,7 @@ namespace RFC.InterProcessMessaging
                                 OnDone.BeginInvoke(this, null, null);
                         }
                         else
-                            throw e;
+                            throw;
                     }
                 }
             }
@@ -96,7 +96,7 @@ namespace RFC.InterProcessMessaging
                 {
                     SocketException inner = e.InnerException as SocketException;
                     if (inner == null)
-                        throw e;
+                        throw;
                     if (inner.SocketErrorCode == SocketError.ConnectionReset ||
                         inner.SocketErrorCode == SocketError.Interrupted)
                     {
@@ -104,7 +104,7 @@ namespace RFC.InterProcessMessaging
                             OnDone.BeginInvoke(this, null, null);
                         return;
                     }
-                    throw e;
+                    throw;
                 }
                 if (MessageReceived != null)
                     MessageReceived(obj);
