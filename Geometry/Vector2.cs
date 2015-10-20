@@ -11,25 +11,15 @@ namespace RFC.Geometry
     [Serializable]
     public class Vector2 : IEquatable<Vector2>
     {
-        private readonly double x;
-
         /// <summary>
         /// The x-coordinate of this vector
         /// </summary>
-        public double X
-        {
-            get { return x; }
-        }
-
-        private readonly double y;
-
+        public double X { get; }
+        
         /// <summary>
         /// The y-coordinate of this vector
         /// </summary>
-        public double Y
-        {
-            get { return y; }
-        }
+        public double Y { get; }
 
         /// <summary>
         /// Creates a zero Vector2
@@ -43,8 +33,8 @@ namespace RFC.Geometry
         /// <param name="y">the y-coordinate</param>
         public Vector2(double x, double y)
         {
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
         }
 
         /// <summary>
@@ -53,8 +43,8 @@ namespace RFC.Geometry
         /// <param name="theta">the angle in radians</param>
         public Vector2(double theta)
         {
-            this.x = Math.Cos(theta);
-            this.y = Math.Sin(theta);
+            this.X = Math.Cos(theta);
+            this.Y = Math.Sin(theta);
         }
 
         /// <summary>
@@ -196,11 +186,8 @@ namespace RFC.Geometry
         {
             if (p2 == null)
                 return double.PositiveInfinity;
-            //less safe but faster?:
-            //return (x - p2.x) * (x - p2.x) + (y - p2.y) * (y - p2.y);
-            //more safe but slower?
+    
             return (X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y);
-            //depends on whether or not the compiler is inlining them
         }
         
         /// <summary>
@@ -211,11 +198,8 @@ namespace RFC.Geometry
         {
             if (p2 == null)
                 return double.PositiveInfinity;
-            //less safe but faster?:
-            //return (x - p2.x) * (x - p2.x) + (y - p2.y) * (y - p2.y);
-            //more safe but slower?
+
             return Math.Sqrt((X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y));
-            //depends on whether or not the compiler is inlining them
         }
 
         /// <summary>
@@ -293,7 +277,7 @@ namespace RFC.Geometry
         {
             double c = Math.Cos(angle);
             double s = Math.Sin(angle);
-            return new Vector2(c * X - s * y, c * Y + s * x); 
+            return new Vector2(c * X - s * Y, c * Y + s * X); 
         }
 
         /// <summary>
@@ -320,7 +304,7 @@ namespace RFC.Geometry
         /// </summary>
         public Vector2 rotatePerpendicular()
         {
-            return new Vector2(-y, x);
+            return new Vector2(-Y, X);
         }
 
         /// <summary>
@@ -389,7 +373,7 @@ namespace RFC.Geometry
         /// </summary>
         public override string ToString()
         {
-            return String.Format("<{0:G4},{1:G4}>", x, y);
+            return String.Format("<{0:G4},{1:G4}>", X, Y);
         }
 
         /// <summary>
