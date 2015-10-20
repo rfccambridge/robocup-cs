@@ -86,8 +86,8 @@ namespace RFC.Geometry
         }
 
         public override double distance(Vector2 p)
-        {
-            return p.distance(Center);
+        { 
+            return p.distance(Center) - Radius;
         }
 
         public override string ToString()
