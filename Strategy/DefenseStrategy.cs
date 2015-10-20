@@ -114,7 +114,7 @@ namespace RFC.Strategy
                 {
                     double positionAngle = centerAngle + Math.Pow(-1,i) * incrementAngle * i;//(i - (playersOnBall - 1.0)/2.0);
 
-                    Vector2 unNormalizedDirection = new Vector2(positionAngle);
+                    Vector2 unNormalizedDirection = Vector2.GetUnitVector(positionAngle);
                     Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
                     Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
                     destinations.Add(new RobotInfo(robotPosition, positionAngle + Math.PI, myTeam, 0)); //adds positions behind ball after ball in List

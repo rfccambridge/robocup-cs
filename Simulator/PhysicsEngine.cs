@@ -390,7 +390,7 @@ namespace RFC.Simulator
                                 const double CENTER_TO_DRIBBLER_DIST = 0.05;
                                 const double DRIBBLER_ACTIVITY_RADIUS = .03;
 
-                                Vector2 robotFaceDir = new Vector2(r.Orientation);
+                                Vector2 robotFaceDir = Vector2.GetUnitVector(r.Orientation);
                                 Vector2 dribblerPosition = r.Position + CENTER_TO_DRIBBLER_DIST * robotFaceDir;
                                 if (dribblerPosition.distanceSq(ball.Position) < DRIBBLER_ACTIVITY_RADIUS * DRIBBLER_ACTIVITY_RADIUS)
                                 {
@@ -505,7 +505,7 @@ namespace RFC.Simulator
             const double CENTER_TO_KICKER_DIST = 0.07;
             const double KICKER_ACTIVITY_RADIUS = 0.04; //.04
 
-            Vector2 robotFaceDir = new Vector2(robot.Orientation);
+            Vector2 robotFaceDir = Vector2.GetUnitVector(robot.Orientation);
             Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * robotFaceDir;
             if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
             {

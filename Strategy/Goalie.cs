@@ -128,7 +128,7 @@ namespace RFC.Strategy
             double regime = guardRegime(ball);
             double angle = shadowAngle * (1 - regime) + leadAngle * regime;
 
-            Vector2 pos = new Vector2(angle) * hold + goalpos;
+            Vector2 pos = Vector2.GetUnitVector(angle) * hold + goalpos;
             double orientation = (ballpos - pos).cartesianAngle();
 
             RobotInfo goalie_dest = new RobotInfo(pos, orientation, team, ID);
