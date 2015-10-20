@@ -826,35 +826,33 @@ namespace RFC.Core
 
 				if (!File.Exists(fname))
 					throw new ApplicationException("sorry, could not find the constants file \""+category+"\", looked in "+fname);
-				StreamReader reader = new StreamReader(fname);
-				while (!reader.EndOfStream)
-				{
-					string s = reader.ReadLine();
-					if (s == null)
-						break;
 
-					//Remove comments (if we find a # anywhere on the line, remove all chars after it)
-					int commentIndex = s.IndexOf('#');
-					if (commentIndex >= 0)
-						s = s.Remove(commentIndex);
+                using (StreamReader reader = new StreamReader(fname))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        string s = reader.ReadLine();
+                        if (s == null)
+                            break;
 
-					//Trim whitespace
-					s = s.Trim();
+                        //Remove comments (if we find a # anywhere on the line, remove all chars after it)
+                        int commentIndex = s.IndexOf('#');
+                        if (commentIndex >= 0)
+                            s = s.Remove(commentIndex);
 
-					if (s.Length == 0)
-						continue;
+                        //Trim whitespace
+                        s = s.Trim();
 
-					string[] strings = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-					//format is:
-					//type name value
-					try {
-						dict.Add(strings[1], convert(strings[0], string.Join(" ", strings, 2, strings.Length - 2)));
-					} catch (ArgumentException e) {
-						reader.Close();
-						throw e;
-					}
-				}
-				reader.Close();
+                        if (s.Length == 0)
+                            continue;
+
+                        string[] strings = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        //format is:
+                        //type name value
+                        
+                        dict.Add(strings[1], convert(strings[0], string.Join(" ", strings, 2, strings.Length - 2)));
+                    }
+                }
 			}
 		}
 
