@@ -37,36 +37,9 @@ namespace RFC.Geometry
         }
 
         /// <summary>
-        /// Returns a circle translated by the added vector
-        /// </summary>
-        public static Circle operator +(Circle c, Vector2 v)
-        {
-            return new Circle(c.Center + v, c.Radius);
-        }
-
-        /// <summary>
-        /// Returns a circle translated by the added vector
-        /// </summary>
-        public static Circle operator +(Vector2 v, Circle c)
-        {
-            return new Circle(v + c.Center, c.Radius);
-        }
-
-        /// <summary>
-        /// Returns a circle translated by the negative of the vector
-        /// </summary>
-        public static Circle operator -(Circle c, Vector2 v)
-        {
-            return new Circle(c.Center - v, c.Radius);
-        }
-
-        /// <summary>
         /// Returns the translation of this circle by the given vector.
         /// </summary>
-        public override Circle translate(Vector2 v)
-        {
-            return this + v;
-        }
+        public override Circle translate(Vector2 v) => new Circle(Center + v, Radius);
 
         /// <summary>
         /// Returns a circle that is this circle rotated a given number of radians in the

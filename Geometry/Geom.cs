@@ -58,6 +58,15 @@ namespace RFC.Geometry
         {
             return distance(v) <= 0;
         }
+
+        /// <summary>Returns the geometry translated by the added vector</summary>
+        public static T operator +(Vector2 v, GeomBase<T> g) => g.translate(v);
+
+        /// <summary>Returns the geometry translated by the added vector</summary>
+        public static T operator +(GeomBase<T> g, Vector2 v) => g.translate(v);
+
+        /// <summary>Returns the geometry translated by the negative of the vector</summary>
+        public static T operator -(GeomBase<T> g, Vector2 v) => g.translate(-v);
     }
 
     public static partial class GeomExtensions

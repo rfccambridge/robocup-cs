@@ -96,38 +96,15 @@ namespace RFC.Geometry
             this.StartPt = pt;
             this.StopPt = pt.rotateAroundPoint(center, angle);
         }
-               
-        /// <summary>
-        /// Returns an arc translated by the added vector
-        /// </summary>
-        public static Arc operator +(Arc a, Vector2 v)
-        {
-            return new Arc(a.Center + v, a.Radius, a.AngleStart, a.AngleStop, a.StartPt + v, a.StopPt + v);
-        }
-
-        /// <summary>
-        /// Returns an arc translated by the added vector
-        /// </summary>
-        public static Arc operator +(Vector2 v, Arc a)
-        {
-            return new Arc(v + a.Center, a.Radius, a.AngleStart, a.AngleStop, v + a.StartPt, v + a.StopPt);
-        }
-
-        /// <summary>
-        /// Returns an arc translated by the negative of the vector
-        /// </summary>
-        public static Arc operator -(Arc a, Vector2 v)
-        {
-            return new Arc(a.Center - v, a.Radius, a.AngleStart, a.AngleStop, a.StartPt - v, a.StopPt - v);
-        }
 
         /// <summary>
         /// Returns the translation of this arc by the given vector.
         /// </summary>
         public override Arc translate(Vector2 v)
         {
-            return this + v;
+            return new Arc(Center + v, Radius, AngleStart, AngleStop, StartPt + v, StopPt + v);
         }
+
         /// <summary>
         /// Returns an arc that is this arc rotated a given number of radians in the
         /// counterclockwise direction around p.

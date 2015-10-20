@@ -55,30 +55,6 @@ namespace RFC.Geometry
         }
 
         /// <summary>
-        /// Returns a line translated by the added vector
-        /// </summary>
-        public static Line operator +(Line l, Vector2 v)
-        {
-            return new Line(l.P0 + v, l.P1 + v);
-        }
-
-        /// <summary>
-        /// Returns a line translated by the added vector
-        /// </summary>
-        public static Line operator +(Vector2 v, Line l)
-        {
-            return new Line(v + l.P0, v + l.P1);
-        }
-
-        /// <summary>
-        /// Returns a line translated by the negative of the vector
-        /// </summary>
-        public static Line operator -(Line l, Vector2 v)
-        {
-            return new Line(l.P0 - v, l.P1 - v);
-        }
-
-        /// <summary>
         /// Computes the minimum distance between this line and a point
         /// </summary>
         public override double distance(Vector2 p)
@@ -134,7 +110,7 @@ namespace RFC.Geometry
         /// </summary>
         public override Line translate(Vector2 v)
         {
-            return this + v;
+            return new Line(P0 + v, P1 + v);
         }
 
         /// <summary>
@@ -238,27 +214,11 @@ namespace RFC.Geometry
         }
 
         /// <summary>
-        /// Returns a line segment translated by the added vector
+        /// Returns the translation of this line segment by the given vector.
         /// </summary>
-        public static LineSegment operator +(LineSegment l, Vector2 v)
+        public override LineSegment translate(Vector2 v)
         {
-            return new LineSegment(l.l + v);
-        }
-
-        /// <summary>
-        /// Returns a line segment translated by the added vector
-        /// </summary>
-        public static LineSegment operator +(Vector2 v, LineSegment l)
-        {
-            return new LineSegment(v + l.l);
-        }
-
-        /// <summary>
-        /// Returns a line segment translated by the negative of the vector
-        /// </summary>
-        public static LineSegment operator -(LineSegment l, Vector2 v)
-        {
-            return new LineSegment(l.l - v);
+            return new LineSegment(l.translate(v));
         }
 
         /// <summary>
@@ -285,14 +245,6 @@ namespace RFC.Geometry
                 return l.P0.distance(p);
 
             return l.distance(p);
-        }
-
-        /// <summary>
-        /// Returns the translation of this line segment by the given vector.
-        /// </summary>
-        public override LineSegment translate(Vector2 v)
-        {
-            return this + v;
         }
 
         /// <summary>

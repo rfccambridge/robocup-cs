@@ -31,35 +31,11 @@ namespace RFC.Geometry
         }
 
         /// <summary>
-        /// Returns a robot shape translated by the added vector
-        /// </summary>
-        public static RobotShape operator +(RobotShape rs, Vector2 v)
-        {
-            return new RobotShape(rs.Arc + v, rs.Segment + v);
-        }
-
-        /// <summary>
-        /// Returns a line segment translated by the added vector
-        /// </summary>
-        public static RobotShape operator +(Vector2 v, RobotShape rs)
-        {
-            return new RobotShape(v + rs.Arc, v + rs.Segment);
-        }
-
-        /// <summary>
-        /// Returns a line segment translated by the negative of the vector
-        /// </summary>
-        public static RobotShape operator -(RobotShape rs, Vector2 v)
-        {
-            return new RobotShape(rs.Arc - v, rs.Segment - v);
-        }
-
-        /// <summary>
         /// Returns the translation of this line segment by the given vector.
         /// </summary>
         public override RobotShape translate(Vector2 v)
         {
-            return this + v;
+            return new RobotShape(Arc.translate(v), Segment.translate(v));
         }
 
         /// <summary>
@@ -70,7 +46,6 @@ namespace RFC.Geometry
         {
             return new RobotShape(Arc.rotateAroundPoint(p, angle), Segment.rotateAroundPoint(p, angle));
         }
-
 
         public override string ToString()
         {

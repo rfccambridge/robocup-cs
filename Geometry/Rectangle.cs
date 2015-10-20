@@ -109,35 +109,11 @@ namespace RFC.Geometry
         }
 
         /// <summary>
-        /// Returns a rectangle translated by the added vector
-        /// </summary>
-        public static Rectangle operator +(Rectangle r, Vector2 v)
-        {
-            return new Rectangle(r.XMin + v.X, r.YMax + v.X, r.YMin + v.Y, r.YMax + v.Y);
-        }
-
-        /// <summary>
-        /// Returns a rectangle translated by the added vector
-        /// </summary>
-        public static Rectangle operator +(Vector2 v, Rectangle r)
-        {
-            return new Rectangle(r.XMin + v.X, r.YMax + v.X, r.YMin + v.Y, r.YMax + v.Y);
-        }
-
-        /// <summary>
-        /// Returns a rectangle translated by the negative of the vector
-        /// </summary>
-        public static Rectangle operator -(Rectangle r, Vector2 v)
-        {
-            return r + (-v);
-        }
-
-        /// <summary>
         /// Returns the translation of this rectangle by the given vector.
         /// </summary>
         public override Rectangle translate(Vector2 v)
         {
-            return this + v;
+            return new Rectangle(XMin + v.X, YMax + v.X, YMin + v.Y, YMax + v.Y);
         }
 
         /// <summary>
