@@ -36,13 +36,7 @@ namespace RFC.Geometry
             this.X = x;
             this.Y = y;
         }
-
-        /// <summary>
-        /// Constructs a vector that is a copy of another one
-        /// </summary>
-        /// <param name="copy">Original object</param>
-        public Vector2(Vector2 orig) : this(orig.X, orig.Y) { }        
-
+        
         public PointF ToPointF()
         {
             return new PointF((float)X, (float)Y);

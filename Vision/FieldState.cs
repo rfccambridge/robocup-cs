@@ -84,7 +84,7 @@ namespace RFC.Vision
                 BallInfo newBall = msg.Ball;
 
                 // Update position
-                ball.Position = new Vector2(WEIGHT_OLD * ball.Position + WEIGHT_NEW * newBall.Position);
+                ball.Position = WEIGHT_OLD * ball.Position + WEIGHT_NEW * newBall.Position;
 
                 // Project velocity to compensate for delays that we are sure of
                 ball.Position += ball.Velocity * msg.Delay;
@@ -152,7 +152,7 @@ namespace RFC.Vision
                     RobotInfo oldRobot = robots[newRobot.Team][oldRobotIdx];
 
                     // Update position and orientation
-                    oldRobot.Position = new Vector2(WEIGHT_OLD * oldRobot.Position + WEIGHT_NEW * newRobot.Position);
+                    oldRobot.Position = WEIGHT_OLD * oldRobot.Position + WEIGHT_NEW * newRobot.Position;
                     oldRobot.Orientation = WEIGHT_OLD * oldRobot.Orientation + WEIGHT_NEW * newRobot.Orientation;
 
                     // Project velocity to compensate for delays that we are sure of

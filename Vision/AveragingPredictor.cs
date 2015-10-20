@@ -299,8 +299,8 @@ namespace RFC.Vision
                 }
                 double t = time - avgRobot.LastSeen;
                 t = 1;
-                Vector2 avgPosition = t * (new Vector2(avgRobot.Position));
-                Vector2 avgVelocity = t * (new Vector2(avgRobot.Velocity));
+                Vector2 avgPosition = t * avgRobot.Position;
+                Vector2 avgVelocity = t * avgRobot.Velocity;
                 double avgOrientation = t * avgRobot.Orientation;
                 double avgAngVel = t * avgRobot.AngularVelocity;
                 double avgLastSeen = t * avgRobot.LastSeen;
