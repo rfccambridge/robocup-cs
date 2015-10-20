@@ -98,7 +98,7 @@ namespace RFC.Geometry
 
         public override string ToString()
         {
-            return string.Format("LatticeSpec({}, {})", Bounds, Samples);
+            return string.Format("LatticeSpec({0}, {1})", Bounds, Samples);
         }
     }
 
