@@ -23,12 +23,12 @@ namespace RFC.Geometry
             return new OffsetGeom<T>(_inner.translate(v), _offset);
         }
 
-        public override OffsetGeom<T> rotateAroundPoint(Vector2 p, double angle)
+        public override OffsetGeom<T> rotateAroundPoint(Point2 p, double angle)
         {
             return new OffsetGeom<T>(_inner.rotateAroundPoint(p, angle), _offset);
         }
 
-        public override double distance(Vector2 p)
+        public override double distance(Point2 p)
         {
             return _inner.distance(p) - _offset;
         }

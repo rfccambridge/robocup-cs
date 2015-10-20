@@ -9,18 +9,18 @@ namespace RFC.Geometry
     {
         static void Main()
         {
-            Line n = new Line(new Vector2(0, -5), new Vector2(0, 5));
-            Line e = new Line(new Vector2(-5, 0), new Vector2(5, 0));
+            Line n = new Line(new Point2(0, -5), new Point2(0, 5));
+            Line e = new Line(new Point2(-5, 0), new Point2(5, 0));
 
-            Circle origCirc = new Circle(new Vector2(0, 0), 1);
-            Circle nCirc = new Circle(new Vector2(0, 5), 1);
-            Circle nnCirc = new Circle(new Vector2(0, 10), 1);
-            Circle eCirc = new Circle(new Vector2(5, 0), 1);
-            Circle eeCirc = new Circle(new Vector2(10, 0), 1);
-            Circle sCirc = new Circle(new Vector2(0, -5), 1);
-            Circle ssCirc = new Circle(new Vector2(0, -10), 1);
-            Circle wCirc = new Circle(new Vector2(-5, 0), 1);
-            Circle wwCirc = new Circle(new Vector2(-10, 0), 1);
+            Circle origCirc = new Circle(new Point2(0, 0), 1);
+            Circle nCirc = new Circle(new Point2(0, 5), 1);
+            Circle nnCirc = new Circle(new Point2(0, 10), 1);
+            Circle eCirc = new Circle(new Point2(5, 0), 1);
+            Circle eeCirc = new Circle(new Point2(10, 0), 1);
+            Circle sCirc = new Circle(new Point2(0, -5), 1);
+            Circle ssCirc = new Circle(new Point2(0, -10), 1);
+            Circle wCirc = new Circle(new Point2(-5, 0), 1);
+            Circle wwCirc = new Circle(new Point2(-10, 0), 1);
 
             Console.WriteLine(LineCircleIntersection.Intersection(n, nnCirc, 0));
             Console.WriteLine(LineCircleIntersection.Intersection(n, nnCirc, 1));

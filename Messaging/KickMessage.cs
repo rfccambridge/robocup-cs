@@ -10,9 +10,9 @@ namespace RFC.Messaging
     public class KickMessage : Message
     {
         public RobotInfo Source;
-        public Vector2 Target;
+        public Point2 Target;
 
-        public KickMessage(RobotInfo source, Vector2 target)
+        public KickMessage(RobotInfo source, Point2 target)
         {
             Target = target;
             Source = source;

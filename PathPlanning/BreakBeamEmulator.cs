@@ -55,7 +55,7 @@ namespace RFC.PathPlanning
                 if (kicker == null)
                     continue;
 
-                Vector2 ideal = kicker.Position + Vector2.GetUnitVector(kicker.Orientation).normalizeToLength(Constants.Basic.ROBOT_FRONT_RADIUS);
+                Point2 ideal = kicker.Position + Vector2.GetUnitVector(kicker.Orientation).normalizeToLength(Constants.Basic.ROBOT_FRONT_RADIUS);
                 if (ideal.distance(msg.Ball.Position) < THRESHOLD)
                 {
                     // kick!

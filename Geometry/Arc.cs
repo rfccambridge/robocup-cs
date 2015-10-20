@@ -17,7 +17,7 @@ namespace RFC.Geometry
         /// <summary>
         /// The center around which this arc revolves
         /// </summary>
-        public Vector2 Center { get; private set; }
+        public Point2 Center { get; private set; }
 
         /// <summary>
         /// The radius around of this arc around the center
@@ -42,19 +42,19 @@ namespace RFC.Geometry
         /// <summary>
         /// The point where this arc starts
         /// </summary>
-        public Vector2 StartPt { get; private set; }
+        public Point2 StartPt { get; private set; }
 
         /// <summary>
         /// The point where this arc stops
         /// </summary>
-        public Vector2 StopPt { get; private set; }
+        public Point2 StopPt { get; private set; }
 
         /// <summary>
         /// The circle that this arc is a segment of
         /// </summary>
         public Circle Circle { get { return new Circle(Center, Radius); } }
 
-        private Arc(Vector2 center, double radius, double angleStart, double angleStop, Vector2 startPt, Vector2 stopPt)
+        private Arc(Point2 center, double radius, double angleStart, double angleStop, Point2 startPt, Point2 stopPt)
         {
             this.Center = center;
             this.Radius = radius;
@@ -68,7 +68,7 @@ namespace RFC.Geometry
         /// Creates an arc with the given center, radius, covering the circular arc from angleStart to angleStop.
         /// Angles are in counterclockwise radians, where zero is towards the right (positive X axis).
         /// </summary>
-        public Arc(Vector2 center, double radius, double angleStart, double angleStop)
+        public Arc(Point2 center, double radius, double angleStart, double angleStop)
         {
             this.Center = center;
             this.Radius = radius;
@@ -85,7 +85,7 @@ namespace RFC.Geometry
         /// counterclockise angle in radians. If angle is negative, will produce an 
         /// arc going counterclockwise.
         /// </summary>
-        public Arc(Vector2 center, Vector2 pt, double angle)
+        public Arc(Point2 center, Point2 pt, double angle)
         {
             this.Center = center;
             this.Radius = pt.distance(center);
@@ -109,7 +109,7 @@ namespace RFC.Geometry
         /// Returns an arc that is this arc rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public override Arc rotateAroundPoint(Vector2 p, double angle)
+        public override Arc rotateAroundPoint(Point2 p, double angle)
         {
             return new Arc(Center.rotateAroundPoint(p,angle), Radius, 
                 AngleStart + angle, AngleStop + angle, 
@@ -145,7 +145,7 @@ namespace RFC.Geometry
             return "Arc(" + Center + ", " + Radius + "," + (AngleStart/TWOPI) + "*2pi, " + (AngleStop/TWOPI) + "*2pi)";
         }
 
-        public override double distance(Vector2 p)
+        public override double distance(Point2 p)
         {
             throw new NotImplementedException();
         }

@@ -116,7 +116,7 @@ namespace RFC.Strategy
 
                     Vector2 unNormalizedDirection = Vector2.GetUnitVector(positionAngle);
                     Vector2 normalizedDirection = unNormalizedDirection.normalizeToLength(avoid_radius);
-                    Vector2 robotPosition = normalizedDirection + msg.Ball.Position;
+                    Point2 robotPosition = normalizedDirection + msg.Ball.Position;
                     destinations.Add(new RobotInfo(robotPosition, positionAngle + Math.PI, myTeam, 0)); //adds positions behind ball after ball in List
                 }
             //truncate destinations to match fieldPlayers
@@ -135,7 +135,7 @@ namespace RFC.Strategy
                     if (destinations[i].Position.X > kickoff_boundary)
                     {
                         double tempStore = destinations[i].Position.Y;
-                        destinations[i] = new RobotInfo(new Vector2(kickoff_boundary, tempStore),0,myTeam,0);
+                        destinations[i] = new RobotInfo(new Point2(kickoff_boundary, tempStore),0,myTeam,0);
                     }
                 }
             }
@@ -161,7 +161,7 @@ namespace RFC.Strategy
                 {
                     // if we can, shoot on goal
                     ShotOpportunity shot = Shot1.evaluateGoal(msg, myTeam, msg.Ball.Position);
-                    Vector2 target;
+                    Point2 target;
                     if (shot.arc > 0)
                     {
                         target = shot.target;

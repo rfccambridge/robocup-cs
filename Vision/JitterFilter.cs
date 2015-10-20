@@ -120,7 +120,7 @@ namespace RFC.Vision
                 }
 
                 RobotInfo lastOfficial;
-                Vector2 projPos = new Vector2();
+                Point2 projPos = Point2.ORIGIN;
                 double radius = .5; // radius from expected position at which robot can be found?
                 double dt = (double)1 / 60;
                 if (!official[robot.Team].ContainsKey(robot.ID))
@@ -189,7 +189,7 @@ namespace RFC.Vision
                         // is this sighting close enough to existing transient?
                         // transient sighting consistency check!
                         RobotInfo lastTransient = transient[robot.Team][robot.ID];
-                        Vector2 projTransient = lastTransient.Position + lastTransient.Velocity * dt; // project position
+                        Point2 projTransient = lastTransient.Position + lastTransient.Velocity * dt; // project position
                         if ((robot.Position - projTransient).magnitude() < radius) // close enough
                         {
                             transientCountup[robot.Team][robot.ID]++;

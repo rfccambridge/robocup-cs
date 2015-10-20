@@ -18,10 +18,10 @@ namespace RFC.Strategy
         }
 
         public readonly double severity;
-        public readonly Vector2 position;
+        public readonly Point2 position;
         public readonly ThreatType type;
 
-        public Threat(double sev, Vector2 pos, ThreatType typ)
+        public Threat(double sev, Point2 pos, ThreatType typ)
         {
             severity = sev;
             position = pos;

@@ -11,11 +11,11 @@ namespace RFC.Messaging
 		public class RobotData
 		{
 			private Team team;
-			private Vector2 position;
+			private Point2 position;
 			private int id;
 			private double orientation;
 
-			public RobotData(int id, Team team, Vector2 position, double orientation)
+			public RobotData(int id, Team team, Point2 position, double orientation)
 			{
 				this.id = id;
 				this.team = team;
@@ -42,7 +42,7 @@ namespace RFC.Messaging
 			/// The position of the robot, in our standard coordinate system
 			/// ([0,0] is center of field, [1,1] is up and to the right, the unit is meters)
 			/// </summary>
-			public Vector2 Position
+			public Point2 Position
 			{
 				get { return position; }
 			}            

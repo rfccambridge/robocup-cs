@@ -16,7 +16,7 @@ namespace RFC.PathPlanning
             double angle = diff.cartesianAngle();
             Vector2 offset = diff.normalizeToLength(2*Constants.Basic.ROBOT_RADIUS);
 
-            Vector2 position = msg.Ball.Position - offset;
+            Point2 position = msg.Ball.Position - offset;
 
             RobotInfo ideal = new RobotInfo(position, angle, closest.Team, closest.ID);
 

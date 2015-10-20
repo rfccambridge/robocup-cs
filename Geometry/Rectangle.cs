@@ -78,32 +78,32 @@ namespace RFC.Geometry
         /// <summary>
         /// Gets the bottom left point of this rectangle
         /// </summary>
-        public Vector2 BL => new Vector2(XMin,YMin);
+        public Point2 BL => new Point2(XMin,YMin);
 
         /// <summary>
         /// Gets the bottom right point of this rectangle
         /// </summary>
-        public Vector2 BR => new Vector2(XMax, YMin);
+        public Point2 BR => new Point2(XMax, YMin);
 
         /// <summary>
         /// Gets the top left point of this rectangle
         /// </summary>
-        public Vector2 TL => new Vector2(XMin, YMax);
+        public Point2 TL => new Point2(XMin, YMax);
 
         /// <summary>
         /// Gets the top right point of this rectangle
         /// </summary>
-        public Vector2 TR => new Vector2(XMax, YMax);
+        public Point2 TR => new Point2(XMax, YMax);
 
         /// <summary>
         /// Gets the center point of this rectangle
         /// </summary>
-        public Vector2 Center => new Vector2((XMin+XMax)/2.0, (YMin+YMax)/2.0);
+        public Point2 Center => new Point2((XMin+XMax)/2.0, (YMin+YMax)/2.0);
 
         /// <summary>
         /// Tests if the given point lies within this rectangle. Points on the boundary are considered contained.
         /// </summary>
-        public override bool contains(Vector2 p)
+        public override bool contains(Point2 p)
         {
             return p.X >= XMin && p.X <= XMax && p.Y >= YMin && p.Y <= YMax;
         }
@@ -119,7 +119,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Not implemented
         /// </summary>
-        public override Rectangle rotateAroundPoint(Vector2 p, double angle)
+        public override Rectangle rotateAroundPoint(Point2 p, double angle)
         {
             throw new NotImplementedException();
         }
@@ -128,7 +128,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Compute the shortest unit vector direction leading out of this rectangle from p
         /// </summary>
-        public Vector2 ShortestDirectionOut(Vector2 p)
+        public Vector2 ShortestDirectionOut(Point2 p)
         {
             bool minXLeft;
             double minXDist;
@@ -150,7 +150,7 @@ namespace RFC.Geometry
                 return minYDown ? new Vector2(0, -1) : new Vector2(0, 1);
         }
 
-        public override double distance(Vector2 p)
+        public override double distance(Point2 p)
         {
             throw new NotImplementedException();
         }

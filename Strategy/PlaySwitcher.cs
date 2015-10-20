@@ -12,10 +12,10 @@ namespace RFC.Strategy
 {
     public class PlaySwitcher : IMessageHandler<RefboxStateMessage>, IMessageHandler<FieldVisionMessage>
     {
-        Vector2 position;
+        Point2 position;
         const double thresholdForBallMove = .03;
 
-        bool ballIsMoved(Vector2 ballPosition)
+        bool ballIsMoved(Point2 ballPosition)
         {
             return this.position.distanceSq(ballPosition) > thresholdForBallMove;
         }

@@ -158,10 +158,10 @@ namespace RFC.PathPlanning
             // approximating the defense areas as two circles of radius .8m
             Vector2 defense_offset = new Vector2(0, .35 / 2);
             double defense_radius = .7 + Constants.Basic.ROBOT_RADIUS; //changed to .9 to avoid robot getting too close to half circle
-            Vector2 LT = Constants.FieldPts.OUR_GOAL + defense_offset;
-            Vector2 LB = Constants.FieldPts.OUR_GOAL - defense_offset;
-            Vector2 RT = Constants.FieldPts.THEIR_GOAL + defense_offset;
-            Vector2 RB = Constants.FieldPts.THEIR_GOAL - defense_offset;
+            Point2 LT = Constants.FieldPts.OUR_GOAL + defense_offset;
+            Point2 LB = Constants.FieldPts.OUR_GOAL - defense_offset;
+            Point2 RT = Constants.FieldPts.THEIR_GOAL + defense_offset;
+            Point2 RB = Constants.FieldPts.THEIR_GOAL - defense_offset;
 
             
 
@@ -233,7 +233,7 @@ namespace RFC.PathPlanning
 
         //Return a random point biased in a certain distribution between the current and the desired location,
         //given the closest point the RRT has found so far to the desired location
-        private Vector2 GetRandomPoint(Vector2 desiredLoc, Vector2 currentLoc, double closestSoFar)
+        private Point2 GetRandomPoint(Point2 desiredLoc, Point2 currentLoc, double closestSoFar)
         {
             double factor = closestSoFar / 4.0 + 0.18;
             double rand1 = RandGen.NextGaussian();
@@ -242,19 +242,19 @@ namespace RFC.PathPlanning
             double fullDist = desiredLoc.distance(currentLoc);
             if (fullDist <= 1e-6)
             {
-                return new Vector2(desiredLoc.X + rand1 * factor, desiredLoc.Y + rand2 * factor);
+                return new Point2(desiredLoc.X + rand1 * factor, desiredLoc.Y + rand2 * factor);
             }
 
             double prop = closestSoFar / fullDist;
             prop *= 0.95;
             double centerX = desiredLoc.X * (1 - prop) + currentLoc.X * prop;
             double centerY = desiredLoc.Y * (1 - prop) + currentLoc.Y * prop;
-            return new Vector2(centerX + rand1 * factor, centerY + rand2 * factor);
+            return new Point2(centerX + rand1 * factor, centerY + rand2 * factor);
         }
 
         //Does the extension in the direction of the given unit ray from p intersect the given obstacle?
         //Yes, if it geometrically intersects AND the direction is TOWARDS the obstacle
-        private bool IntersectsObstacle(Vector2 p, Vector2 obsPos, double obsRadius, Vector2 rayUnit)
+        private bool IntersectsObstacle(Point2 p, Point2 obsPos, double obsRadius, Vector2 rayUnit)
         {
             return rayUnit * (obsPos - p) >= 0 && obsPos.distanceSq(p) < obsRadius * obsRadius;
         }
@@ -273,7 +273,7 @@ namespace RFC.PathPlanning
         //Does the extension along the given ray from p intersect the given obstacle?
         //Yes, if it geometrically intersects AND the direction is TOWARDS the obstacle
         //Tests both the segment and the endpoints
-        private bool IntersectsObstacle(Vector2 src, Vector2 dest, Vector2 rayUnit, double rayLen, Vector2 obsPos, double obsRadius)
+        private bool IntersectsObstacle(Point2 src, Point2 dest, Vector2 rayUnit, double rayLen, Point2 obsPos, double obsRadius)
         {
             //We consider a step okay if it moves away from the obstacle, despite intersecting right now.
             if (rayUnit * (obsPos - src) <= 0)
@@ -299,17 +299,17 @@ namespace RFC.PathPlanning
         }
 
         //Get the future position of a robot, extrapolating based on its velocity
-        private Vector2 GetFuturePos(Vector2 obsPos, Vector2 obsVel, double time)
+        private Point2 GetFuturePos(Point2 obsPos, Vector2 obsVel, double time)
         {
             time = Math.Max(time, ROBOT_MAX_TIME_EXTRAPOLATED);
             return obsPos + obsVel * time;
         }
 
         //Check if the given extension by nextSegment would be allowed by all the obstacles
-        private bool IsAllowedByObstacles(RobotInfo currentState, Vector2 src, Vector2 nextSegment, double curTime,
-            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal, List<IGeom> obstacles)
+        private bool IsAllowedByObstacles(RobotInfo currentState, Point2 src, Vector2 nextSegment, double curTime,
+            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Point2 goal, List<IGeom> obstacles)
         {
-            Vector2 dest = src + nextSegment;
+            Point2 dest = src + nextSegment;
             Vector2 ray = nextSegment;
             if (ray.magnitudeSq() < 1e-16)
                 return true;
@@ -345,14 +345,14 @@ namespace RFC.PathPlanning
                 if (info.Team != currentState.Team || info.ID != currentState.ID)
                 {
                     //Extrapolate the robot's position into the future.
-                    Vector2 obsPos = GetFuturePos(info.Position, info.Velocity, curTime);
+                    Point2 obsPos = GetFuturePos(info.Position, info.Velocity, curTime);
 
                     if (IntersectsObstacle(src, dest, rayUnit, rayLen, obsPos, robotAvoidDist))
                     { return false; }
 
                     //It's also bad if the obstacle would collide with us next turn, by virtue of moving...
                     //But it's still okay if we're moving away from it.
-                    Vector2 obsPosNext = obsPos + info.Velocity * TIME_STEP;
+                    Point2 obsPosNext = obsPos + info.Velocity * TIME_STEP;
                     if (IntersectsObstacle(dest, obsPosNext, robotAvoidDist, rayUnit))
                     { return false; }
                 }
@@ -399,7 +399,7 @@ namespace RFC.PathPlanning
         }
 
         //Get the adjusted target direction using a tangentbug-like algorithm
-        private Vector2 GetAdjustedTargetDir(Vector2 cur, Vector2 targetDir, Vector2 obsPos, Vector2 obsVel, double time, double avoidDist, double targetDist)
+        private Vector2 GetAdjustedTargetDir(Point2 cur, Vector2 targetDir, Point2 obsPos, Vector2 obsVel, double time, double avoidDist, double targetDist)
         {
             double obsDist = obsPos.distance(cur);
             time += (obsDist / ROBOT_VELOCITY);
@@ -425,7 +425,7 @@ namespace RFC.PathPlanning
         }
 
         //Get the extended point, using the acceleration model
-        private Vector2 GetAcceleratedExtension(RRTNode node, Vector2 target, BallInfo ball, List<RobotInfo> robots, Vector2 goal, double ballAvoidRadius, bool adjust)
+        private Vector2 GetAcceleratedExtension(RRTNode node, Point2 target, BallInfo ball, List<RobotInfo> robots, Point2 goal, double ballAvoidRadius, bool adjust)
         {
             Vector2 targetDir = target - node.info.Position;
             double magnitude = targetDir.magnitude();
@@ -436,7 +436,7 @@ namespace RFC.PathPlanning
             if (magnitude <= node.info.Velocity.magnitude() + MAX_ACCEL_PER_STEP * TIME_STEP)
             {
                 //Check if we can get there right away anywhere in our acceleration circle or the cone reaching to it.
-                Vector2 circleCenter = node.info.Position + node.info.Velocity * TIME_STEP;
+                Point2 circleCenter = node.info.Position + node.info.Velocity * TIME_STEP;
                 double circleRadius = MAX_ACCEL_PER_STEP * 2 * TIME_STEP;
 
                 Vector2 toCircle = (circleCenter - node.info.Position);
@@ -444,7 +444,7 @@ namespace RFC.PathPlanning
                 double closestDistToCenter = closestOffsetTowardsCenter.magnitude();
                 if (closestDistToCenter < circleRadius)
                 {
-                    Vector2 closestApproachToCenter = circleCenter - closestOffsetTowardsCenter;
+                    Point2 closestApproachToCenter = circleCenter - closestOffsetTowardsCenter;
                     double halfChordLength = Math.Sqrt(circleRadius * circleRadius - closestDistToCenter * closestDistToCenter);
                     double distToClosestApproach = (toCircle * targetDir >= 0) ?
                         (closestApproachToCenter - node.info.Position).magnitude() :
@@ -528,7 +528,7 @@ namespace RFC.PathPlanning
 
         //Check if extending according to nextSegment (the position offset vector) would hit obstacles.
         private RRTNode TryVsObstacles(RobotInfo currentState, RRTNode node, TwoDTreeMap<RRTNode> map, Vector2 nextSegment,
-            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal, List<IGeom> obstacles)
+            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Point2 goal, List<IGeom> obstacles)
         {
             Vector2 nextVel = nextSegment.normalizeToLength(ROBOT_VELOCITY);
 
@@ -547,9 +547,9 @@ namespace RFC.PathPlanning
         }
 
         //Extract the full successful path to node
-        List<Vector2> GetPathFrom(RRTNode node)
+        List<Point2> GetPathFrom(RRTNode node)
         {
-            List<Vector2> list = new List<Vector2>();
+            List<Point2> list = new List<Point2>();
             while (node != null)
             {
                 list.Add(node.info.Position);
@@ -561,7 +561,7 @@ namespace RFC.PathPlanning
         }
 
         //Get a path!
-        private List<Vector2> GetPathTo(RobotInfo currentState, Vector2 desiredPosition, List<RobotInfo> robots,
+        private List<Point2> GetPathTo(RobotInfo currentState, Point2 desiredPosition, List<RobotInfo> robots,
             BallInfo ball, double avoidBallRadius, List<IGeom> obstacles)
         {
             double mapXMin = Math.Min(currentState.Position.X, desiredPosition.X) - 0.3;
@@ -577,7 +577,7 @@ namespace RFC.PathPlanning
             RRTNode successNode = null;
 
             RRTNode activeNode = startNode;
-            Vector2 currentTarget = desiredPosition;
+            Point2 currentTarget = desiredPosition;
             int stepsLeft = 1000;
             double closestSoFar = 1000;
             double closeEnoughToGoal = (desiredPosition - currentState.Position).magnitude() - DIST_FOR_SUCCESS;
@@ -673,14 +673,14 @@ namespace RFC.PathPlanning
             if (!(map.Size() < MAX_TREE_SIZE && tries < MAX_PATH_TRIES))
             {
                 successNode = map.NearestNeighbor(desiredPosition).Item2;
-                List<Vector2> path = GetPathFrom(successNode);
+                List<Point2> path = GetPathFrom(successNode);
                 return path;
             }
             else
             {
                 //If we did succeed, take the succeeding node and tack on the
                 //desired state if it's not there (such as because we got close enough and stopped early).
-                List<Vector2> path = GetPathFrom(successNode);
+                List<Point2> path = GetPathFrom(successNode);
                 if (path.Count > 0 && path[path.Count - 1].distance(desiredPosition) > 0.001)
                     path.Add(desiredPosition);
                 return path;
@@ -688,7 +688,7 @@ namespace RFC.PathPlanning
         }
 
         //Try a bunch of paths and take the best one
-        private List<Vector2> GetBestPointPath(Team team, int id, RobotInfo desiredState,
+        private List<Point2> GetBestPointPath(Team team, int id, RobotInfo desiredState,
             double avoidBallRadius, RobotPath oldPath, List<IGeom> obstacles)
         {
             ServiceManager sm = ServiceManager.getServiceManager();
@@ -699,7 +699,7 @@ namespace RFC.PathPlanning
             try
             { currentState = robotVision.GetRobot(team, id); }
             catch (ApplicationException)
-            { return new List<Vector2>(); }
+            { return new List<Point2>(); }
             currentState = new RobotInfo(currentState);
             if (currentState.Velocity.magnitude() > MAX_OBSERVABLE_VELOCITY)
                 currentState.Velocity = currentState.Velocity.normalizeToLength(MAX_OBSERVABLE_VELOCITY);
@@ -728,13 +728,13 @@ namespace RFC.PathPlanning
                 }*/
             }
 
-            List<Vector2> bestPath = null;
+            List<Point2> bestPath = null;
             double bestPathScore = Double.NegativeInfinity;
 
             for (int i = 0; i < NUM_PATHS_TO_SCORE; i++)
             {
                 msngr.db("trying a point path");
-                List<Vector2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius, obstacles);
+                List<Point2> path = GetPathTo(currentState, desiredState.Position, robots, ball, avoidBallRadius, obstacles);
                 double score = 0;
 
                 //Penalty based on distance from the goal, per meter
@@ -785,7 +785,7 @@ namespace RFC.PathPlanning
                     double distSum = 0;
                     for (int j = 1; j < path.Count; j++)
                     {
-                        Vector2 pathLoc = path[j];
+                        Point2 pathLoc = path[j];
 
                         double closestDist = OLDPATH_AGREEMENT_DIST;
                         for (int k = 0; k < oldPath.Waypoints.Count - 1; k++)
@@ -841,7 +841,7 @@ namespace RFC.PathPlanning
                 return new RobotPath(team, id);
             }
 
-            List<Vector2> bestPath = GetBestPointPath(team, id, new RobotInfo(desiredState), avoidBallRadius, oldPath, obstacles);
+            List<Point2> bestPath = GetBestPointPath(team, id, new RobotInfo(desiredState), avoidBallRadius, oldPath, obstacles);
 
             //Convert the path
             List<RobotInfo> robotPath = new List<RobotInfo>();

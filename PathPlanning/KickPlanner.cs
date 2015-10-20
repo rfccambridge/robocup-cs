@@ -44,17 +44,17 @@ namespace RFC.PathPlanning
             double angle = diff.cartesianAngle();
             Vector2 offset = diff.normalizeToLength(kick_dist);
 
-            Vector2 position = ball.Position - offset;
+            Point2 position = ball.Position - offset;
             RobotInfo ideal = new RobotInfo(position, angle, robot.Team, robot.ID);
 
             // a little further than we need so we actually get there
             Vector2 to_go = position - robot.Position;
-            Vector2 excessive_pos = position + to_go.normalizeToLength(.02);
+            Point2 excessive_pos = position + to_go.normalizeToLength(.02);
             RobotInfo excessive = new RobotInfo(excessive_pos, angle, robot.Team, robot.ID);
 
             Vector2 followThroughOffset = diff.normalizeToLength(follow_through_dist);
             //quick fix, move the robot a little further because of friction on the field
-            Vector2 followThroughPosition = ball.Position + followThroughOffset;
+            Point2 followThroughPosition = ball.Position + followThroughOffset;
             
             
             //ideal = new RobotInfo(new Vector2(), 0, robot.ID);

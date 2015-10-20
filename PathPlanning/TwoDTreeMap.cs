@@ -8,7 +8,7 @@ using RFC.Geometry;
 
 namespace RFC.PathPlanning
 {
-    //This is an implemenation of a map from Vector2 to any desired object type which allows fast lookups of nearest points.
+    //This is an implemenation of a map from Point2 to any desired object type which allows fast lookups of nearest points.
     //The underlying implementaiton is a k-d tree where k = 2. 
 
     //That is, points are stored recursively in a binary tree that alternately partitions along each dimension, 
@@ -38,32 +38,32 @@ namespace RFC.PathPlanning
         }
 
         //Add a point to the map
-        public void Add(Vector2 vec, T obj)
+        public void Add(Point2 vec, T obj)
         {
             _root.AddAndMaybeSplit(vec, obj);
         }
 
         //Get the nearest neighbor to vec, if one exists, else returns a pair of (null, default(T)).
-        public Tuple<Vector2, T> NearestNeighbor(Vector2 vec)
+        public Tuple<Point2, T> NearestNeighbor(Point2 vec)
         {
-            Vector2 bestVec = null;
+            Point2 bestVec = null;
             T bestT = default(T);
             double nearestDistSq = double.PositiveInfinity;
             _root.NearestNeighbor(vec, ref bestVec, ref bestT, ref nearestDistSq);
-            return new Tuple<Vector2, T>(bestVec, bestT);
+            return new Tuple<Point2, T>(bestVec, bestT);
         }
 
         //Get the nearest k neighbors. If fewer than k neighbors exist, returns all of them.
         //Neighbors are NOT guaranteed to be sorted by distance.
-        public Tuple<List<Vector2>, List<T>> NearestK(Vector2 vec, int k)
+        public Tuple<List<Point2>, List<T>> NearestK(Point2 vec, int k)
         {
-            List<Vector2> bestVecs = new List<Vector2>();
+            List<Point2> bestVecs = new List<Point2>();
             List<T> bestTs = new List<T>();
             double worstDistSqSoFar = double.PositiveInfinity;
             int numVecs = 0;
             int worstVecId = -1;
             _root.NearestK(vec, k, ref bestVecs, ref bestTs, ref worstDistSqSoFar, ref numVecs, ref worstVecId);
-            return new Tuple<List<Vector2>, List<T>>(bestVecs, bestTs);
+            return new Tuple<List<Point2>, List<T>>(bestVecs, bestTs);
         }
 
         //Print this tree down to the specified depth
@@ -78,7 +78,7 @@ namespace RFC.PathPlanning
         {
             //Data storage
             public int num;
-            public List<Vector2> vectors;
+            public List<Point2> vectors;
             public List<T> objects;
 
             //Tree pointers
@@ -100,7 +100,7 @@ namespace RFC.PathPlanning
             public TwoDTreeMapNode(TwoDTreeMapNode root, TwoDTreeMapNode parent, double xMin, double xMax, double yMin, double yMax, int cutDimension)
             {
                 num = 0;
-                vectors = new List<Vector2>(SPLIT_THRESHOLD + 1);
+                vectors = new List<Point2>(SPLIT_THRESHOLD + 1);
                 objects = new List<T>(SPLIT_THRESHOLD + 1);
 
                 left = null;
@@ -130,7 +130,7 @@ namespace RFC.PathPlanning
             }
 
             //Returns the child that contains this point.
-            public TwoDTreeMapNode GetChild(Vector2 pt)
+            public TwoDTreeMapNode GetChild(Point2 pt)
             {
                 if (IsLeaf())
                 {
@@ -158,7 +158,7 @@ namespace RFC.PathPlanning
 
             //Add a point and split if we cross the threshold for too many points.
             //Not recursive, but does split if we get too many things in here
-            public void AddAndMaybeSplit(Vector2 vec, T obj)
+            public void AddAndMaybeSplit(Point2 vec, T obj)
             {
                 if (!IsLeaf())
                 {
@@ -216,7 +216,7 @@ namespace RFC.PathPlanning
             //Get the squared distance of this point from our bounding box
             //We have a special case if we match the root's border - in that case, we don't consider the distance
             //in that direction, so that we correctly handle distances for points outside the root's bounds.
-            public double DistanceSqFrom(Vector2 vec)
+            public double DistanceSqFrom(Point2 vec)
             {
                 double dx = 0;
                 double dy = 0;
@@ -231,7 +231,7 @@ namespace RFC.PathPlanning
             }
 
             //Recursively find the nearest neighbor
-            public void NearestNeighbor(Vector2 vec, ref Vector2 bestVec, ref T bestT, ref double nearestDistSqSoFar)
+            public void NearestNeighbor(Point2 vec, ref Point2 bestVec, ref T bestT, ref double nearestDistSqSoFar)
             {
                 //Leaf node? Test all the points
                 if (IsLeaf())
@@ -275,7 +275,7 @@ namespace RFC.PathPlanning
             }
 
             //Recursively find the nearest k neighbors
-            public void NearestK(Vector2 vec, int k, ref List<Vector2> bestVecs, ref List<T> bestTs,
+            public void NearestK(Point2 vec, int k, ref List<Point2> bestVecs, ref List<T> bestTs,
                 ref double worstDistSqSoFar, ref int numVecs, ref int worstVecId)
             {
                 //Leaf node? Test all the points
@@ -358,17 +358,17 @@ namespace RFC.PathPlanning
                     System.Console.WriteLine(r);
 
                 /*
-                Vector2NNFinder map = new Vector2NNFinder();
+                Point2NNFinder map = new Point2NNFinder();
                 for (int i = 0; i < 50; i++)
                 {
-                    map.AddPoint(new Vector2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10));
+                    map.AddPoint(new Point2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10));
                 }
 
 
                 for (int i = 0; i < 50; i++)
                 {
-                    Vector2 vec = new Vector2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10);
-                    Vector2 result = map.NearestNeighbor(vec);
+                    Point2 vec = new Point2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10);
+                    Point2 result = map.NearestNeighbor(vec);
                     //System.Console.WriteLine(vec + " " + result.First + " " + result.Item2);
                 }
                 */
@@ -376,14 +376,14 @@ namespace RFC.PathPlanning
                 TwoDTreeMap<int> map = new TwoDTreeMap<int>(-2, 2, -10, 10);
                 for (int i = 0; i < 200000; i++)
                 {
-                    map.Add(new Vector2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10), i);
+                    map.Add(new Point2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10), i);
                 }
 
 
                 for (int i = 0; i < 200; i++)
                 {
-                    Vector2 vec = new Vector2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10);
-                    Tuple<Vector2, int> result = map.NearestNeighbor(vec);
+                    Point2 vec = new Point2(rand.NextDouble() * 4 - 2, rand.NextDouble() * 20 - 10);
+                    Tuple<Point2, int> result = map.NearestNeighbor(vec);
                     System.Console.WriteLine(vec + " " + result.Item1 + " " + result.Item2);
                 }
 

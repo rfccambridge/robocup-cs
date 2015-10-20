@@ -52,10 +52,10 @@ namespace RFC.Vision
             {
                 VisionMessage newMessage = new VisionMessage(msg.CameraID);
                 if (msg.Ball != null)
-                    newMessage.Ball = new BallInfo(msg.Ball.Position.rotate(Math.PI));
+                    newMessage.Ball = new BallInfo(msg.Ball.Position.rotateAroundPoint(Point2.ORIGIN, Math.PI));
                 foreach (VisionMessage.RobotData robotInfo in msg.Robots)
                     newMessage.Robots.Add(new VisionMessage.RobotData(robotInfo.ID, robotInfo.Team,
-                                                                        robotInfo.Position.rotate(Math.PI), Angle.AngleModTwoPi(robotInfo.Orientation + Math.PI)));
+                                                                        robotInfo.Position.rotateAroundPoint(Point2.ORIGIN, Math.PI), Angle.AngleModTwoPi(robotInfo.Orientation + Math.PI)));
                 msg = newMessage;
             }
 

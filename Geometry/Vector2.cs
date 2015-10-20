@@ -5,17 +5,13 @@ using System.Drawing;
 
 namespace RFC.Geometry
 {
-    /// <summary>
-    /// An immutable class that represents a point in 2D space, or a vector in 2D space.
-    /// </summary>
-    [Serializable]
-    public class Vector2 : IEquatable<Vector2>
+    public abstract class BaseVector2
     {
         /// <summary>
         /// The x-coordinate of this vector
         /// </summary>
         public double X { get; }
-        
+
         /// <summary>
         /// The y-coordinate of this vector
         /// </summary>
@@ -24,18 +20,155 @@ namespace RFC.Geometry
         /// <summary>
         /// Creates a zero Vector2
         /// </summary>
-        public Vector2() : this(0, 0) { }
-        
+        public BaseVector2() : this(0, 0) { }
+
         /// <summary>
         /// Creates a new Vector2
         /// </summary>
         /// <param name="x">the x-coordinate</param>
         /// <param name="y">the y-coordinate</param>
-        public Vector2(double x, double y)
+        public BaseVector2(double x, double y)
         {
             this.X = x;
             this.Y = y;
         }
+
+        /// <summary>
+        /// Provides a string representation of this Vector2.
+        /// </summary>
+        public override string ToString()
+        {
+            return String.Format("<{0:G4},{1:G4}>", X, Y);
+        }
+    }
+    public abstract class BaseVector2<T> : BaseVector2, IEquatable<T> where T : BaseVector2<T>
+    {
+        public BaseVector2(double x, double y) : base(x, y) { }
+
+        /// <summary>
+        /// Checks for equality between two Vector2's.  Since the class is
+        /// immutable, does value-equality.
+        /// </summary>
+        public static bool operator ==(BaseVector2<T> p1, BaseVector2<T> p2)
+        {
+            if (object.ReferenceEquals(p1, null))
+                return (object.ReferenceEquals(p2, null));
+            else if (object.ReferenceEquals(p2, null))
+                return (object.ReferenceEquals(p1, null));
+            return (p1.X == p2.X && p1.Y == p2.Y);
+        }
+
+        /// <summary>
+        /// Checks for inequality between two Vector2's.  Since the class is
+        /// immutable, does value-equality.
+        /// </summary>
+        public static bool operator !=(BaseVector2<T> p1, BaseVector2<T> p2)
+        {
+            return !(p1 == p2);
+        }
+
+        /// <summary>
+        /// Checks for value equality between this and another object.  Returns
+        /// false if the other object is null or not a Vector2.
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            BaseVector2<T> v = obj as BaseVector2<T>;
+            if (v == null)
+                return false;
+            return (X == v.X && Y == v.Y);
+        }
+
+        /// <summary>
+        /// Checks for value equality between this and another object.  Returns
+        /// false if the other object is null.
+        /// </summary>
+        public bool Equals(T obj)
+        {
+            return this == obj;
+        }
+
+        /// <summary>
+        /// Returns a hash code of this Vector2.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return typeof(T).GetHashCode() + 43 * X.GetHashCode() + 37 * Y.GetHashCode();
+        }
+    }
+
+    [Serializable]
+    public class Point2 : BaseVector2<Point2>
+    {
+        public Point2(double x, double y) : base(x, y) { }
+
+        public static readonly Point2 ORIGIN;
+        static Point2() {
+            ORIGIN = new Point2(0, 0);
+        }
+
+        static public Point2  operator +(Point2 p1, Vector2 p2) => new Point2(p1.X + p2.X, p1.Y + p2.Y);
+        static public Point2  operator +(Vector2 p1, Point2 p2) => new Point2(p1.X + p2.X, p1.Y + p2.Y);
+        static public Point2  operator -(Point2 p1,  Vector2 p2) => new Point2(p1.X - p2.X, p1.Y - p2.Y);
+        static public Vector2 operator -(Point2 p1, Point2 p2) => new Vector2(p1.X - p2.X, p1.Y - p2.Y);
+
+        /// <summary>
+        /// Returns the distance between this point and another point.
+        /// Returns the same value (within tolerance) as (p1-p2).magnitude()
+        /// </summary>
+        public double distance(Point2 p2)
+        {
+            if (p2 == null)
+                return double.PositiveInfinity;
+
+            return Math.Sqrt((X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y));
+        }
+
+        /// <summary>
+        /// Returns a point that is this point rotated a given number of radians in the
+        /// counterclockwise direction around p.
+        /// </summary>
+        public Point2 rotateAroundPoint(Point2 p, double angle)
+        {
+            return (this - p).rotate(angle) + p;
+        }
+
+        /// <summary>
+        /// Returns the squared distance between this point and another point.
+        /// Returns the same value (within tolerance) as (p1-p2).magnitudeSq()
+        /// </summary>
+        public double distanceSq(Point2 p2)
+        {
+            if (p2 == null)
+                return double.PositiveInfinity;
+
+            return (X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y);
+        }
+
+        public Point2 lerp(Point2 other, double f)
+        {
+            return new Point2(X * (1 - f) + other.X * f, Y * (1 - f) + other.Y * f);
+        }
+    }
+
+    /// <summary>
+    /// An immutable class that represents a point in 2D space, or a vector in 2D space.
+    /// </summary>
+    /// 
+    [Serializable]
+    public class Vector2 : BaseVector2<Vector2>
+    {
+        /// <summary>
+        /// Creates a zero Vector2
+        /// </summary>
+        public Vector2() : this(0, 0) { }
+
+        /// <summary>
+        /// Creates a new Vector2
+        /// </summary>
+        /// <param name="x">the x-coordinate</param>
+        /// <param name="y">the y-coordinate</param>
+        public Vector2(double x, double y) : base(x, y) { }
         
         public PointF ToPointF()
         {
@@ -59,56 +192,7 @@ namespace RFC.Geometry
             return new Vector2(Math.Cos(orientation), Math.Sin(orientation));
         }
 
-        /// <summary>
-        /// Checks for equality between two Vector2's.  Since the class is
-        /// immutable, does value-equality.
-        /// </summary>
-        public static bool operator ==(Vector2 p1, Vector2 p2)
-        {
-            if (object.ReferenceEquals(p1, null))
-                return (object.ReferenceEquals(p2, null));
-            else if (object.ReferenceEquals(p2, null))
-                return (object.ReferenceEquals(p1, null));
-            return (p1.X == p2.X && p1.Y == p2.Y);
-        }
-
-        /// <summary>
-        /// Checks for inequality between two Vector2's.  Since the class is
-        /// immutable, does value-equality.
-        /// </summary>
-        public static bool operator !=(Vector2 p1, Vector2 p2)
-        {
-            return !(p1 == p2);
-        }
-
-        /// <summary>
-        /// Checks for value equality between this and another object.  Returns
-        /// false if the other object is null or not a Vector2.
-        /// </summary>
-        public override bool Equals(object obj)
-        {
-            Vector2 v = obj as Vector2;
-            if (v == null)
-                return false;
-            return (X == v.X && Y == v.Y);
-        }
         
-        /// <summary>
-        /// Checks for value equality between this and another object.  Returns
-        /// false if the other object is null.
-        /// </summary>
-        public bool Equals(Vector2 obj)
-        {
-            return this == obj;
-        }
-        
-        /// <summary>
-        /// Returns a hash code of this Vector2.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return 43 * X.GetHashCode() + 37 * Y.GetHashCode();
-        }
         
         /// <summary>
         /// Returns the square of the length of this vector.
@@ -162,29 +246,6 @@ namespace RFC.Geometry
             return new Vector2(-p.X, -p.Y);
         }
         
-        /// <summary>
-        /// Returns the squared distance between this point and another point.
-        /// Returns the same value (within tolerance) as (p1-p2).magnitudeSq()
-        /// </summary>
-        public double distanceSq(Vector2 p2)
-        {
-            if (p2 == null)
-                return double.PositiveInfinity;
-    
-            return (X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y);
-        }
-        
-        /// <summary>
-        /// Returns the distance between this point and another point.
-        /// Returns the same value (within tolerance) as (p1-p2).magnitude()
-        /// </summary>
-        public double distance(Vector2 p2)
-        {
-            if (p2 == null)
-                return double.PositiveInfinity;
-
-            return Math.Sqrt((X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y));
-        }
 
         /// <summary>
         /// Returns the dot product of two Vector2's
@@ -264,23 +325,6 @@ namespace RFC.Geometry
             return new Vector2(c * X - s * Y, c * Y + s * X); 
         }
 
-        /// <summary>
-        /// Returns the translation of this point by the given vector.
-        /// </summary>
-        public Vector2 translate(Vector2 v)
-        {
-            return this + v;
-        }
-
-        /// <summary>
-        /// Returns a point that is this point rotated a given number of radians in the
-        /// counterclockwise direction around p.
-        /// </summary>
-        public Vector2 rotateAroundPoint(Vector2 p, double angle)
-        {
-            return (this - p).rotate(angle) + p;
-        }
-
 
         /// <summary>
         /// Returns a vector that is this vector rotated 1/4 of a turn in the
@@ -340,25 +384,18 @@ namespace RFC.Geometry
         /// <summary>
         /// Returns the z-component of the crossproduct P2P1 x P2P3
         /// </summary>
-        static public double crossproduct(Vector2 p1, Vector2 p2, Vector2 p3)
+        static public double crossproduct(Point2 p1, Point2 p2, Point2 p3)
         {
             return (p1.X - p2.X) * (p3.Y - p2.Y) - (p3.X - p2.X) * (p1.Y - p2.Y);
         }
         /// <summary>
         /// Returns the dotproduct of P2P1 and P2P3
         /// </summary>
-        static public double dotproduct(Vector2 p1, Vector2 p2, Vector2 p3)
+        static public double dotproduct(Point2 p1, Point2 p2, Point2 p3)
         {
             return (p1.X - p2.X) * (p3.X - p2.X) + (p1.Y - p2.Y) * (p3.Y - p2.Y);
         }
 
-        /// <summary>
-        /// Provides a string representation of this Vector2.
-        /// </summary>
-        public override string ToString()
-        {
-            return String.Format("<{0:G4},{1:G4}>", X, Y);
-        }
 
         /// <summary>
         /// Parses a Vector2 from the string format of ToString().  There is not much guarantee about

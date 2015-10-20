@@ -56,7 +56,7 @@ namespace RFC.Core
         /// Given a single Vector2 waypoint
         /// </summary>
         /// <param name="waypoints"></param>
-        public RobotPath(Team team, int id, Vector2 waypoint)
+        public RobotPath(Team team, int id, Point2 waypoint)
         {
             Team = team;
             ID = id;
@@ -87,7 +87,7 @@ namespace RFC.Core
         /// </summary>
         /// <param name="waypoints1">RobotInfo starting list of waypoints</param>
         /// <param name="waypoints2">Vector2 ending list of waypoints</param>
-        public RobotPath(List<RobotInfo> waypoints1, List<Vector2> waypoints2)
+        public RobotPath(List<RobotInfo> waypoints1, List<Point2> waypoints2)
         {
             Team = waypoints1[0].Team;
             ID = waypoints1[0].ID;
@@ -103,7 +103,7 @@ namespace RFC.Core
         /// </summary>
         /// <param name="id">ID of robot</param>
         /// <param name="waypoints">Vector2 list of waypoints along path</param>
-        public RobotPath(Team team, int id, List<Vector2> waypoints)
+        public RobotPath(Team team, int id, List<Point2> waypoints)
         {
             Team = team;
             ID = id;
@@ -116,7 +116,7 @@ namespace RFC.Core
         /// </summary>
         /// <param name="waypoints"></param>
         /// <returns></returns>
-        private List<RobotInfo> makeRobotInfoList(int id, List<Vector2> waypoints)
+        private List<RobotInfo> makeRobotInfoList(int id, List<Point2> waypoints)
         {
             List<RobotInfo> retlst = new List<RobotInfo>();
             double orientation = 0;

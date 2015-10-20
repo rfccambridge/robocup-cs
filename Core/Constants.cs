@@ -185,114 +185,114 @@ namespace RFC.Core
 			//BASIC LOCATIONS----------------------------------------------------------------------
 
 			/// <summary> Top left corner of field </summary>
-			volatile Vector2 _TOP_LEFT; public Vector2 TOP_LEFT => _TOP_LEFT;
+			volatile Point2 _TOP_LEFT; public Point2 TOP_LEFT => _TOP_LEFT;
 
 			/// <summary> Bottom left corner of field </summary>
-			volatile Vector2 _BOTTOM_LEFT; public Vector2 BOTTOM_LEFT => _BOTTOM_LEFT;
+			volatile Point2 _BOTTOM_LEFT; public Point2 BOTTOM_LEFT => _BOTTOM_LEFT;
 
 			/// <summary> Top right corner of field </summary>
-			volatile Vector2 _TOP_RIGHT; public Vector2 TOP_RIGHT => _TOP_RIGHT;
+			volatile Point2 _TOP_RIGHT; public Point2 TOP_RIGHT => _TOP_RIGHT;
 
 			/// <summary> Bottom right corner of field </summary>
-			volatile Vector2 _BOTTOM_RIGHT; public Vector2 BOTTOM_RIGHT => _BOTTOM_RIGHT;
+			volatile Point2 _BOTTOM_RIGHT; public Point2 BOTTOM_RIGHT => _BOTTOM_RIGHT;
 
 			/// <summary> Top center edge of field </summary>
-			volatile Vector2 _TOP; public Vector2 TOP => _TOP;
+			volatile Point2 _TOP; public Point2 TOP => _TOP;
 
 			/// <summary> Bottom center edge of field </summary>
-			volatile Vector2 _BOTTOM; public Vector2 BOTTOM => _BOTTOM;
+			volatile Point2 _BOTTOM; public Point2 BOTTOM => _BOTTOM;
 
 			/// <summary> Left center edge of field </summary>
-			volatile Vector2 _LEFT; public Vector2 LEFT => _LEFT;
+			volatile Point2 _LEFT; public Point2 LEFT => _LEFT;
 
 			/// <summary> Right center edge of field </summary>
-			volatile Vector2 _RIGHT; public Vector2 RIGHT => _RIGHT;
+			volatile Point2 _RIGHT; public Point2 RIGHT => _RIGHT;
 
 			/// <summary> Center of field </summary>
-			volatile Vector2 _CENTER; public Vector2 CENTER => _CENTER;
+			volatile Point2 _CENTER; public Point2 CENTER => _CENTER;
 
 
 			//QUADRANTS (octants, really)-----------------------------------------------------------------
 
 			/// <summary> Halfway in between center and top left corner </summary>
-			volatile Vector2 _TOP_LEFT_QUAD; public Vector2 TOP_LEFT_QUAD => _TOP_LEFT_QUAD;
+			volatile Point2 _TOP_LEFT_QUAD; public Point2 TOP_LEFT_QUAD => _TOP_LEFT_QUAD;
 
 			/// <summary> Halfway in between center and top left corner </summary>
-			volatile Vector2 _BOTTOM_LEFT_QUAD; public Vector2 BOTTOM_LEFT_QUAD => _BOTTOM_LEFT_QUAD;
+			volatile Point2 _BOTTOM_LEFT_QUAD; public Point2 BOTTOM_LEFT_QUAD => _BOTTOM_LEFT_QUAD;
 
 			/// <summary> Halfway in between center and bottom right corner  </summary>
-			volatile Vector2 _TOP_RIGHT_QUAD; public Vector2 TOP_RIGHT_QUAD => _TOP_RIGHT_QUAD;
+			volatile Point2 _TOP_RIGHT_QUAD; public Point2 TOP_RIGHT_QUAD => _TOP_RIGHT_QUAD;
 
 			/// <summary> Halfway in between center and bottom right corner </summary>
-			volatile Vector2 _BOTTOM_RIGHT_QUAD; public Vector2 BOTTOM_RIGHT_QUAD => _BOTTOM_RIGHT_QUAD;
+			volatile Point2 _BOTTOM_RIGHT_QUAD; public Point2 BOTTOM_RIGHT_QUAD => _BOTTOM_RIGHT_QUAD;
 
 			/// <summary> Halfway in between center and top edge </summary>
-			volatile Vector2 _TOP_QUAD; public Vector2 TOP_QUAD => _TOP_QUAD;
+			volatile Point2 _TOP_QUAD; public Point2 TOP_QUAD => _TOP_QUAD;
 
 			/// <summary> Halfway in between center and bottom edge </summary>
-			volatile Vector2 _BOTTOM_QUAD; public Vector2 BOTTOM_QUAD => _BOTTOM_QUAD;
+			volatile Point2 _BOTTOM_QUAD; public Point2 BOTTOM_QUAD => _BOTTOM_QUAD;
 
 			/// <summary> Halfway in between center and left edge </summary>
-			volatile Vector2 _LEFT_QUAD; public Vector2 LEFT_QUAD => _LEFT_QUAD;
+			volatile Point2 _LEFT_QUAD; public Point2 LEFT_QUAD => _LEFT_QUAD;
 
 			/// <summary> Halfway in between center and right edge </summary>
-			volatile Vector2 _RIGHT_QUAD; public Vector2 RIGHT_QUAD => _RIGHT_QUAD;
+			volatile Point2 _RIGHT_QUAD; public Point2 RIGHT_QUAD => _RIGHT_QUAD;
 
 
 			//GOAL---------------------------------------------------------
 
 			/// <summary> Center location of the opening of our goal, same as LEFT </summary>
-			volatile Vector2 _OUR_GOAL; public Vector2 OUR_GOAL => _OUR_GOAL;
+			volatile Point2 _OUR_GOAL; public Point2 OUR_GOAL => _OUR_GOAL;
 
 			/// <summary> Bottom point of our goal </summary>
-			volatile Vector2 _OUR_GOAL_BOTTOM; public Vector2 OUR_GOAL_BOTTOM => _OUR_GOAL_BOTTOM;
+			volatile Point2 _OUR_GOAL_BOTTOM; public Point2 OUR_GOAL_BOTTOM => _OUR_GOAL_BOTTOM;
 
 			/// <summary> Top point of our goal </summary>
-			volatile Vector2 _OUR_GOAL_TOP; public Vector2 OUR_GOAL_TOP => _OUR_GOAL_TOP;
+			volatile Point2 _OUR_GOAL_TOP; public Point2 OUR_GOAL_TOP => _OUR_GOAL_TOP;
 
 			/// <summary> Center location of the opening of their goal, same as RIGHT </summary>
-			volatile Vector2 _THEIR_GOAL; public Vector2 THEIR_GOAL => _THEIR_GOAL;
+			volatile Point2 _THEIR_GOAL; public Point2 THEIR_GOAL => _THEIR_GOAL;
 
 			/// <summary> Bottom point of their goal </summary>
-			volatile Vector2 _THEIR_GOAL_BOTTOM; public Vector2 THEIR_GOAL_BOTTOM => _THEIR_GOAL_BOTTOM;
+			volatile Point2 _THEIR_GOAL_BOTTOM; public Point2 THEIR_GOAL_BOTTOM => _THEIR_GOAL_BOTTOM;
 
 			/// <summary> Top point of their goal </summary>
-			volatile Vector2 _THEIR_GOAL_TOP; public Vector2 THEIR_GOAL_TOP => _THEIR_GOAL_TOP;
+			volatile Point2 _THEIR_GOAL_TOP; public Point2 THEIR_GOAL_TOP => _THEIR_GOAL_TOP;
 
 			/// <summary> Their PenaltyKick Mark </summary>
-			volatile Vector2 _THEIR_PENALTY_KICK_MARK; public Vector2 THEIR_PENALTY_KICK_MARK => _THEIR_PENALTY_KICK_MARK;
+			volatile Point2 _THEIR_PENALTY_KICK_MARK; public Point2 THEIR_PENALTY_KICK_MARK => _THEIR_PENALTY_KICK_MARK;
 
 			/// <summary> Our PenaltyKick Mark </summary>
-			volatile Vector2 _OUR_PENALTY_KICK_MARK; public Vector2 OUR_PENALTY_KICK_MARK => _OUR_PENALTY_KICK_MARK;
+			volatile Point2 _OUR_PENALTY_KICK_MARK; public Point2 OUR_PENALTY_KICK_MARK => _OUR_PENALTY_KICK_MARK;
 
 			//EXTENDED BOUNDS---------------------------------------------------------
 
 			/// <summary> Top left corner of field including ref zone </summary>
-			volatile Vector2 _EXTENDED_TOP_LEFT; public Vector2 EXTENDED_TOP_LEFT => _EXTENDED_TOP_LEFT;
+			volatile Point2 _EXTENDED_TOP_LEFT; public Point2 EXTENDED_TOP_LEFT => _EXTENDED_TOP_LEFT;
 
 			/// <summary> Bottom left corner of field including ref zone </summary>
-			volatile Vector2 _EXTENDED_BOTTOM_LEFT; public Vector2 EXTENDED_BOTTOM_LEFT => _EXTENDED_BOTTOM_LEFT;
+			volatile Point2 _EXTENDED_BOTTOM_LEFT; public Point2 EXTENDED_BOTTOM_LEFT => _EXTENDED_BOTTOM_LEFT;
 
 			/// <summary> Top right corner of field including ref zone </summary>
-			volatile Vector2 _EXTENDED_TOP_RIGHT; public Vector2 EXTENDED_TOP_RIGHT => _EXTENDED_TOP_RIGHT;
+			volatile Point2 _EXTENDED_TOP_RIGHT; public Point2 EXTENDED_TOP_RIGHT => _EXTENDED_TOP_RIGHT;
 
 			/// <summary> Bottom right corner of field including ref zone </summary>
-			volatile Vector2 _EXTENDED_BOTTOM_RIGHT; public Vector2 EXTENDED_BOTTOM_RIGHT => _EXTENDED_BOTTOM_RIGHT;
+			volatile Point2 _EXTENDED_BOTTOM_RIGHT; public Point2 EXTENDED_BOTTOM_RIGHT => _EXTENDED_BOTTOM_RIGHT;
 
 
 			//FULL BOUNDS---------------------------------------------------------
 
 			/// <summary> Top left corner of field including ref zone </summary>
-			volatile Vector2 _FULL_TOP_LEFT; public Vector2 FULL_TOP_LEFT => _FULL_TOP_LEFT;
+			volatile Point2 _FULL_TOP_LEFT; public Point2 FULL_TOP_LEFT => _FULL_TOP_LEFT;
 
 			/// <summary> Bottom left corner of field including ref zone </summary>
-			volatile Vector2 _FULL_BOTTOM_LEFT; public Vector2 FULL_BOTTOM_LEFT => _FULL_BOTTOM_LEFT;
+			volatile Point2 _FULL_BOTTOM_LEFT; public Point2 FULL_BOTTOM_LEFT => _FULL_BOTTOM_LEFT;
 
 			/// <summary> Top right corner of field including ref zone </summary>
-			volatile Vector2 _FULL_TOP_RIGHT; public Vector2 FULL_TOP_RIGHT => _FULL_TOP_RIGHT;
+			volatile Point2 _FULL_TOP_RIGHT; public Point2 FULL_TOP_RIGHT => _FULL_TOP_RIGHT;
 
 			/// <summary> Bottom right corner of field including ref zone </summary>
-			volatile Vector2 _FULL_BOTTOM_RIGHT; public Vector2 FULL_BOTTOM_RIGHT => _FULL_BOTTOM_RIGHT;
+			volatile Point2 _FULL_BOTTOM_RIGHT; public Point2 FULL_BOTTOM_RIGHT => _FULL_BOTTOM_RIGHT;
 
 			//LINES------------------------------------------------------------------------------
 
@@ -342,17 +342,17 @@ namespace RFC.Core
 				double dy = (float)ConstantsRaw.get<double>("plays", "FIELD_HEIGHT") / 2;
 				double dyg = (float)ConstantsRaw.get<double>("plays", "GOAL_HEIGHT") / 2;
 
-				_TOP_LEFT = new Vector2(-dx, dy);
-				_BOTTOM_LEFT = new Vector2(-dx, -dy);
-				_TOP_RIGHT = new Vector2(dx, dy);
-				_BOTTOM_RIGHT = new Vector2(dx, -dy);
-				_TOP = new Vector2(0, dy);
-				_BOTTOM = new Vector2(0, -dy);
-				_LEFT = new Vector2(-dx, 0);
-				_RIGHT = new Vector2(dx, 0);
-				_CENTER = new Vector2(0, 0);
+				_TOP_LEFT = new Point2(-dx, dy);
+				_BOTTOM_LEFT = new Point2(-dx, -dy);
+				_TOP_RIGHT = new Point2(dx, dy);
+				_BOTTOM_RIGHT = new Point2(dx, -dy);
+				_TOP = new Point2(0, dy);
+				_BOTTOM = new Point2(0, -dy);
+				_LEFT = new Point2(-dx, 0);
+				_RIGHT = new Point2(dx, 0);
+				_CENTER = new Point2(0, 0);
 
-                _TOP_LEFT_QUAD =     _TOP_LEFT     .lerp(_CENTER, 0.5);
+				_TOP_LEFT_QUAD =     _TOP_LEFT     .lerp(_CENTER, 0.5);
 				_BOTTOM_LEFT_QUAD =  _BOTTOM_LEFT  .lerp(_CENTER, 0.5);
 				_TOP_RIGHT_QUAD =    _TOP_RIGHT    .lerp(_CENTER, 0.5);
 				_BOTTOM_RIGHT_QUAD = _BOTTOM_RIGHT .lerp(_CENTER, 0.5);
@@ -361,27 +361,27 @@ namespace RFC.Core
 				_LEFT_QUAD =         _LEFT         .lerp(_CENTER, 0.5);
 				_RIGHT_QUAD =        _RIGHT        .lerp(_CENTER, 0.5);
 
-				_OUR_GOAL = new Vector2(-dx, 0);
-				_OUR_GOAL_BOTTOM = new Vector2(-dx, -dyg);
-				_OUR_GOAL_TOP = new Vector2(-dx, dyg);
-				_THEIR_GOAL = new Vector2(dx, 0);
-				_THEIR_GOAL_BOTTOM = new Vector2(dx, -dyg);
-				_THEIR_GOAL_TOP = new Vector2(dx, dyg);
+				_OUR_GOAL = new Point2(-dx, 0);
+				_OUR_GOAL_BOTTOM = new Point2(-dx, -dyg);
+				_OUR_GOAL_TOP = new Point2(-dx, dyg);
+				_THEIR_GOAL = new Point2(dx, 0);
+				_THEIR_GOAL_BOTTOM = new Point2(dx, -dyg);
+				_THEIR_GOAL_TOP = new Point2(dx, dyg);
 
 				_THEIR_PENALTY_KICK_MARK = _THEIR_GOAL - new Vector2(.75,0);
 				_OUR_PENALTY_KICK_MARK = _OUR_GOAL + new Vector2(.75,0);
 
 				double extwidth = ConstantsRaw.get<double>("plays", "EXTENDED_BORDER_WIDTH");
-				_EXTENDED_TOP_LEFT = new Vector2(-dx - extwidth, dy + extwidth);
-				_EXTENDED_BOTTOM_LEFT = new Vector2(-dx - extwidth, -dy - extwidth);
-				_EXTENDED_TOP_RIGHT = new Vector2(dx + extwidth, dy + extwidth);
-				_EXTENDED_BOTTOM_RIGHT = new Vector2(dx + extwidth, -dy - extwidth);
+				_EXTENDED_TOP_LEFT = new Point2(-dx - extwidth, dy + extwidth);
+				_EXTENDED_BOTTOM_LEFT = new Point2(-dx - extwidth, -dy - extwidth);
+				_EXTENDED_TOP_RIGHT = new Point2(dx + extwidth, dy + extwidth);
+				_EXTENDED_BOTTOM_RIGHT = new Point2(dx + extwidth, -dy - extwidth);
 
 				double refandextwidth = extwidth + ConstantsRaw.get<double>("plays", "REFEREE_ZONE_WIDTH");
-				_FULL_TOP_LEFT = new Vector2(-dx - refandextwidth, dy + refandextwidth);
-				_FULL_BOTTOM_LEFT = new Vector2(-dx - refandextwidth, -dy - refandextwidth);
-				_FULL_TOP_RIGHT = new Vector2(dx + refandextwidth, dy + refandextwidth);
-				_FULL_BOTTOM_RIGHT = new Vector2(dx + refandextwidth, -dy - refandextwidth);
+				_FULL_TOP_LEFT = new Point2(-dx - refandextwidth, dy + refandextwidth);
+				_FULL_BOTTOM_LEFT = new Point2(-dx - refandextwidth, -dy - refandextwidth);
+				_FULL_TOP_RIGHT = new Point2(dx + refandextwidth, dy + refandextwidth);
+				_FULL_BOTTOM_RIGHT = new Point2(dx + refandextwidth, -dy - refandextwidth);
 
 				List<Line> boundaryLines = new List<Line>();
 				boundaryLines.Add(new Line(_TOP_RIGHT, _TOP_LEFT));

@@ -24,7 +24,7 @@ namespace RFC.Strategy
         Progress progress;
         ServiceManager msngr;
         double critical_radius = .3;
-        Vector2 bounce_loc;
+        Point2 bounce_loc;
         int goalie_id;
 
         // constants used to make sure robots far away from shots going on
@@ -41,7 +41,7 @@ namespace RFC.Strategy
             msngr = ServiceManager.getServiceManager();
         }
 
-        public void reset(Vector2 bounce_loc)
+        public void reset(Point2 bounce_loc)
         {
             this.progress = Progress.Far;
             this.bounce_loc = bounce_loc;
