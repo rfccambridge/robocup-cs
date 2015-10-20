@@ -136,7 +136,7 @@ namespace RFC.Strategy
                     {
                         return new QuantifiedPosition(rob, map[rob.Position]);
                     }
-                    catch (IndexOutOfRangeException e)
+                    catch (IndexOutOfRangeException)
                     {
                         return null;
                     }

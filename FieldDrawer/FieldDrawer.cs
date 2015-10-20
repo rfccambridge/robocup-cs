@@ -506,7 +506,7 @@ namespace RFC.FieldDrawer
 
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Console.WriteLine("Markers already changed--cannot draw.");
                 }
@@ -762,7 +762,6 @@ namespace RFC.FieldDrawer
             GL.End();
 
             // Center circle
-            const int SLICES = 20;
             GL.LoadIdentity();
             GL.Translate(0, 0, 0);         
             drawCircle(CENTER_CIRCLE_RADIUS);
@@ -809,8 +808,8 @@ namespace RFC.FieldDrawer
 
         private void drawRobot(RobotDrawingInfo drawingInfo)
         {
-            const double ROBOT_ARC_SWEEP = 270; // degrees
-            const int SLICES = 10;
+            // const double ROBOT_ARC_SWEEP = 270; // degrees
+            // const int SLICES = 10;
 
             RobotInfo robot = drawingInfo.RobotInfo;
             double angle = (robot.Orientation + Math.PI) * 180 / Math.PI;
@@ -845,8 +844,6 @@ namespace RFC.FieldDrawer
 
         private void drawBall(BallInfo ball)
         {
-            const int SLICES = 8;
-            
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Translate(ball.Position.X, ball.Position.Y, 0);
@@ -884,7 +881,6 @@ namespace RFC.FieldDrawer
         private void drawPath(RobotPath path)
         {
             const double WAYPOINT_RADIUS = 0.02;
-            const int SLICES = 8;
 
             if (path.isEmpty())
                 return;

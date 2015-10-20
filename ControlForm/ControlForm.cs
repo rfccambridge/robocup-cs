@@ -71,7 +71,7 @@ namespace ControlForm
                     {
                         new SimulatorSender();
                     }
-                    catch (ConnectionRefusedException ex)
+                    catch (ConnectionRefusedException)
                     {
                         MessageBox.Show("Is the simulator running?", "Could not connect");
                         return false;
@@ -83,7 +83,7 @@ namespace ControlForm
                     {
                         new SerialSender(com);
                     }
-                    catch (IOException ex)
+                    catch (IOException)
                     {
                         MessageBox.Show("Could not open given serial port.", "Could not connect");
                         return false;

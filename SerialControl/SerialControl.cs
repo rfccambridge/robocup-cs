@@ -86,7 +86,7 @@ namespace RFC.SerialControl
                 timer.Enabled = true;
                 timer.Tick += timer_Tick;
             }
-            catch (IOException ex)
+            catch (IOException)
             {
                 MessageBox.Show("Could not open given serial port.");
             }
