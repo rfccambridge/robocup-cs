@@ -113,7 +113,7 @@ namespace RFC.Geometry
     /// A point, ie location, in 2D space
     /// </summary>
     [Serializable]
-    public class Point2 : CartesianPair<Point2>
+    public class Point2 : CartesianPair<Point2>, IGeom<Point2>
     {
         public Point2(double x, double y) : base(x, y) { }
 
@@ -170,6 +170,12 @@ namespace RFC.Geometry
         {
             return new Point2(X * (1 - f) + other.X * f, Y * (1 - f) + other.Y * f);
         }
+
+        // Implement IGeom
+        Point2 IGeom<Point2>.translate(Vector2 v) => this + v;
+        IGeom IGeom.translate(Vector2 v) => this + v;
+        IGeom IGeom.rotateAroundPoint(Point2 p, double angle) => rotateAroundPoint(p, angle);
+        bool IGeom.contains(Point2 target) => this == target;
     }
 
     /// <summary>
