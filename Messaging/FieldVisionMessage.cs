@@ -105,7 +105,7 @@ namespace RFC.Messaging
             }
         }
 
-        public string bio()
+        public override string bio()
         {
             string rep = DateTime.Now.TimeOfDay + ", ";
             foreach (RobotInfo rob in robots[Team.Yellow])

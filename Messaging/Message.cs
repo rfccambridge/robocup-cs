@@ -13,7 +13,7 @@ namespace RFC.Messaging
     {
         // print information about what this message is
         // messages can override to provide more useful / readable information
-        public string bio()
+        public virtual string bio()
         {
             return this.ToString();
         }
