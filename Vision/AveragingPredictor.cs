@@ -79,7 +79,8 @@ namespace RFC.Vision
             // preparing messages
             if (ball != null)
             {
-                BallVisionMessage ball_msg = new BallVisionMessage(Flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
+                if (Flipped) ball = new BallInfo(-ball.Position, -ball.Velocity);
+                BallVisionMessage ball_msg = new BallVisionMessage(ball);
                 messenger.SendMessage<BallVisionMessage>(ball_msg);
             }
             else
@@ -88,7 +89,7 @@ namespace RFC.Vision
             }
 
             RobotVisionMessage robots_msg = new RobotVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
-            FieldVisionMessage all_msg = new FieldVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow), Flipped ? new BallInfo(-ball.Position, -ball.Velocity) : ball);
+            FieldVisionMessage all_msg = new FieldVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow), ball);
 
             // sending message containing new data
             filter.Update(all_msg);
