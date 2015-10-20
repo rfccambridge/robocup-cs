@@ -373,19 +373,21 @@ namespace RFC.PathPlanning
             {
                 if (g is Circle)
                 {
-                    if ((src - ((Circle)g).Center) * rayUnit <= 0 && GeomFuncs.intersects(seg, (Circle)g))
+                    Circle c = g as Circle;
+                    if ((src - c.Center) * rayUnit <= 0 && GeomFuncs.intersects(seg, c))
                         return false;
                 }
                 else if (g is Rectangle)
                 {
-                    if (((Rectangle)g).contains(src))
+                    Rectangle r = g as Rectangle;
+                    if (r.contains(src))
                     {
-                        if (((Rectangle)g).ShortestDirectionOut(src) * rayUnit <= 0)
+                        if (r.ShortestDirectionOut(src) * rayUnit <= 0)
                             return false;
                     }
                     else
                     {
-                        if (GeomFuncs.intersects(seg, (Rectangle)g))
+                        if (GeomFuncs.intersects(seg, r))
                             return false;
                     }
                 }
