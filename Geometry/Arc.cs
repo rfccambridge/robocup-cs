@@ -10,7 +10,7 @@ namespace RFC.Geometry
     /// they will essentially behave like circles, or negative angles, in which case the arc will go clockwise 
     /// instead of counterclockwise.
     /// </summary>
-    public class Arc : Geom<Arc>
+    public class Arc : GeomBase<Arc>
     {
         const double TWOPI = Geometry.Angle.TWOPI;
 

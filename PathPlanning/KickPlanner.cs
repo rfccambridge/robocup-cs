@@ -61,7 +61,7 @@ namespace RFC.PathPlanning
             RobotInfo idealFollowThrough = new RobotInfo(followThroughPosition, angle,robot.Team, robot.ID);
 
             // checking if we're close enough to start the actual kick
-            Geom closeRegion = new LineSegment(ball.Position, position - 50*offset).offset(dist_threshold);
+            IGeom closeRegion = new LineSegment(ball.Position, position - 50*offset).offset(dist_threshold);
 
             if (AngUtils.compare(angle, robot.Orientation) < heading_threshold && closeRegion.contains(robot.Position))
             {

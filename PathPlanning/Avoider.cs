@@ -18,12 +18,12 @@ namespace RFC.PathPlanning
                 return false;
 
             // if its a goalie we skip over checking the left defense area
-            List<Geom> copy = new List<Geom>(Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA);
+            List<IGeom> copy = new List<IGeom>(Constants.FieldPts.LEFT_EXTENDED_DEFENSE_AREA);
             if (!is_goalie && copy.Any(g => g.contains(target)))
                 return false;
 
 
-            List<Geom> copy2 = new List<Geom>(Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA);
+            List<IGeom> copy2 = new List<IGeom>(Constants.FieldPts.RIGHT_EXTENDED_DEFENSE_AREA);
             if (copy2.Any(g => g.contains(target)))
                 return false;
 

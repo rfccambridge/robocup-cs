@@ -8,7 +8,7 @@ namespace RFC.Geometry
     /// <summary>
     /// A robot shape. Circular arc, with a flat front part.
     /// </summary>
-    public class RobotShape : Geom<RobotShape>
+    public class RobotShape : GeomBase<RobotShape>
     {
         public Arc Arc { get; private set; }
         public LineSegment Segment { get; private set; }

@@ -33,7 +33,7 @@ namespace RFC.Strategy
 
     public class OffenseStrategy
     {
-        public List<Geom> stateCheck;
+        public List<IGeom> stateCheck;
         public enum State { Normal, Shot, BounceShot };
         private State state;
 
@@ -282,7 +282,7 @@ namespace RFC.Strategy
                 // Console.WriteLine("switching to bounce shot");
                 LineSegment between = new LineSegment(shootingRobot.Position, (bouncingRobot.Position - shootingRobot.Position).cartesianAngle());
                 LineSegment toGoal = new LineSegment(bouncingRobot.Position, Shot1.evaluate(fieldVision, team, bouncingRobot.Position).target - bouncingRobot.Position);
-                stateCheck = new List<Geom>();
+                stateCheck = new List<IGeom>();
                 stateCheck.Add(between.offset(Constants.Basic.ROBOT_RADIUS * 5));
                 stateCheck.Add(toGoal.offset(Constants.Basic.ROBOT_RADIUS * 5));
                 playStartTime = DateTime.Now;

@@ -9,7 +9,7 @@ namespace RFC.Geometry
     /// for intersections and distances, the line is treated as infinitely extended in both directions.
     /// For a line segment, see LineSegment.
     /// </summary>
-    public class Line : Geom<Line>
+    public class Line : GeomBase<Line>
     {
         /// <summary>
         /// The starting point defining this line
@@ -182,7 +182,7 @@ namespace RFC.Geometry
     /// <summary>
     /// A line segment.
     /// </summary>
-    public class LineSegment : Geom<LineSegment>
+    public class LineSegment : GeomBase<LineSegment>
     {
         private Line l;
 

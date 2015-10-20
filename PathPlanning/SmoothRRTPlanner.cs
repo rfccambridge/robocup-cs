@@ -307,7 +307,7 @@ namespace RFC.PathPlanning
 
         //Check if the given extension by nextSegment would be allowed by all the obstacles
         private bool IsAllowedByObstacles(RobotInfo currentState, Vector2 src, Vector2 nextSegment, double curTime,
-            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal, List<Geom> obstacles)
+            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal, List<IGeom> obstacles)
         {
             Vector2 dest = src + nextSegment;
             Vector2 ray = nextSegment;
@@ -369,7 +369,7 @@ namespace RFC.PathPlanning
 
             //Test destination against all other obstacles
             LineSegment seg = new LineSegment(src, dest);
-            foreach (Geom g in obstacles)
+            foreach (IGeom g in obstacles)
             {
                 if (g is Circle)
                 {
@@ -526,7 +526,7 @@ namespace RFC.PathPlanning
 
         //Check if extending according to nextSegment (the position offset vector) would hit obstacles.
         private RRTNode TryVsObstacles(RobotInfo currentState, RRTNode node, TwoDTreeMap<RRTNode> map, Vector2 nextSegment,
-            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal, List<Geom> obstacles)
+            BallInfo ball, List<RobotInfo> robots, double avoidBallRadius, Vector2 goal, List<IGeom> obstacles)
         {
             Vector2 nextVel = nextSegment.normalizeToLength(ROBOT_VELOCITY);
 
@@ -560,7 +560,7 @@ namespace RFC.PathPlanning
 
         //Get a path!
         private List<Vector2> GetPathTo(RobotInfo currentState, Vector2 desiredPosition, List<RobotInfo> robots,
-            BallInfo ball, double avoidBallRadius, List<Geom> obstacles)
+            BallInfo ball, double avoidBallRadius, List<IGeom> obstacles)
         {
             double mapXMin = Math.Min(currentState.Position.X, desiredPosition.X) - 0.3;
             double mapYMin = Math.Min(currentState.Position.Y, desiredPosition.Y) - 0.3;
@@ -687,7 +687,7 @@ namespace RFC.PathPlanning
 
         //Try a bunch of paths and take the best one
         private List<Vector2> GetBestPointPath(Team team, int id, RobotInfo desiredState,
-            double avoidBallRadius, RobotPath oldPath, List<Geom> obstacles)
+            double avoidBallRadius, RobotPath oldPath, List<IGeom> obstacles)
         {
             ServiceManager sm = ServiceManager.getServiceManager();
             RobotVisionMessage robotVision = sm.GetLastMessage<RobotVisionMessage>();
@@ -822,7 +822,7 @@ namespace RFC.PathPlanning
 
         //Top level function
         public RobotPath GetPath(RobotInfo desiredState, double avoidBallRadius,
-            RobotPath oldPath, List<Geom> obstacles)
+            RobotPath oldPath, List<IGeom> obstacles)
         {
             Team team = desiredState.Team;
             int id = desiredState.ID;
@@ -890,7 +890,7 @@ namespace RFC.PathPlanning
             RobotPath oldPath, DefenseAreaAvoid leftAvoid, DefenseAreaAvoid rightAvoid)
         {
             //Build obstacle list
-            List<Geom> obstacles = new List<Geom>();
+            List<IGeom> obstacles = new List<IGeom>();
             /*
             obstacles.Add(ExpandLeft(Constants.FieldPts.LEFT_GOAL_BOX));
             obstacles.Add(ExpandRight(Constants.FieldPts.RIGHT_GOAL_BOX));

@@ -8,7 +8,7 @@ namespace RFC.Geometry
     /// <summary>
     /// Represents a geometry expanded by a distance in all directions
     /// </summary>
-    public class OffsetGeom<T> : Geom<OffsetGeom<T>> where T : Geom<T>
+    public class OffsetGeom<T> : GeomBase<OffsetGeom<T>> where T : IGeom<T>
     {
         private readonly T _inner;
         private readonly double _offset;
@@ -39,7 +39,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Shorthand for creating a new OffsetGeom
         /// </summary>
-        public static OffsetGeom<T> offset<T>(this T geom, double dist) where T : Geom<T>
+        public static OffsetGeom<T> offset<T>(this T geom, double dist) where T : IGeom<T>
         {
             return new OffsetGeom<T>(geom, dist);
         }

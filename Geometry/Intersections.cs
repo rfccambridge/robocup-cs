@@ -26,7 +26,7 @@ namespace RFC.Geometry
         /// Tests if two Geom objects intersect.
         /// If one entirely contains another, this also counts as intersection.
         /// </summary>
-        static public bool intersects(Geom g0, Geom g1)
+        static public bool intersects(IGeom g0, IGeom g1)
         {
             if (g0 is Line)
             {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RFC.Geometry
 {
-    public class Circle : Geom<Circle>
+    public class Circle : GeomBase<Circle>
     {
         public Vector2 Center { get; private set; }
         public double Radius { get; private set; }

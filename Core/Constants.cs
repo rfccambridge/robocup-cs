@@ -324,16 +324,16 @@ namespace RFC.Core
 
 			//OTHER------------------------------------------------------------------------------
 			/// <summary> A list of shapes that together compose the defense area  </summary>
-			volatile IList<Geom> _LEFT_DEFENSE_AREA; public IList<Geom> LEFT_DEFENSE_AREA => _LEFT_DEFENSE_AREA;
+			volatile IList<IGeom> _LEFT_DEFENSE_AREA; public IList<IGeom> LEFT_DEFENSE_AREA => _LEFT_DEFENSE_AREA;
 
 			/// <summary> A list of shapes that together compose the defense area  </summary>
-			volatile IList<Geom> _RIGHT_DEFENSE_AREA; public IList<Geom> RIGHT_DEFENSE_AREA => _RIGHT_DEFENSE_AREA;
+			volatile IList<IGeom> _RIGHT_DEFENSE_AREA; public IList<IGeom> RIGHT_DEFENSE_AREA => _RIGHT_DEFENSE_AREA;
 
 			/// <summary> A list of shapes that together compose the extended defense area  </summary>
-			volatile IList<Geom> _LEFT_EXTENDED_DEFENSE_AREA; public IList<Geom> LEFT_EXTENDED_DEFENSE_AREA => _LEFT_EXTENDED_DEFENSE_AREA;
+			volatile IList<IGeom> _LEFT_EXTENDED_DEFENSE_AREA; public IList<IGeom> LEFT_EXTENDED_DEFENSE_AREA => _LEFT_EXTENDED_DEFENSE_AREA;
 
 			/// <summary> A list of shapes that together compose the defense area  </summary>
-			volatile IList<Geom> _RIGHT_EXTENDED_DEFENSE_AREA; public IList<Geom> RIGHT_EXTENDED_DEFENSE_AREA => _RIGHT_EXTENDED_DEFENSE_AREA;
+			volatile IList<IGeom> _RIGHT_EXTENDED_DEFENSE_AREA; public IList<IGeom> RIGHT_EXTENDED_DEFENSE_AREA => _RIGHT_EXTENDED_DEFENSE_AREA;
 
 
 			internal FieldPtsType()
@@ -417,10 +417,10 @@ namespace RFC.Core
 				double dr = ConstantsRaw.get<double>("plays", "DEFENSE_AREA_RADIUS");
 				double edr = ConstantsRaw.get<double>("plays", "EXTENDED_DEFENSE_AREA_RADIUS");
 
-				List<Geom> lda = new List<Geom>();
-				List<Geom> rda = new List<Geom>();
-				List<Geom> leda = new List<Geom>();
-				List<Geom> reda = new List<Geom>();
+				List<IGeom> lda = new List<IGeom>();
+				List<IGeom> rda = new List<IGeom>();
+				List<IGeom> leda = new List<IGeom>();
+				List<IGeom> reda = new List<IGeom>();
 				lda.Add(new Rectangle(-dx, -dx + dr, -drh / 2, drh / 2));
 				rda.Add(new Rectangle(dx - dr, dx, -drh / 2, drh / 2));
 				leda.Add(new Rectangle(-dx, -dx + edr, -drh / 2, drh / 2));
