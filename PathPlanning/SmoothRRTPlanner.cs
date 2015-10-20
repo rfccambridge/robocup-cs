@@ -788,8 +788,8 @@ namespace RFC.PathPlanning
                         double closestDist = OLDPATH_AGREEMENT_DIST;
                         for (int k = 0; k < oldPath.Waypoints.Count - 1; k++)
                         {
-                            Line seg = new Line(oldPath.Waypoints[k + 1].Position, oldPath.Waypoints[k].Position);
-                            double dist = seg.Segment.distance(pathLoc);
+                            LineSegment seg = new LineSegment(oldPath.Waypoints[k + 1].Position, oldPath.Waypoints[k].Position);
+                            double dist = seg.distance(pathLoc);
                             if (dist < closestDist)
                                 closestDist = dist;
                         }

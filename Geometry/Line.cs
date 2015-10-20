@@ -47,12 +47,6 @@ namespace RFC.Geometry
         { get { return P1 - P0; } }
 
         /// <summary>
-        /// The finite line segment defined by the same points as this line
-        /// </summary>
-        public LineSegment Segment
-        { get { return new LineSegment(this); } }
-
-        /// <summary>
         /// Returns a line with the start and end reversed.
         /// </summary>
         public static Line operator -(Line l)

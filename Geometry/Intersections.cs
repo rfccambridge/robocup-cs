@@ -119,13 +119,13 @@ namespace RFC.Geometry
                 return true;
             if (a1.Angle == 0)
                 return false;
-            Line endpointLine = new Line(a1.StartPt, a1.StopPt);
-            if (endpointLine.Direction == Vector2.ZERO)
+            LineSegment endpointSeg = new LineSegment(a1.StartPt, a1.StopPt);
+            if (endpointSeg.Direction == Vector2.ZERO)
                 return false;
-            if (intersects(a0, endpointLine.Segment))
+            if (intersects(a0, endpointSeg))
                 return true;
             Vector2 closestPoint = a0.closestPointTo(a1.Center);
-            return endpointLine.signedDistance(closestPoint) * a1.Angle <= 0;
+            return endpointSeg.Line.signedDistance(closestPoint) * a1.Angle <= 0;
         }
         static public bool intersects(Arc a0, Line a1)
         { return intersects(a1, a0); }
