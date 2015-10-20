@@ -168,7 +168,7 @@ namespace RFC.Geometry
         /// Note: floating point imprecision may be a problem here!
         /// </summary>
         ///         
-        public bool contains(Vector2 p)
+        public override bool contains(Vector2 p)
         {
             return signedDistance(p) == 0;
         }
