@@ -5,7 +5,10 @@ using System.Drawing;
 
 namespace RFC.Geometry
 {
-    public abstract class BaseVector2
+    /// <summary>
+    /// An immutable cartesian pair of (X, Y), with no prescribed use
+    /// </summary>
+    public abstract class CartesianPair
     {
         /// <summary>
         /// The x-coordinate of this vector
@@ -20,14 +23,14 @@ namespace RFC.Geometry
         /// <summary>
         /// Creates a zero Vector2
         /// </summary>
-        public BaseVector2() : this(0, 0) { }
+        public CartesianPair() : this(0, 0) { }
 
         /// <summary>
         /// Creates a new Vector2
         /// </summary>
         /// <param name="x">the x-coordinate</param>
         /// <param name="y">the y-coordinate</param>
-        public BaseVector2(double x, double y)
+        internal CartesianPair(double x, double y)
         {
             this.X = x;
             this.Y = y;
@@ -41,15 +44,24 @@ namespace RFC.Geometry
             return String.Format("<{0:G4},{1:G4}>", X, Y);
         }
     }
-    public abstract class BaseVector2<T> : BaseVector2, IEquatable<T> where T : BaseVector2<T>
+
+    /// <summary>
+    /// A base class to implement equality within a type of cartesian pair
+    /// This is separate from the non-generic class to ensure that:
+    /// 
+    ///     new Vector2(1, 2) != new Point2(1, 2)
+    /// 
+    /// Is a compile-time error, as points are not meaninfully comparable to vectors
+    /// </summary>
+    public abstract class CartesianPair<T> : CartesianPair, IEquatable<T> where T : CartesianPair<T>
     {
-        public BaseVector2(double x, double y) : base(x, y) { }
+        public CartesianPair(double x, double y) : base(x, y) { }
 
         /// <summary>
         /// Checks for equality between two Vector2's.  Since the class is
         /// immutable, does value-equality.
         /// </summary>
-        public static bool operator ==(BaseVector2<T> p1, BaseVector2<T> p2)
+        public static bool operator ==(CartesianPair<T> p1, CartesianPair<T> p2)
         {
             if (object.ReferenceEquals(p1, null))
                 return (object.ReferenceEquals(p2, null));
@@ -62,7 +74,7 @@ namespace RFC.Geometry
         /// Checks for inequality between two Vector2's.  Since the class is
         /// immutable, does value-equality.
         /// </summary>
-        public static bool operator !=(BaseVector2<T> p1, BaseVector2<T> p2)
+        public static bool operator !=(CartesianPair<T> p1, CartesianPair<T> p2)
         {
             return !(p1 == p2);
         }
@@ -73,7 +85,7 @@ namespace RFC.Geometry
         /// </summary>
         public override bool Equals(object obj)
         {
-            BaseVector2<T> v = obj as BaseVector2<T>;
+            CartesianPair<T> v = obj as CartesianPair<T>;
             if (v == null)
                 return false;
             return (X == v.X && Y == v.Y);
@@ -89,7 +101,7 @@ namespace RFC.Geometry
         }
 
         /// <summary>
-        /// Returns a hash code of this Vector2.
+        /// Returns a hash code of this CartesianPair.
         /// </summary>
         public override int GetHashCode()
         {
@@ -97,19 +109,23 @@ namespace RFC.Geometry
         }
     }
 
+    /// <summary>
+    /// A point, ie location, in 2D space
+    /// </summary>
     [Serializable]
-    public class Point2 : BaseVector2<Point2>
+    public class Point2 : CartesianPair<Point2>
     {
         public Point2(double x, double y) : base(x, y) { }
 
-        public static readonly Point2 ORIGIN;
-        static Point2() {
-            ORIGIN = new Point2(0, 0);
-        }
-
+        public static Point2 ORIGIN { get; } = new Point2(0, 0);
+        /// <summary>returns the original point translated by a vector</summary>
         static public Point2  operator +(Point2 p1, Vector2 p2) => new Point2(p1.X + p2.X, p1.Y + p2.Y);
+        /// <summary>returns the original point translated by a vector</summary>
         static public Point2  operator +(Vector2 p1, Point2 p2) => new Point2(p1.X + p2.X, p1.Y + p2.Y);
-        static public Point2  operator -(Point2 p1,  Vector2 p2) => new Point2(p1.X - p2.X, p1.Y - p2.Y);
+
+        /// <summary>returns the original point untranslated by a vector</summary>
+        static public Point2  operator -(Point2 p1, Vector2 p2) => new Point2(p1.X - p2.X, p1.Y - p2.Y);
+        /// <summary>returns the vector from the second point to the first point</summary>
         static public Vector2 operator -(Point2 p1, Point2 p2) => new Vector2(p1.X - p2.X, p1.Y - p2.Y);
 
         /// <summary>
@@ -145,6 +161,11 @@ namespace RFC.Geometry
             return (X - p2.X) * (X - p2.X) + (Y - p2.Y) * (Y - p2.Y);
         }
 
+        /// <summary>
+        /// Linearly interpolate between this point and the target
+        /// </summary>
+        /// <param name="f">The amount to interpolate. 0 results in the first point being
+        /// returned, 1 resutls in the second being returned</param>
         public Point2 lerp(Point2 other, double f)
         {
             return new Point2(X * (1 - f) + other.X * f, Y * (1 - f) + other.Y * f);
@@ -152,11 +173,13 @@ namespace RFC.Geometry
     }
 
     /// <summary>
-    /// An immutable class that represents a point in 2D space, or a vector in 2D space.
+    /// An immutable class that represents a vector in 2D space. Used to represent
+    /// * Directions
+    /// * Distances between two Point2s
+    /// * Velocities
     /// </summary>
-    /// 
     [Serializable]
-    public class Vector2 : BaseVector2<Vector2>
+    public class Vector2 : CartesianPair<Vector2>
     {
         /// <summary>
         /// Creates a zero Vector2
@@ -187,12 +210,11 @@ namespace RFC.Geometry
         /// <summary>
         /// Gets a unit vector in the desired orientation, in radians
         /// </summary>
+        /// <param name="orientation">The counter-clockwise angle from the vector [1, 0]</param>
         static public Vector2 GetUnitVector(double orientation)
         {
             return new Vector2(Math.Cos(orientation), Math.Sin(orientation));
         }
-
-        
         
         /// <summary>
         /// Returns the square of the length of this vector.
@@ -282,9 +304,6 @@ namespace RFC.Geometry
         /// <summary>
         /// Cross product
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <returns></returns>
         static public double cross(Vector2 v1, Vector2 v2)
         {
             return v1.X * v2.Y - v1.Y * v2.X;
@@ -324,8 +343,7 @@ namespace RFC.Geometry
             double s = Math.Sin(angle);
             return new Vector2(c * X - s * Y, c * Y + s * X); 
         }
-
-
+        
         /// <summary>
         /// Returns a vector that is this vector rotated 1/4 of a turn in the
         /// counterclockwise direction.
@@ -383,37 +401,31 @@ namespace RFC.Geometry
 
         /// <summary>
         /// Returns the z-component of the crossproduct P2P1 x P2P3
+        /// Equivalent to <code>Vector2.cross(p1 - p2, p3 - p2)</code>
         /// </summary>
         static public double crossproduct(Point2 p1, Point2 p2, Point2 p3)
         {
             return (p1.X - p2.X) * (p3.Y - p2.Y) - (p3.X - p2.X) * (p1.Y - p2.Y);
         }
         /// <summary>
-        /// Returns the dotproduct of P2P1 and P2P3
+        /// Returns the dot product of P2P1 and P2P3
+        /// Equivalent to (p1 - p2) * (p3 - p2)
         /// </summary>
         static public double dotproduct(Point2 p1, Point2 p2, Point2 p3)
         {
             return (p1.X - p2.X) * (p3.X - p2.X) + (p1.Y - p2.Y) * (p3.Y - p2.Y);
         }
 
-
         /// <summary>
         /// Parses a Vector2 from the string format of ToString().  There is not much guarantee about
         /// how constant the string representation will be, however.
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
         static public Vector2 Parse(string s)
         {
             string[] split = s.Trim('<', '>', ' ').Split(',');
             if (split.Length != 2)
                 throw new FormatException("invalid format for Vector2: " + s);
             return new Vector2(double.Parse(split[0]), double.Parse(split[1]));
-        }
-
-        public Vector2 lerp(Vector2 other, double f)
-        {
-            return new Vector2(X * (1 - f) + other.X * f, Y * (1 - f) + other.Y * f);
         }
     }
 }
