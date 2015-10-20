@@ -373,5 +373,10 @@ namespace RFC.Geometry
                 throw new FormatException("invalid format for Vector2: " + s);
             return new Vector2(double.Parse(split[0]), double.Parse(split[1]));
         }
+
+        public Vector2 lerp(Vector2 other, double f)
+        {
+            return new Vector2(X * (1 - f) + other.X * f, Y * (1 - f) + other.Y * f);
+        }
     }
 }

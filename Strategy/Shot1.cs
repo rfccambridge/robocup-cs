@@ -122,7 +122,7 @@ namespace RFC.Strategy
             }
 
             // returning the angle in the middle and how wide an angle we have
-            if (index == -1) return new ShotOpportunity((top + bottom)/2, 0);
+            if (index == -1) return new ShotOpportunity(top.lerp(bottom, 0.5), 0);
             double shot_angle = ((statuses[2 * index + 1].d + statuses[index * 2].d) / 2.0);
             double arc = open_arc[index];
 

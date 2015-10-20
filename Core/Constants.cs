@@ -352,14 +352,14 @@ namespace RFC.Core
 				_RIGHT = new Vector2(dx, 0);
 				_CENTER = new Vector2(0, 0);
 
-				_TOP_LEFT_QUAD =     (_TOP_LEFT     + _CENTER) / 2.0;
-				_BOTTOM_LEFT_QUAD =  (_BOTTOM_LEFT  + _CENTER) / 2.0;
-				_TOP_RIGHT_QUAD =    (_TOP_RIGHT    + _CENTER) / 2.0;
-				_BOTTOM_RIGHT_QUAD = (_BOTTOM_RIGHT + _CENTER) / 2.0;
-				_TOP_QUAD =          (_TOP          + _CENTER) / 2.0;
-				_BOTTOM_QUAD =       (_BOTTOM       + _CENTER) / 2.0;
-				_LEFT_QUAD =         (_LEFT         + _CENTER) / 2.0;
-				_RIGHT_QUAD =        (_RIGHT        + _CENTER) / 2.0;
+                _TOP_LEFT_QUAD =     _TOP_LEFT     .lerp(_CENTER, 0.5);
+				_BOTTOM_LEFT_QUAD =  _BOTTOM_LEFT  .lerp(_CENTER, 0.5);
+				_TOP_RIGHT_QUAD =    _TOP_RIGHT    .lerp(_CENTER, 0.5);
+				_BOTTOM_RIGHT_QUAD = _BOTTOM_RIGHT .lerp(_CENTER, 0.5);
+				_TOP_QUAD =          _TOP          .lerp(_CENTER, 0.5);
+				_BOTTOM_QUAD =       _BOTTOM       .lerp(_CENTER, 0.5);
+				_LEFT_QUAD =         _LEFT         .lerp(_CENTER, 0.5);
+				_RIGHT_QUAD =        _RIGHT        .lerp(_CENTER, 0.5);
 
 				_OUR_GOAL = new Vector2(-dx, 0);
 				_OUR_GOAL_BOTTOM = new Vector2(-dx, -dyg);
