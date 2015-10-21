@@ -10,7 +10,7 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class GoalieTest
+    public class GoalieTest : IMessageHandler<FieldVisionMessage>, IMessageHandler<StopMessage>
     {
 
         Team team;
@@ -25,18 +25,14 @@ namespace RFC.Strategy
             this.team = team;
             goalie = new Goalie(team, id);
             object lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
-            msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+            msngr.RegisterListener(this.LockingOn<StopMessage>(lockObject));
+            msngr.RegisterListener(this.Queued<FieldVisionMessage>(lockObject));
 
             // static debug
-
-
-
-
         }
 
-        public void Handle(FieldVisionMessage fieldVision)
+        public void HandleMessage(FieldVisionMessage fieldVision)
         {
             if (!first && fieldVision.GetRobots(team).Count() > 0)
             {
@@ -48,7 +44,7 @@ namespace RFC.Strategy
 
         }
 
-        public void stopMessageHandler(StopMessage message)
+        public void HandleMessage(StopMessage message)
         {
             stopped = true;
         }

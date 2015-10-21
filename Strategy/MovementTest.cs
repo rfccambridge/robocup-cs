@@ -10,7 +10,7 @@ using System.Drawing;
 
 namespace RFC.Strategy
 {
-    public class MovementTest
+    public class MovementTest : IMessageHandler<StopMessage>, IMessageHandler<RobotVisionMessage>
     {
         const double TOLERANCE = .02;
 
@@ -30,12 +30,12 @@ namespace RFC.Strategy
             this.team = team;
 
             object lockObject = new object();
-            new QueuedMessageHandler<RobotVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
-            msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+            msngr.RegisterListener(this.LockingOn<StopMessage>(lockObject));
+            msngr.RegisterListener(this.Queued<RobotVisionMessage>(lockObject));
         }
 
-        public void Handle(RobotVisionMessage robotVision)
+        public void HandleMessage(RobotVisionMessage robotVision)
         {
             if (!stopped && robotVision.GetRobots().Count > 0)
             {
@@ -58,7 +58,7 @@ namespace RFC.Strategy
             }
         }
 
-        public void stopMessageHandler(StopMessage message)
+        public void HandleMessage(StopMessage message)
         {
             stopped = true;
         }

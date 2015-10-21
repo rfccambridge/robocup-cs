@@ -29,7 +29,7 @@ namespace RFC.Strategy
             this.currentState = NormalBehavior.State.Unknown;
             this.fd = fd;
             this.lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
+            msngr.RegisterListener(this.Queued<FieldVisionMessage>(lockObject));
         }
 
         public void HandleMessage(FieldVisionMessage msg)

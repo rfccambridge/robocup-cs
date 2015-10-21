@@ -21,7 +21,7 @@ namespace RFC.Strategy
             this.msngr = ServiceManager.getServiceManager();
             penaltyKickBehavior = new PenaltyKickBehavior(this.team, this.goalie_id);
             object lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
+            msngr.RegisterListener(this.Queued<FieldVisionMessage>(lockObject));
         }
 
         public void HandleMessage(FieldVisionMessage msg)

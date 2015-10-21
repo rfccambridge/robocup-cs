@@ -20,7 +20,7 @@ namespace RFC.PathPlanning
             this.msngr = ServiceManager.getServiceManager();
             this.team = team;
             object lockObj = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(this, lockObj);
+            msngr.RegisterListener(this.Queued<FieldVisionMessage>(lockObj));
             this.threshold = Constants.Basic.ROBOT_RADIUS * 1.5;
             this.threshold = this.threshold * this.threshold;
             this.dists = new Dictionary<int, double>();

@@ -9,19 +9,18 @@ using RFC.Geometry;
 namespace RFC.Strategy
 {
 	
-	public class AlexTest
+	public class AlexTest : IMessageHandler<FieldVisionMessage>
 	{
         DefenseStrategy defenseStrategy;
 		
 		public AlexTest(Team myTeam, int goalie_id)
 		{
 			object lockObject = new object();
+            var msngr = ServiceManager.getServiceManager();
             defenseStrategy = new DefenseStrategy(myTeam, goalie_id, DefenseStrategy.PlayType.Defense);
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
-			
-			
+            msngr.RegisterListener(this.Queued(lockObject));
 		}
-		public void Handle(FieldVisionMessage msg)
+		public void HandleMessage(FieldVisionMessage msg)
         {
             System.Threading.Thread.Sleep(100);
             defenseStrategy.DefenseCommand(msg, 1, false, .5);

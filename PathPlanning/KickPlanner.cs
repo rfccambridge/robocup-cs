@@ -9,7 +9,7 @@ using RFC.Utilities;
 
 namespace RFC.PathPlanning
 {
-    public class KickPlanner
+    public class KickPlanner :IMessageHandler<KickMessage>
     {
         // angle and distance to go from setting up to kick
         // to actually kicking
@@ -26,11 +26,11 @@ namespace RFC.PathPlanning
         public KickPlanner()
         {
             object lockObject = new object();
-            new QueuedMessageHandler<KickMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
+            msngr.RegisterListener(this.Queued<KickMessage>(lockObject));
         }
 
-        public void Handle(KickMessage kick)
+        public void HandleMessage(KickMessage kick)
         {
             BallVisionMessage bvm = msngr.GetLastMessage<BallVisionMessage>();
             if (bvm == null)

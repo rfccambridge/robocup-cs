@@ -23,7 +23,8 @@ namespace RFC.Commands
         {
             string port = "COM" + comNumber;
             _comPort = SerialPortManager.OpenSerialPort(port);
-            new QueuedMessageHandler<CommandMessage>(this, new object());
+            var msngr = ServiceManager.getServiceManager();
+            msngr.RegisterListener(this.Queued<CommandMessage>(new object()));
             // indexed [command, robot]
             timesSent = new int[Enum.GetNames(typeof(RobotCommand.Command)).Length,RFC.Core.Constants.Basic.NUM_ROBOTS];
             msSent = new DateTime[Enum.GetNames(typeof(RobotCommand.Command)).Length,RFC.Core.Constants.Basic.NUM_ROBOTS];
