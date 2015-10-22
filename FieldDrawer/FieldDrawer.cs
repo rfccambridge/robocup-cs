@@ -63,7 +63,7 @@ namespace RFC.FieldDrawer
             public string PlayName;
             public string AdditionalInfo;
             public RobotPath Path;
-        
+
             public RobotDrawingInfo(RobotInfo robotInfo)
             {
                 RobotInfo = robotInfo;
@@ -97,7 +97,7 @@ namespace RFC.FieldDrawer
 
                 DoDrawOrientation = true;
                 Orientation = orientation;
-            }                
+            }
         }
 
         private class Arrow
@@ -106,7 +106,7 @@ namespace RFC.FieldDrawer
             public Color Color;
 
             public Arrow(Point2 toPoint, Color color)
-            {         
+            {
                 ToPoint = toPoint;
                 Color = color;
             }
@@ -118,7 +118,7 @@ namespace RFC.FieldDrawer
             public BallInfo Ball;
             public Dictionary<int, Marker> Markers = new Dictionary<int, Marker>();
 
-            public int NextRobotHandle = 0;            
+            public int NextRobotHandle = 0;
             public int NextMarkerHandle = 0;
 
             public State()
@@ -128,7 +128,7 @@ namespace RFC.FieldDrawer
             }
 
             public void Clear()
-            {                
+            {
                 Robots[Team.Yellow].Clear();
                 Robots[Team.Blue].Clear();
                 Ball = null;
@@ -136,7 +136,7 @@ namespace RFC.FieldDrawer
 
                 NextRobotHandle = 0;
                 NextMarkerHandle = 0;
-          }
+            }
         }
 
         const double MARKER_SIZE = 0.02;
@@ -157,7 +157,7 @@ namespace RFC.FieldDrawer
         double FIELD_FULL_YMIN;
         double FIELD_FULL_YMAX;
 
-        FieldDrawerForm _fieldDrawerForm; 
+        FieldDrawerForm _fieldDrawerForm;
         State _bufferedState = new State();
         State _state = new State();
         object _stateLock = new object();
@@ -293,14 +293,14 @@ namespace RFC.FieldDrawer
                     DrawPath(msg.Path);
                 }
             }
-            
+
         }
 
         public void HandleMessage(RobotDestinationMessage msg)
         {
             if (debug_motion)
             {
-                lock(_stateLock)
+                lock (_stateLock)
                 {
                     DrawArrow(msg.Destination.Team, msg.Destination.ID, ArrowType.Destination, msg.Destination.Position);
                 }
@@ -326,7 +326,7 @@ namespace RFC.FieldDrawer
             _glControlWidth = w;
             _glControlHeight = h;
             GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
-        }       
+        }
 
         public void Show()
         {
@@ -343,7 +343,8 @@ namespace RFC.FieldDrawer
             Point2 pt = controlToFieldCoords(loc);
             _draggedMarker = null;
             _movedDraggedMarker = false;
-            lock (_stateLock) {
+            lock (_stateLock)
+            {
                 foreach (Marker marker in _state.Markers.Values)
                     if (ptInsideMarker(marker, pt))
                         _draggedMarker = marker;
@@ -425,20 +426,21 @@ namespace RFC.FieldDrawer
             }
         }*/
 
-        public void UpdateState() {
+        public void UpdateState()
+        {
             lock (_stateLock)
             {
                 // Apply the modifications stored in the buffer
 
                 if (_robotsAndBallUpdated)
                 {
-                    _state.Ball = _bufferedState.Ball;                    
+                    _state.Ball = _bufferedState.Ball;
                     foreach (Team team in Enum.GetValues(typeof(Team)))
                     {
                         _state.Robots[team].Clear();
                         foreach (KeyValuePair<int, RobotDrawingInfo> pair in _bufferedState.Robots[team])
                             _state.Robots[team].Add(pair.Key, pair.Value);
-                    }                    
+                    }
                 }
 
                 foreach (KeyValuePair<int, Marker> pair in _bufferedState.Markers)
@@ -482,9 +484,9 @@ namespace RFC.FieldDrawer
                 {
                     Console.WriteLine("Markers already changed--cannot draw.");
                 }
-                
+
                 foreach (Team team in Enum.GetValues(typeof(Team)))
-                    foreach (RobotDrawingInfo robot in _state.Robots[team].Values)                
+                    foreach (RobotDrawingInfo robot in _state.Robots[team].Values)
                         drawRobot(robot);
 
                 if (_state.Ball != null)
@@ -518,7 +520,7 @@ namespace RFC.FieldDrawer
             interpretFreqAvg = freq * prop + interpretFreqAvg * (1.0 - prop);
             _fieldDrawerForm.UpdateInterpretFreq(interpretFreqAvg);
         }
-        
+
         public void UpdateInterpretDuration(double duration)
         {
             if (interpretDurationCnt < NUM_VALUES_TO_AVG)
@@ -533,7 +535,7 @@ namespace RFC.FieldDrawer
         {
             _fieldDrawerForm.UpdateLapDuration(duration);
         }
-        
+
         public void UpdateControllerDuration(double duration)
         {
             if (controllerDurationCnt < NUM_VALUES_TO_AVG)
@@ -546,14 +548,14 @@ namespace RFC.FieldDrawer
 
         public void UpdatePlayName(Team team, int robotID, string name)
         {
-            if(team == _team)
+            if (team == _team)
                 _fieldDrawerForm.UpdatePlayName(name);
             lock (_collectingStateLock)
             {
                 if (!_collectingState)
                     return;
                 if (_bufferedState.Robots[team].ContainsKey(robotID))
-                    _bufferedState.Robots[team][robotID].PlayName = name + (_robotInfos[team].ContainsKey(robotID) ? _robotInfos[team][robotID] : "");                
+                    _bufferedState.Robots[team][robotID].PlayName = name + (_robotInfos[team].ContainsKey(robotID) ? _robotInfos[team][robotID] : "");
             }
         }
 
@@ -584,7 +586,7 @@ namespace RFC.FieldDrawer
 
         public void ClearMarkers()
         {
-            
+
             lock (_collectingStateLock)
             {
                 if (!_collectingState)
@@ -592,8 +594,8 @@ namespace RFC.FieldDrawer
                 _bufferedState.Markers.Clear();
                 _state.Markers.Clear();
             }
-             
-            
+
+
         }
         public int AddMarker(Point2 location, Color color)
         {
@@ -614,7 +616,7 @@ namespace RFC.FieldDrawer
                     return handle;
                 }
             }
-            
+
         }
         public void RemoveMarker(int handle)
         {
@@ -636,7 +638,8 @@ namespace RFC.FieldDrawer
         }
         public Color GetMarkerColor(int handle)
         {
-            lock (_stateLock) {
+            lock (_stateLock)
+            {
                 return _state.Markers[handle].Color;
             }
         }
@@ -645,7 +648,8 @@ namespace RFC.FieldDrawer
         {
             Color color = Color.Black;
 
-            switch (type) {
+            switch (type)
+            {
                 case ArrowType.Destination: color = Color.Red; break;
                 case ArrowType.Waypoint: color = Color.LightPink; break;
             }
@@ -673,7 +677,7 @@ namespace RFC.FieldDrawer
                     _bufferedState.Robots[team][robotID].Path = path;
             }
         }
-        
+
 
         private bool ptInsideMarker(Marker marker, Point2 pt)
         {
