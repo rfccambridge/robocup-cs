@@ -559,7 +559,6 @@ namespace RFC.FieldDrawer
 
         public void ClearMarkers()
         {
-
             lock (_collectingStateLock)
             {
                 if (!_collectingState)
@@ -567,8 +566,6 @@ namespace RFC.FieldDrawer
                 _bufferedState.Markers.Clear();
                 _state.Markers.Clear();
             }
-
-
         }
         public int AddMarker(Point2 location, Color color)
         {
@@ -654,10 +651,8 @@ namespace RFC.FieldDrawer
 
         private bool ptInsideMarker(Marker marker, Point2 pt)
         {
-            if (pt.X < marker.Location.X - Marker.SIZE || pt.X > marker.Location.X + Marker.SIZE
-                || pt.Y < marker.Location.Y - Marker.SIZE || pt.Y > marker.Location.Y + Marker.SIZE)
-                return false;
-            return true;
+            return !(pt.X < marker.Location.X - Marker.SIZE || pt.X > marker.Location.X + Marker.SIZE
+                || pt.Y < marker.Location.Y - Marker.SIZE || pt.Y > marker.Location.Y + Marker.SIZE);
         }
 
         private Point2 controlToFieldCoords(Point loc)
