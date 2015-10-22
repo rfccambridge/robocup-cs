@@ -172,7 +172,6 @@ namespace RFC.FieldDrawer
         double _glControlWidth;
         double _glControlHeight;
 
-        IntPtr _ballQuadric, _centerCircleQuadric, _robotQuadric;
         OpenTK.Graphics.TextPrinter _printer = new OpenTK.Graphics.TextPrinter();
         double[] _modelViewMatrix = new double[16];
         double[] _projectionMatrix = new double[16];
@@ -228,14 +227,6 @@ namespace RFC.FieldDrawer
 
             Resize(w, h);
 
-            _ballQuadric = OpenTK.Graphics.Glu.NewQuadric();
-            OpenTK.Graphics.Glu.QuadricDrawStyle(_ballQuadric, OpenTK.Graphics.QuadricDrawStyle.Fill);
-
-            _centerCircleQuadric = OpenTK.Graphics.Glu.NewQuadric();
-            OpenTK.Graphics.Glu.QuadricDrawStyle(_centerCircleQuadric, OpenTK.Graphics.QuadricDrawStyle.Silhouette);
-
-            _robotQuadric = OpenTK.Graphics.Glu.NewQuadric();
-            OpenTK.Graphics.Glu.QuadricDrawStyle(_robotQuadric, OpenTK.Graphics.QuadricDrawStyle.Line);
 
             _robotInfos = new Dictionary<Team, Dictionary<int, string>>();
             _robotInfos.Add(Team.Blue, new Dictionary<int, string>());
