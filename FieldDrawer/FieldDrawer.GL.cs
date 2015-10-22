@@ -8,6 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//Disable warnings about deprecated objects (the GLU classes)
+#pragma warning disable 0612, 0618
+
 namespace RFC.FieldDrawer
 {
     partial class FieldDrawer
@@ -323,3 +326,5 @@ namespace RFC.FieldDrawer
         }
     }
 }
+
+#pragma warning restore 0612, 0618
