@@ -346,16 +346,14 @@ namespace RFC.FieldDrawer
             {
                 if (loc.X < 0 || loc.X > _glControlWidth || loc.Y < 0 || loc.Y > _glControlHeight)
                 {
-                    if (WaypointRemoved != null)
-                        WaypointRemoved(this, new EventArgs<WaypointInfo>(
+                    WaypointRemoved?.Invoke(this, new EventArgs<WaypointInfo>(
                                                 new WaypointInfo(_draggedMarker.Object, _draggedMarker.Color)));
                 }
 
                 if (!_movedDraggedMarker)
                 {
                     _draggedMarker.Orientation += Math.PI / 8;
-                    if (WaypointMoved != null)
-                        WaypointMoved(this, new EventArgs<WaypointMovedInfo>(
+                    WaypointMoved?.Invoke(this, new EventArgs<WaypointMovedInfo>(
                                                 new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
                 }
                 _draggedMarker = null;
@@ -372,8 +370,7 @@ namespace RFC.FieldDrawer
                 lock (_collectingStateLock)
                 {
                     _draggedMarker.Location = pt;
-                    if (WaypointMoved != null)
-                        WaypointMoved(this, new EventArgs<WaypointMovedInfo>(
+                    WaypointMoved?.Invoke(this, new EventArgs<WaypointMovedInfo>(
                                                 new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
                 }
             }
@@ -387,8 +384,7 @@ namespace RFC.FieldDrawer
                 EventArgs<WaypointInfo> eventArgs = obj as EventArgs<WaypointInfo>;
                 RobotInfo waypoint = eventArgs.Data.Object as RobotInfo;
                 waypoint.Position = controlToFieldCoords(loc);
-                if (WaypointAdded != null)
-                    WaypointAdded(this, eventArgs);
+                WaypointAdded?.Invoke(this, eventArgs);
             }
         }
 
