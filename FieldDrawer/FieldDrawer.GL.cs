@@ -170,18 +170,18 @@ namespace RFC.FieldDrawer
             if (!marker.DoDrawOrientation)
             {
                 GL.Begin(BeginMode.Quads);
-                GL.Vertex2(-MARKER_SIZE, MARKER_SIZE);
-                GL.Vertex2(MARKER_SIZE, MARKER_SIZE);
-                GL.Vertex2(MARKER_SIZE, -MARKER_SIZE);
-                GL.Vertex2(-MARKER_SIZE, -MARKER_SIZE);
+                GL.Vertex2(-Marker.SIZE, Marker.SIZE);
+                GL.Vertex2(Marker.SIZE, Marker.SIZE);
+                GL.Vertex2(Marker.SIZE, -Marker.SIZE);
+                GL.Vertex2(-Marker.SIZE, -Marker.SIZE);
                 GL.End();
             }
             else
             {
                 GL.Begin(BeginMode.Triangles);
-                GL.Vertex2(MARKER_SIZE * 2, 0);
-                GL.Vertex2(-MARKER_SIZE * 2, MARKER_SIZE);
-                GL.Vertex2(-MARKER_SIZE * 2, -MARKER_SIZE);
+                GL.Vertex2(Marker.SIZE * 2, 0);
+                GL.Vertex2(-Marker.SIZE * 2, Marker.SIZE);
+                GL.Vertex2(-Marker.SIZE * 2, -Marker.SIZE);
                 GL.End();
             }
         }

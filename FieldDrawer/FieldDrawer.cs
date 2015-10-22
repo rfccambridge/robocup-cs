@@ -70,6 +70,8 @@ namespace RFC.FieldDrawer
 
         private class Marker
         {
+            public const double SIZE = 0.02;
+
             public Point2 Location;
             public Color Color;
             public object Object;
@@ -137,7 +139,6 @@ namespace RFC.FieldDrawer
             }
         }
 
-        const double MARKER_SIZE = 0.02;
 
         //Local copies of constants for the field size and parameters
         //They will not change when constants are reloaded!
@@ -663,8 +664,8 @@ namespace RFC.FieldDrawer
 
         private bool ptInsideMarker(Marker marker, Point2 pt)
         {
-            if (pt.X < marker.Location.X - MARKER_SIZE || pt.X > marker.Location.X + MARKER_SIZE
-                || pt.Y < marker.Location.Y - MARKER_SIZE || pt.Y > marker.Location.Y + MARKER_SIZE)
+            if (pt.X < marker.Location.X - Marker.SIZE || pt.X > marker.Location.X + Marker.SIZE
+                || pt.Y < marker.Location.Y - Marker.SIZE || pt.Y > marker.Location.Y + Marker.SIZE)
                 return false;
             return true;
         }
