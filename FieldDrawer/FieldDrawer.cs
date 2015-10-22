@@ -168,14 +168,6 @@ namespace RFC.FieldDrawer
         Marker _draggedMarker; //The marker currently being dragged
         bool _movedDraggedMarker; //Have we ever moved this marker since the start of the drag?
 
-        double _glControlWidth;
-        double _glControlHeight;
-
-        OpenTK.Graphics.TextPrinter _printer = new OpenTK.Graphics.TextPrinter();
-        double[] _modelViewMatrix = new double[16];
-        double[] _projectionMatrix = new double[16];
-        int[] _viewport = new int[4];
-
         const int NUM_VALUES_TO_AVG = 30;
         double interpretFreqAvg, interpretDurationAvg, controllerDurationAvg;
         int interpretFreqCnt = 0, interpretDurationCnt = 0, controllerDurationCnt = 0;
@@ -310,9 +302,7 @@ namespace RFC.FieldDrawer
 
         public void Resize(int w, int h)
         {
-            _glControlWidth = w;
-            _glControlHeight = h;
-            GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
+            resizeGL(w, h);
         }
 
         public void Show()

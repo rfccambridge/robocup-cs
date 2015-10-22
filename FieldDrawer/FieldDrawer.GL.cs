@@ -15,6 +15,20 @@ namespace RFC.FieldDrawer
 {
     partial class FieldDrawer
     {
+        OpenTK.Graphics.TextPrinter _printer = new OpenTK.Graphics.TextPrinter();
+        double[] _modelViewMatrix = new double[16];
+        double[] _projectionMatrix = new double[16];
+        int[] _viewport = new int[4];
+        double _glControlWidth;
+        double _glControlHeight;
+
+        private void resizeGL(int w, int h)
+        {
+            _glControlWidth = w;
+            _glControlHeight = h;
+            GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
+        }
+
         private void updateProjection()
         {
             double actualAspect = _glControlWidth / _glControlHeight;
