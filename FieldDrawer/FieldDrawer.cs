@@ -213,7 +213,7 @@ namespace RFC.FieldDrawer
             msngr.RegisterListener(this.Queued<VisualDebugMessage<Lattice<Color>>>(new object()));
         }
 
-        public void Init(int w, int h)
+        public void Init()
         {
             GL.ClearColor(Color.DarkGreen);
             GL.Enable(EnableCap.Blend);
@@ -221,10 +221,7 @@ namespace RFC.FieldDrawer
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            Resize(w, h);
-
+            GL.LoadIdentity();            
 
             _robotInfos = new Dictionary<Team, Dictionary<int, string>>();
             _robotInfos.Add(Team.Blue, new Dictionary<int, string>());
