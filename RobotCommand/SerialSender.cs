@@ -19,24 +19,25 @@ namespace RFC.Commands
         private const int RESET_TIME = 5000;
         private const byte MAX_SEND = 3;
 
-        public SerialSender(int comNumber)
+        public SerialSender(string portName)
         {
-            string port = "COM" + comNumber;
-            _comPort = SerialPortManager.OpenSerialPort(port);
+            _comPort = SerialPortManager.OpenSerialPort(portName);
             var msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener(this.Queued<CommandMessage>(new object()));
             // indexed [command, robot]
-            timesSent = new int[Enum.GetNames(typeof(RobotCommand.Command)).Length,RFC.Core.Constants.Basic.NUM_ROBOTS];
-            msSent = new DateTime[Enum.GetNames(typeof(RobotCommand.Command)).Length,RFC.Core.Constants.Basic.NUM_ROBOTS];
+            timesSent = new int[Enum.GetNames(typeof(RobotCommand.Command)).Length, RFC.Core.Constants.Basic.NUM_ROBOTS];
+            msSent = new DateTime[Enum.GetNames(typeof(RobotCommand.Command)).Length, RFC.Core.Constants.Basic.NUM_ROBOTS];
             for (int i = 0; i < Enum.GetNames(typeof(RobotCommand.Command)).Length; i++)
             {
                 for (int j = 0; j < RFC.Core.Constants.Basic.NUM_ROBOTS; j++)
                 {
-                    timesSent[i,j] = 0;
-                    msSent[i,j] = DateTime.Now;
+                    timesSent[i, j] = 0;
+                    msSent[i, j] = DateTime.Now;
                 }
             }
         }
+        [Obsolete("Pass the full com port name")]
+        public SerialSender(int comNumber) : this("COM" + comNumber) { }
 
         public void HandleMessage(CommandMessage message)
         {
