@@ -8,8 +8,6 @@ using RFC.Geometry;
 using RFC.Messaging;
 using RFC.Utilities;
 
-//Disable warnings about deprecated objects (the GLU classes)
-#pragma warning disable 0612, 0618
 
 namespace RFC.FieldDrawer
 {
@@ -42,7 +40,7 @@ namespace RFC.FieldDrawer
         }
     }
 
-    public class FieldDrawer : IMessageHandler<RobotVisionMessage>,
+    public partial class FieldDrawer : IMessageHandler<RobotVisionMessage>,
                             IMessageHandler<BallVisionMessage>,
                             IMessageHandler<VisualDebugMessage>,
                             IMessageHandler<VisualDebugMessage<Lattice<Color>>>,
@@ -63,7 +61,7 @@ namespace RFC.FieldDrawer
             public string PlayName;
             public string AdditionalInfo;
             public RobotPath Path;
-        
+
             public RobotDrawingInfo(RobotInfo robotInfo)
             {
                 RobotInfo = robotInfo;
@@ -72,6 +70,8 @@ namespace RFC.FieldDrawer
 
         private class Marker
         {
+            public const double SIZE = 0.02;
+
             public Point2 Location;
             public Color Color;
             public object Object;
@@ -97,7 +97,7 @@ namespace RFC.FieldDrawer
 
                 DoDrawOrientation = true;
                 Orientation = orientation;
-            }                
+            }
         }
 
         private class Arrow
@@ -106,7 +106,7 @@ namespace RFC.FieldDrawer
             public Color Color;
 
             public Arrow(Point2 toPoint, Color color)
-            {         
+            {
                 ToPoint = toPoint;
                 Color = color;
             }
@@ -118,7 +118,7 @@ namespace RFC.FieldDrawer
             public BallInfo Ball;
             public Dictionary<int, Marker> Markers = new Dictionary<int, Marker>();
 
-            public int NextRobotHandle = 0;            
+            public int NextRobotHandle = 0;
             public int NextMarkerHandle = 0;
 
             public State()
@@ -128,7 +128,7 @@ namespace RFC.FieldDrawer
             }
 
             public void Clear()
-            {                
+            {
                 Robots[Team.Yellow].Clear();
                 Robots[Team.Blue].Clear();
                 Ball = null;
@@ -136,10 +136,9 @@ namespace RFC.FieldDrawer
 
                 NextRobotHandle = 0;
                 NextMarkerHandle = 0;
-          }
+            }
         }
 
-        const double MARKER_SIZE = 0.02;
 
         //Local copies of constants for the field size and parameters
         //They will not change when constants are reloaded!
@@ -157,7 +156,7 @@ namespace RFC.FieldDrawer
         double FIELD_FULL_YMIN;
         double FIELD_FULL_YMAX;
 
-        FieldDrawerForm _fieldDrawerForm; 
+        FieldDrawerForm _fieldDrawerForm;
         State _bufferedState = new State();
         State _state = new State();
         object _stateLock = new object();
@@ -168,15 +167,6 @@ namespace RFC.FieldDrawer
         //Marker drag and drop
         Marker _draggedMarker; //The marker currently being dragged
         bool _movedDraggedMarker; //Have we ever moved this marker since the start of the drag?
-
-        double _glControlWidth;
-        double _glControlHeight;
-
-        IntPtr _ballQuadric, _centerCircleQuadric, _robotQuadric;
-        OpenTK.Graphics.TextPrinter _printer = new OpenTK.Graphics.TextPrinter();
-        double[] _modelViewMatrix = new double[16];
-        double[] _projectionMatrix = new double[16];
-        int[] _viewport = new int[4];
 
         const int NUM_VALUES_TO_AVG = 30;
         double interpretFreqAvg, interpretDurationAvg, controllerDurationAvg;
@@ -216,7 +206,7 @@ namespace RFC.FieldDrawer
             msngr.RegisterListener(this.Queued<VisualDebugMessage<Lattice<Color>>>(new object()));
         }
 
-        public void Init(int w, int h)
+        public void Init()
         {
             GL.ClearColor(Color.DarkGreen);
             GL.Enable(EnableCap.Blend);
@@ -224,18 +214,7 @@ namespace RFC.FieldDrawer
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            Resize(w, h);
-
-            _ballQuadric = OpenTK.Graphics.Glu.NewQuadric();
-            OpenTK.Graphics.Glu.QuadricDrawStyle(_ballQuadric, OpenTK.Graphics.QuadricDrawStyle.Fill);
-
-            _centerCircleQuadric = OpenTK.Graphics.Glu.NewQuadric();
-            OpenTK.Graphics.Glu.QuadricDrawStyle(_centerCircleQuadric, OpenTK.Graphics.QuadricDrawStyle.Silhouette);
-
-            _robotQuadric = OpenTK.Graphics.Glu.NewQuadric();
-            OpenTK.Graphics.Glu.QuadricDrawStyle(_robotQuadric, OpenTK.Graphics.QuadricDrawStyle.Line);
+            GL.LoadIdentity();            
 
             _robotInfos = new Dictionary<Team, Dictionary<int, string>>();
             _robotInfos.Add(Team.Blue, new Dictionary<int, string>());
@@ -293,14 +272,14 @@ namespace RFC.FieldDrawer
                     DrawPath(msg.Path);
                 }
             }
-            
+
         }
 
         public void HandleMessage(RobotDestinationMessage msg)
         {
             if (debug_motion)
             {
-                lock(_stateLock)
+                lock (_stateLock)
                 {
                     DrawArrow(msg.Destination.Team, msg.Destination.ID, ArrowType.Destination, msg.Destination.Position);
                 }
@@ -321,40 +300,10 @@ namespace RFC.FieldDrawer
             }
         }
 
-        private void updateProjection()
-        {
-            double actualAspect = _glControlWidth / _glControlHeight;
-            double desiredW = FIELD_FULL_XMAX - FIELD_FULL_XMIN;
-            double desiredH = FIELD_FULL_YMAX - FIELD_FULL_YMIN;
-            double desiredAspect = desiredW / desiredH;
-
-            double marginX = 0, marginY = 0;
-
-            if (actualAspect > desiredAspect)
-            {
-                // render window is wider than field
-                marginX = (desiredH * actualAspect - desiredW) / 2;
-            }
-            else
-            {
-                // render window is taller than field
-                marginY = (desiredW / actualAspect - desiredH) / 2;
-            }
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-            GL.Ortho(
-                FIELD_FULL_XMIN - marginX, FIELD_FULL_XMAX + marginX,
-                FIELD_FULL_YMIN - marginY, FIELD_FULL_YMAX + marginY,
-                -1, 1
-            );
-        }
-
         public void Resize(int w, int h)
         {
-            _glControlWidth = w;
-            _glControlHeight = h;
-            GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
-        }       
+            resizeGL(w, h);
+        }
 
         public void Show()
         {
@@ -371,7 +320,8 @@ namespace RFC.FieldDrawer
             Point2 pt = controlToFieldCoords(loc);
             _draggedMarker = null;
             _movedDraggedMarker = false;
-            lock (_stateLock) {
+            lock (_stateLock)
+            {
                 foreach (Marker marker in _state.Markers.Values)
                     if (ptInsideMarker(marker, pt))
                         _draggedMarker = marker;
@@ -384,16 +334,14 @@ namespace RFC.FieldDrawer
             {
                 if (loc.X < 0 || loc.X > _glControlWidth || loc.Y < 0 || loc.Y > _glControlHeight)
                 {
-                    if (WaypointRemoved != null)
-                        WaypointRemoved(this, new EventArgs<WaypointInfo>(
+                    WaypointRemoved?.Invoke(this, new EventArgs<WaypointInfo>(
                                                 new WaypointInfo(_draggedMarker.Object, _draggedMarker.Color)));
                 }
 
                 if (!_movedDraggedMarker)
                 {
                     _draggedMarker.Orientation += Math.PI / 8;
-                    if (WaypointMoved != null)
-                        WaypointMoved(this, new EventArgs<WaypointMovedInfo>(
+                    WaypointMoved?.Invoke(this, new EventArgs<WaypointMovedInfo>(
                                                 new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
                 }
                 _draggedMarker = null;
@@ -410,8 +358,7 @@ namespace RFC.FieldDrawer
                 lock (_collectingStateLock)
                 {
                     _draggedMarker.Location = pt;
-                    if (WaypointMoved != null)
-                        WaypointMoved(this, new EventArgs<WaypointMovedInfo>(
+                    WaypointMoved?.Invoke(this, new EventArgs<WaypointMovedInfo>(
                                                 new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
                 }
             }
@@ -425,8 +372,7 @@ namespace RFC.FieldDrawer
                 EventArgs<WaypointInfo> eventArgs = obj as EventArgs<WaypointInfo>;
                 RobotInfo waypoint = eventArgs.Data.Object as RobotInfo;
                 waypoint.Position = controlToFieldCoords(loc);
-                if (WaypointAdded != null)
-                    WaypointAdded(this, eventArgs);
+                WaypointAdded?.Invoke(this, eventArgs);
             }
         }
 
@@ -453,20 +399,21 @@ namespace RFC.FieldDrawer
             }
         }*/
 
-        public void UpdateState() {
+        public void UpdateState()
+        {
             lock (_stateLock)
             {
                 // Apply the modifications stored in the buffer
 
                 if (_robotsAndBallUpdated)
                 {
-                    _state.Ball = _bufferedState.Ball;                    
+                    _state.Ball = _bufferedState.Ball;
                     foreach (Team team in Enum.GetValues(typeof(Team)))
                     {
                         _state.Robots[team].Clear();
                         foreach (KeyValuePair<int, RobotDrawingInfo> pair in _bufferedState.Robots[team])
                             _state.Robots[team].Add(pair.Key, pair.Value);
-                    }                    
+                    }
                 }
 
                 foreach (KeyValuePair<int, Marker> pair in _bufferedState.Markers)
@@ -510,36 +457,13 @@ namespace RFC.FieldDrawer
                 {
                     Console.WriteLine("Markers already changed--cannot draw.");
                 }
-                
+
                 foreach (Team team in Enum.GetValues(typeof(Team)))
-                    foreach (RobotDrawingInfo robot in _state.Robots[team].Values)                
+                    foreach (RobotDrawingInfo robot in _state.Robots[team].Values)
                         drawRobot(robot);
 
                 if (_state.Ball != null)
                     drawBall(_state.Ball);
-            }
-        }
-
-        private void drawLattice(Lattice<Color> l)
-        {
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            
-            for (int i = 0; i < l.Spec.Samples; i++)
-            {
-                for (int j = 0; j < l.Spec.Samples; j++)
-                {
-                    Geometry.Rectangle cell = l.Spec.indexToRect(i, j);
-                    Color c = l.Get(i, j);
-
-                    GL.Begin(BeginMode.Polygon);
-                    GL.Color4(c);
-                    GL.Vertex2(cell.XMin, cell.YMin);
-                    GL.Vertex2(cell.XMin, cell.YMax);
-                    GL.Vertex2(cell.XMax, cell.YMax);
-                    GL.Vertex2(cell.XMax, cell.YMin);
-                    GL.End();
-                }
             }
         }
 
@@ -569,7 +493,7 @@ namespace RFC.FieldDrawer
             interpretFreqAvg = freq * prop + interpretFreqAvg * (1.0 - prop);
             _fieldDrawerForm.UpdateInterpretFreq(interpretFreqAvg);
         }
-        
+
         public void UpdateInterpretDuration(double duration)
         {
             if (interpretDurationCnt < NUM_VALUES_TO_AVG)
@@ -584,7 +508,7 @@ namespace RFC.FieldDrawer
         {
             _fieldDrawerForm.UpdateLapDuration(duration);
         }
-        
+
         public void UpdateControllerDuration(double duration)
         {
             if (controllerDurationCnt < NUM_VALUES_TO_AVG)
@@ -597,14 +521,14 @@ namespace RFC.FieldDrawer
 
         public void UpdatePlayName(Team team, int robotID, string name)
         {
-            if(team == _team)
+            if (team == _team)
                 _fieldDrawerForm.UpdatePlayName(name);
             lock (_collectingStateLock)
             {
                 if (!_collectingState)
                     return;
                 if (_bufferedState.Robots[team].ContainsKey(robotID))
-                    _bufferedState.Robots[team][robotID].PlayName = name + (_robotInfos[team].ContainsKey(robotID) ? _robotInfos[team][robotID] : "");                
+                    _bufferedState.Robots[team][robotID].PlayName = name + (_robotInfos[team].ContainsKey(robotID) ? _robotInfos[team][robotID] : "");
             }
         }
 
@@ -635,7 +559,6 @@ namespace RFC.FieldDrawer
 
         public void ClearMarkers()
         {
-            
             lock (_collectingStateLock)
             {
                 if (!_collectingState)
@@ -643,8 +566,6 @@ namespace RFC.FieldDrawer
                 _bufferedState.Markers.Clear();
                 _state.Markers.Clear();
             }
-             
-            
         }
         public int AddMarker(Point2 location, Color color)
         {
@@ -665,7 +586,7 @@ namespace RFC.FieldDrawer
                     return handle;
                 }
             }
-            
+
         }
         public void RemoveMarker(int handle)
         {
@@ -687,7 +608,8 @@ namespace RFC.FieldDrawer
         }
         public Color GetMarkerColor(int handle)
         {
-            lock (_stateLock) {
+            lock (_stateLock)
+            {
                 return _state.Markers[handle].Color;
             }
         }
@@ -696,7 +618,8 @@ namespace RFC.FieldDrawer
         {
             Color color = Color.Black;
 
-            switch (type) {
+            switch (type)
+            {
                 case ArrowType.Destination: color = Color.Red; break;
                 case ArrowType.Waypoint: color = Color.LightPink; break;
             }
@@ -724,281 +647,12 @@ namespace RFC.FieldDrawer
                     _bufferedState.Robots[team][robotID].Path = path;
             }
         }
-        
 
-        private void drawField()
-        {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-
-            // Extended Field border
-            GL.Color3(Color.ForestGreen);
-            GL.Begin(BeginMode.LineLoop);
-            GL.Vertex2(-EXTENDED_FIELD_WIDTH / 2, -EXTENDED_FIELD_HEIGHT / 2);
-            GL.Vertex2(EXTENDED_FIELD_WIDTH / 2, -EXTENDED_FIELD_HEIGHT / 2);
-            GL.Vertex2(EXTENDED_FIELD_WIDTH / 2, EXTENDED_FIELD_HEIGHT / 2);
-            GL.Vertex2(-EXTENDED_FIELD_WIDTH / 2, EXTENDED_FIELD_HEIGHT / 2);
-            GL.End();
-
-            // Field border
-            GL.Color3(Color.White);
-            GL.Begin(BeginMode.LineLoop);
-            GL.Vertex2(-FIELD_WIDTH / 2, -FIELD_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2, -FIELD_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2, FIELD_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2, FIELD_HEIGHT / 2);
-            GL.End();
-
-            // Center line
-            GL.Begin(BeginMode.Lines);
-            GL.Vertex2(0, FIELD_HEIGHT / 2);
-            GL.Vertex2(0, -FIELD_HEIGHT / 2);
-            GL.End();
-            GL.Begin(BeginMode.Lines);
-            GL.Vertex2(FIELD_WIDTH / 2, 0);
-            GL.Vertex2(FIELD_WIDTH / 2, 0);
-            GL.End();
-
-            // Center circle
-            GL.LoadIdentity();
-            GL.Translate(0, 0, 0);         
-            drawCircle(CENTER_CIRCLE_RADIUS);
-            
-
-            //Goals
-            GL.Begin(BeginMode.LineLoop);
-            GL.Vertex2(-FIELD_WIDTH / 2, GOAL_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2 - GOAL_WIDTH, GOAL_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2 - GOAL_WIDTH, -GOAL_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2, -GOAL_HEIGHT / 2);
-            GL.End();
-
-            GL.Begin(BeginMode.LineLoop);
-            GL.Vertex2(FIELD_WIDTH / 2, GOAL_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2 + GOAL_WIDTH, GOAL_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2 + GOAL_WIDTH, -GOAL_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2, -GOAL_HEIGHT / 2);
-            GL.End();
-
-            //Defense areas
-            GL.LoadIdentity();
-            GL.Translate(-FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT/2, 0);      
-            drawPartialCircle(DEFENSE_AREA_RADIUS, 0, 90);
-            GL.LoadIdentity();
-            GL.Translate(-FIELD_WIDTH / 2, -DEFENSE_RECT_HEIGHT / 2, 0);
-            drawPartialCircle(DEFENSE_AREA_RADIUS, -90, 0);
-            GL.LoadIdentity();
-            GL.Translate(FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT / 2, 0);
-            drawPartialCircle(DEFENSE_AREA_RADIUS, 90, 180);
-            GL.LoadIdentity();
-            GL.Translate(FIELD_WIDTH / 2, -DEFENSE_RECT_HEIGHT / 2, 0);
-            drawPartialCircle(DEFENSE_AREA_RADIUS, 180, 270);
-            GL.LoadIdentity();
-            GL.Begin(BeginMode.Lines);
-            GL.Vertex2(-FIELD_WIDTH / 2 + DEFENSE_AREA_RADIUS, -DEFENSE_RECT_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2 + DEFENSE_AREA_RADIUS, DEFENSE_RECT_HEIGHT / 2);
-            GL.End();
-            GL.Begin(BeginMode.Lines);
-            GL.Vertex2(FIELD_WIDTH / 2 - DEFENSE_AREA_RADIUS, -DEFENSE_RECT_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2 - DEFENSE_AREA_RADIUS, DEFENSE_RECT_HEIGHT / 2);
-            GL.End();
-        }
-
-        private void drawRobot(RobotDrawingInfo drawingInfo)
-        {
-            // const double ROBOT_ARC_SWEEP = 270; // degrees
-            // const int SLICES = 10;
-
-            RobotInfo robot = drawingInfo.RobotInfo;
-            double angle = (robot.Orientation + Math.PI) * 180 / Math.PI;
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.Translate(robot.Position.X, robot.Position.Y, 0);
-            GL.Rotate(angle, 0, 0, 1);
-            GL.Color3(robot.Team == Team.Yellow ? Color.Yellow : Color.Blue);            
-            //GL.Begin(BeginMode.Polygon);
-
-            //OpenTK.Graphics.Glu.PartialDisk(_robotQuadric, 0, Constants.Basic.ROBOT_RADIUS, SLICES, 1,
-            //                                -(360 - ROBOT_ARC_SWEEP) / 2, ROBOT_ARC_SWEEP);
-            //GL.End();
-            // TODO: better drawing of robot
-            drawCircle(Constants.Basic.ROBOT_RADIUS, true);
-            
-            /*
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            // TODO: Figure out the real way to render text!
-            renderString(robot.ID.ToString(), robot.Position + new Vector2(-0.03, 0.045), Color.Red, 8);
-            renderString(drawingInfo.PlayName, robot.Position + new Vector2(-0.05, -0.05), Color.Cyan, 8);
-            */
-            
-            foreach (Arrow arrow in drawingInfo.Arrows.Values)                
-                drawArrow(robot.Position, arrow.ToPoint, arrow.Color);
-
-            if (drawingInfo.Path != null)
-                drawPath(drawingInfo.Path);
-        }
-
-        private void drawBall(BallInfo ball)
-        {
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.Translate(ball.Position.X, ball.Position.Y, 0);
-            GL.Color3(Color.Orange);
-            drawCircle(Constants.Basic.BALL_RADIUS, true);
-        }
-
-        private void drawMarker(Marker marker)
-        {            
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.Translate(marker.Location.X, marker.Location.Y, 0);
-            GL.Rotate(marker.Orientation * 180.0/Math.PI, 0, 0, 1.0);
-            GL.Color3(marker.Color);
-
-            if (!marker.DoDrawOrientation)
-            {
-                GL.Begin(BeginMode.Quads);
-                GL.Vertex2(-MARKER_SIZE, MARKER_SIZE);
-                GL.Vertex2(MARKER_SIZE, MARKER_SIZE);
-                GL.Vertex2(MARKER_SIZE, -MARKER_SIZE);
-                GL.Vertex2(-MARKER_SIZE, -MARKER_SIZE);
-                GL.End();
-            }
-            else
-            {
-                GL.Begin(BeginMode.Triangles);
-                GL.Vertex2(MARKER_SIZE * 2, 0);
-                GL.Vertex2(-MARKER_SIZE * 2, MARKER_SIZE);
-                GL.Vertex2(-MARKER_SIZE * 2, -MARKER_SIZE);
-                GL.End();
-            }
-        }
-
-        private void drawPath(RobotPath path)
-        {
-            const double WAYPOINT_RADIUS = 0.02;
-
-            if (path.isEmpty())
-                return;
-
-            foreach (RobotInfo waypoint in path.Waypoints)
-            {
-                //GL.Vertex2(waypoint.Position.X, waypoint.Position.Y);
-                GL.MatrixMode(MatrixMode.Modelview);
-                GL.LoadIdentity();
-                GL.Color3(path.Team == Team.Yellow ? Color.Yellow : Color.Blue);
-                GL.Translate(waypoint.Position.X, waypoint.Position.Y, 0);
-                drawCircle(WAYPOINT_RADIUS, true);
-            }
-        }
 
         private bool ptInsideMarker(Marker marker, Point2 pt)
         {
-            if (pt.X < marker.Location.X - MARKER_SIZE || pt.X > marker.Location.X + MARKER_SIZE
-                || pt.Y < marker.Location.Y - MARKER_SIZE || pt.Y > marker.Location.Y + MARKER_SIZE)
-                return false;
-            return true;
-        }
-
-        private void drawArrow(Point2 fromPoint, Point2 toPoint, Color color)
-        {
-            const double TIP_HEIGHT = 0.15;
-            const double TIP_BASE = 0.1;
-            double angle = Math.Atan2(toPoint.Y - fromPoint.Y, toPoint.X - fromPoint.X) * 180 / Math.PI;
-            double length = Math.Sqrt(fromPoint.distanceSq(toPoint));
-            GL.Color3(color);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.Translate(fromPoint.X, fromPoint.Y, 0);
-            GL.Rotate(angle, 0, 0, 1);
-            GL.Begin(BeginMode.Triangles);
-            GL.Vertex2(0, 0);
-            GL.Vertex2(length - TIP_HEIGHT, TIP_BASE / 4);
-            GL.Vertex2(length - TIP_HEIGHT, -TIP_BASE / 4);
-            GL.Vertex2(length, 0);
-            GL.Vertex2(length - TIP_HEIGHT, TIP_BASE / 2);
-            GL.Vertex2(length - TIP_HEIGHT, -TIP_BASE / 2);
-            GL.End();
-        }
-
-        private OpenTK.Vector3 worldToScreen(OpenTK.Vector3 world)
-        {
-            OpenTK.Vector3 screen;          
-
-            GL.GetInteger(GetPName.Viewport, _viewport);
-            GL.GetDouble(GetPName.ModelviewMatrix, _modelViewMatrix);
-            GL.GetDouble(GetPName.ProjectionMatrix, _projectionMatrix);
-
-
-            OpenTK.Graphics.Glu.Project(world, _modelViewMatrix, _projectionMatrix, _viewport,
-                                        out screen);
-
-            screen.Y = _viewport[3] - screen.Y;
-            return screen;
-        }
-
-        private OpenTK.Vector3 screenToWorld(OpenTK.Vector3 screen)
-        {
-            screen.Y = _viewport[3] - screen.Y;
-            OpenTK.Vector3 world;
-
-            GL.GetInteger(GetPName.Viewport, _viewport);
-            GL.GetDouble(GetPName.ModelviewMatrix, _modelViewMatrix);
-            GL.GetDouble(GetPName.ProjectionMatrix, _projectionMatrix);
-
-            OpenTK.Graphics.Glu.UnProject(screen, _modelViewMatrix, _projectionMatrix, _viewport,
-                                        out world);
-
-            return world;
-        }
-
-        private void renderString(string s, Vector2 location, Color color, float size)
-        {
-            OpenTK.Vector3 screen = worldToScreen(new OpenTK.Vector3((float)location.X, (float)location.Y, 0.0f));            
-
-            _printer.Begin();
-            GL.Translate(screen);
-            _printer.Print(s, new Font(FontFamily.GenericSansSerif, size), color);
-            _printer.End();
-        }
-
-        void drawCircle(double radius, bool fill = false)
-        {
-            if (fill)
-                GL.Begin(BeginMode.Polygon);
-            else
-                GL.Begin(BeginMode.LineLoop);
-
-            for (int i = 0; i < 360; i++)
-            {
-                double degInRad = i * Math.PI / 180;
-                GL.Vertex2(Math.Cos(degInRad) * radius, Math.Sin(degInRad) * radius);
-            }
-            GL.End();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="radius"></param>
-        /// <param name="startAngle">in degrees</param>
-        /// <param name="endAngle"></param>
-        void drawPartialCircle(double radius, int startAngle, int endAngle)
-        {
-            GL.Begin(BeginMode.LineStrip);
-
-            for (int i = startAngle; i < endAngle; i++)
-            {
-                double degInRad = i * Math.PI / 180;
-                GL.Vertex2(Math.Cos(degInRad) * radius, Math.Sin(degInRad) * radius);
-            }
-            GL.End();
+            return !(pt.X < marker.Location.X - Marker.SIZE || pt.X > marker.Location.X + Marker.SIZE
+                || pt.Y < marker.Location.Y - Marker.SIZE || pt.Y > marker.Location.Y + Marker.SIZE);
         }
 
         private Point2 controlToFieldCoords(Point loc)
@@ -1031,5 +685,3 @@ namespace RFC.FieldDrawer
 
     }
 }
-
-#pragma warning restore 0612, 0618

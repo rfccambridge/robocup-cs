@@ -120,7 +120,8 @@ namespace RFC.FieldDrawer
         private void glField_Load(object sender, EventArgs e)
         {
             _glFieldLoaded = true;
-            _fieldDrawer.Init(glField.Width, glField.Height);
+            _fieldDrawer.Init();
+            _fieldDrawer.Resize(glField.Width, glField.Height);
         }
 
         private void glField_Resize(object sender, EventArgs e)

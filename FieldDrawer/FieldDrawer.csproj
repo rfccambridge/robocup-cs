@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FieldDrawer.cs" />
+    <Compile Include="FieldDrawer.GL.cs" />
     <Compile Include="FieldDrawerForm.cs">
       <SubType>Form</SubType>
     </Compile>
