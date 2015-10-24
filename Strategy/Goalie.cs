@@ -65,8 +65,8 @@ namespace RFC.Strategy
             // does not take enemy robots and thus possible bounce sources into account
             // if ball is moving slowly enough, then robot will simply shadow the ball
 
-            Vector2 goalpos = Constants.FieldPts.OUR_GOAL;
-            Vector2 ballpos = ball.Position;
+            Point2 goalpos = Constants.FieldPts.OUR_GOAL;
+            Point2 ballpos = ball.Position;
             Vector2 ballvel = ball.Velocity;
             double hold = Constants.Field.GOAL_HEIGHT/2; // robot distance from goal 
 
@@ -102,7 +102,7 @@ namespace RFC.Strategy
             Line ballray = new Line(ballpos, ballvel.cartesianAngle());
             Circle guardcircle = new Circle(goalpos, hold);
             double leadAngle = shadowAngle; // robot angle along semicircle if leading ball movements
-            Vector2[] intersects = LineCircleIntersection.BothIntersections(ballray, guardcircle);
+            Point2[] intersects = LineCircleIntersection.BothIntersections(ballray, guardcircle);
             if (intersects.Length != 0)
             {
                 // intersection between ball ray and guard circle that is closest to the ball
@@ -128,7 +128,7 @@ namespace RFC.Strategy
             double regime = guardRegime(ball);
             double angle = shadowAngle * (1 - regime) + leadAngle * regime;
 
-            Vector2 pos = Vector2.GetUnitVector(angle) * hold + goalpos;
+            Point2 pos = Vector2.GetUnitVector(angle) * hold + goalpos;
             double orientation = (ballpos - pos).cartesianAngle();
 
             RobotInfo goalie_dest = new RobotInfo(pos, orientation, team, ID);

@@ -13,7 +13,7 @@ namespace RFC.Utilities
             return Math.Exp(-(x - mean) * (x - mean) / (2 * stdDev * stdDev)) / (stdDev * Math.Sqrt(2 * Math.PI));
         }
 
-        public static double gaussianPDF(Vector2 v, Vector2 mean, double stdDev)
+        public static double gaussianPDF(Point2 v, Point2 mean, double stdDev)
         {
             return Math.Sqrt(gaussianPDF(v.X, mean.X, stdDev) * gaussianPDF(v.X, mean.X, stdDev)
                 + gaussianPDF(v.Y, mean.X, stdDev) * gaussianPDF(v.Y, mean.X, stdDev));

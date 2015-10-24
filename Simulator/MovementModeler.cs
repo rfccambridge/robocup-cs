@@ -99,7 +99,7 @@ namespace RFC.Simulator
 
             Tuple<Vector2, double> vwpair = GetInfoFromWheel(newWheel, angle);
             Vector2 newVelocity = vwpair.Item1;
-            Vector2 newPosition = info.Position + 0.5 * dt * (newVelocity + info.Velocity);
+            Point2 newPosition = info.Position + 0.5 * dt * (newVelocity + info.Velocity);
 
             return new RobotInfo(newPosition, newVelocity, newAngularVelocity, angle, info.Team, info.ID);
         }

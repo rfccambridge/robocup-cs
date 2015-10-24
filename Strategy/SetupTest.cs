@@ -29,7 +29,7 @@ namespace RFC.Strategy
             this.ko = new KickOffBehavior(team, goalie);
             this.lockObject = new object();
             this.bk = new BounceKicker(team, goalie_id);
-            this.bk.reset(new Vector2(1, 0));
+            this.bk.reset(new Point2(1, 0));
             this.pk = new PenaltyKickBehavior(team, goalie);
             this.dk = new KickInBehavior(team, goalie);
             new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);

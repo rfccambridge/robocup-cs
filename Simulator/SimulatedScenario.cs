@@ -35,7 +35,7 @@ namespace RFC.Simulator
 
         public abstract SimulatorScene GetScene();
         public abstract void GoalScored();
-        public abstract void BallOut(Vector2 lastPosition);
+        public abstract void BallOut(Point2 lastPosition);
         public abstract bool SupportsNumbers { get; }
 
         public virtual void LoadConstants()
@@ -76,39 +76,39 @@ namespace RFC.Simulator
             List<RobotInfo> yellowRobots = new List<RobotInfo>();
             List<RobotInfo> blueRobots = new List<RobotInfo>();
 
-            yellowRobots.Add(new RobotInfo(new Vector2(-1.0, -1), 0, Team.Yellow, 0));
+            yellowRobots.Add(new RobotInfo(new Point2(-1.0, -1), 0, Team.Yellow, 0));
             
             if (numYellow > 1)
-                yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 0), 0, Team.Yellow, 1));
+                yellowRobots.Add(new RobotInfo(new Point2(-1.0, 0), 0, Team.Yellow, 1));
             if (numYellow > 2)
-                yellowRobots.Add(new RobotInfo(new Vector2(-1.0, 1), 0, Team.Yellow, 2));
+                yellowRobots.Add(new RobotInfo(new Point2(-1.0, 1), 0, Team.Yellow, 2));
             if (numYellow > 3)
-                yellowRobots.Add(new RobotInfo(new Vector2(-2f, -1), 0, Team.Yellow, 3));
+                yellowRobots.Add(new RobotInfo(new Point2(-2f, -1), 0, Team.Yellow, 3));
             if (numYellow > 4)
-                yellowRobots.Add(new RobotInfo(new Vector2(-2f, 1), 0, Team.Yellow, 4));
+                yellowRobots.Add(new RobotInfo(new Point2(-2f, 1), 0, Team.Yellow, 4));
 
-            blueRobots.Add(new RobotInfo(new Vector2(1.0, -1), Math.PI, Team.Blue, 5));
+            blueRobots.Add(new RobotInfo(new Point2(1.0, -1), Math.PI, Team.Blue, 5));
             if (numBlue > 1)
-                blueRobots.Add(new RobotInfo(new Vector2(0.3, 0), Math.PI, Team.Blue, 6));
+                blueRobots.Add(new RobotInfo(new Point2(0.3, 0), Math.PI, Team.Blue, 6));
             if (numBlue > 2)
-                blueRobots.Add(new RobotInfo(new Vector2(1.0, 1), Math.PI, Team.Blue, 7));
+                blueRobots.Add(new RobotInfo(new Point2(1.0, 1), Math.PI, Team.Blue, 7));
             if (numBlue > 3)
-                blueRobots.Add(new RobotInfo(new Vector2(2f, -1), Math.PI, Team.Blue, 8));
+                blueRobots.Add(new RobotInfo(new Point2(2f, -1), Math.PI, Team.Blue, 8));
             if (numBlue > 4)
-                blueRobots.Add(new RobotInfo(new Vector2(2f, 1), Math.PI, Team.Blue, 9));
+                blueRobots.Add(new RobotInfo(new Point2(2f, 1), Math.PI, Team.Blue, 9));
 
             robots[Team.Yellow] = yellowRobots;
             robots[Team.Blue] = blueRobots;
 
             result.Robots = robots;
-            result.Ball = new BallInfo(Vector2.ZERO);
+            result.Ball = new BallInfo(Point2.ORIGIN);
 
             return result;
         }
 
         public override void GoalScored()
         {
-            _engine.UpdateBall(new BallInfo(Vector2.ZERO));
+            _engine.UpdateBall(new BallInfo(Point2.ORIGIN));
 
             // Update referee state
             // XXX: This is plain wrong for autogoals, but there's no trivial way of determining who attacks which side
@@ -119,7 +119,7 @@ namespace RFC.Simulator
             _engine.Referee.EnqueueCommand(MulticastRefBoxListener.READY, 2000);
         }
 
-        public override void BallOut(Vector2 lastPosition)
+        public override void BallOut(Point2 lastPosition)
         {
             double freeKickX, freeKickY;
 
@@ -132,7 +132,7 @@ namespace RFC.Simulator
             else if (lastPosition.Y < Constants.Field.YMIN + FREEKICK_DISTANCE) freeKickY = Constants.Field.YMIN + FREEKICK_DISTANCE;
             else freeKickY = lastPosition.Y;
 
-            BallInfo newBall = new BallInfo(new Vector2(freeKickX, freeKickY));
+            BallInfo newBall = new BallInfo(new Point2(freeKickX, freeKickY));
             _engine.UpdateBall(newBall);
 
             // Update referee state
@@ -172,30 +172,30 @@ namespace RFC.Simulator
             List<RobotInfo> blueRobots = new List<RobotInfo>();
 
             //Add goalie
-            yellowRobots.Add(new RobotInfo(new Vector2(Constants.Field.XMIN + 0.2, 0f), 0, Team.Yellow, 0));
+            yellowRobots.Add(new RobotInfo(new Point2(Constants.Field.XMIN + 0.2, 0f), 0, Team.Yellow, 0));
 
             //Shooter and ball based on current scene
             switch (index)
             {
                 case 0:
-                    blueRobots.Add(new RobotInfo(new Vector2(-2.0f, Constants.Field.YMAX - 0.5), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-2.2f, Constants.Field.YMAX - 0.7));
+                    blueRobots.Add(new RobotInfo(new Point2(-2.0f, Constants.Field.YMAX - 0.5), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Point2(-2.2f, Constants.Field.YMAX - 0.7));
                     break;
                 case 1:
-                    blueRobots.Add(new RobotInfo(new Vector2(-1.5f, Constants.Field.YMAX - 1.0), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-1.7f, Constants.Field.YMAX - 1.2));
+                    blueRobots.Add(new RobotInfo(new Point2(-1.5f, Constants.Field.YMAX - 1.0), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Point2(-1.7f, Constants.Field.YMAX - 1.2));
                     break;
                 case 2:
-                    blueRobots.Add(new RobotInfo(new Vector2(-1.3f, 0), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-1.5f, 0));
+                    blueRobots.Add(new RobotInfo(new Point2(-1.3f, 0), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Point2(-1.5f, 0));
                     break;
                 case 3:
-                    blueRobots.Add(new RobotInfo(new Vector2(-1.5f, Constants.Field.YMIN + 1.0), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-1.7f, Constants.Field.YMIN + 1.2));
+                    blueRobots.Add(new RobotInfo(new Point2(-1.5f, Constants.Field.YMIN + 1.0), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Point2(-1.7f, Constants.Field.YMIN + 1.2));
                     break;
                 case 4:
-                    blueRobots.Add(new RobotInfo(new Vector2(-2.0f, Constants.Field.YMIN + 0.5), Math.PI, Team.Blue, 5));
-                    scene.Ball = new BallInfo(new Vector2(-2.2f, Constants.Field.YMIN + 0.7));
+                    blueRobots.Add(new RobotInfo(new Point2(-2.0f, Constants.Field.YMIN + 0.5), Math.PI, Team.Blue, 5));
+                    scene.Ball = new BallInfo(new Point2(-2.2f, Constants.Field.YMIN + 0.7));
                     break;
                 default:
                     break;
@@ -220,7 +220,7 @@ namespace RFC.Simulator
             _engine.ResetScenarioScene();
         }
 
-        public override void BallOut(Vector2 lastPosition)
+        public override void BallOut(Point2 lastPosition)
         {
             //Restart from the same shootout position
             _engine.ResetScenarioScene();

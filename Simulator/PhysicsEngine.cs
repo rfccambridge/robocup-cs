@@ -23,7 +23,7 @@ namespace RFC.Simulator
         static double[] KICK_SPEED = new double[RobotCommand.MAX_KICKER_STRENGTH / 5 + 1] { 0, 0, 1.81, 2.88, 3.33, 4.25 };
 
         private bool _marking = false;
-        private Vector2 _markedPosition;
+        private Point2 _markedPosition;
 
         //Running data-----------------------------------------------------------
         FunctionLoop runLoop;
@@ -289,12 +289,12 @@ namespace RFC.Simulator
                     {
                         if (i == j)
                             continue;
-                        Vector2 p1 = allRobots[i].Position;
-                        Vector2 p2 = allRobots[j].Position;
+                        Point2 p1 = allRobots[i].Position;
+                        Point2 p2 = allRobots[j].Position;
                         if (p1.distanceSq(p2) <= (2 * ROBOT_RADIUS) * (2 * ROBOT_RADIUS))
                         {
-                            Vector2 t1 = p1 + .01 * (p1 - p2).normalize();
-                            Vector2 t2 = p2 + .01 * (p2 - p1).normalize();
+                            Point2 t1 = p1 + .01 * (p1 - p2).normalize();
+                            Point2 t2 = p2 + .01 * (p2 - p1).normalize();
                             UpdateRobot(allRobots[i], new RobotInfo(t1, allRobots[i].Orientation,
                                 allRobots[i].Team, allRobots[i].ID));
                             UpdateRobot(allRobots[j], new RobotInfo(t2, allRobots[j].Orientation,
@@ -325,7 +325,7 @@ namespace RFC.Simulator
                     }
 
                     // Update ball location
-                    Vector2 newBallLocation = ball.Position + dt * ball.Velocity;
+                    Point2 newBallLocation = ball.Position + dt * ball.Velocity;
                     Vector2 newBallVelocity;
                     double ballSpeed = ball.Velocity.magnitude();
                     ballSpeed -= BALL_FRICTION * dt;
@@ -337,7 +337,7 @@ namespace RFC.Simulator
                     // Check for collisions ball-robot and update ball position
                     foreach (RobotInfo r in allRobots)
                     {
-                        Vector2 robotLoc = r.Position;
+                        Point2 robotLoc = r.Position;
 
                         bool collided = false;
                         //Possible collision
@@ -391,7 +391,7 @@ namespace RFC.Simulator
                                 const double DRIBBLER_ACTIVITY_RADIUS = .03;
 
                                 Vector2 robotFaceDir = Vector2.GetUnitVector(r.Orientation);
-                                Vector2 dribblerPosition = r.Position + CENTER_TO_DRIBBLER_DIST * robotFaceDir;
+                                Point2 dribblerPosition = r.Position + CENTER_TO_DRIBBLER_DIST * robotFaceDir;
                                 if (dribblerPosition.distanceSq(ball.Position) < DRIBBLER_ACTIVITY_RADIUS * DRIBBLER_ACTIVITY_RADIUS)
                                 {
                                     // in range of dribbler
@@ -420,7 +420,7 @@ namespace RFC.Simulator
                         { ballVy = -Math.Abs(ballVy) * BALL_WALL_ELASTICITY; ballY = 2 * Constants.Field.FULL_YMAX - ballY; }
 
                         newBallVelocity = new Vector2(ballVx, ballVy);
-                        newBallLocation = new Vector2(ballX, ballY);
+                        newBallLocation = new Point2(ballX, ballY);
                     }
 
                     UpdateBall(new BallInfo(newBallLocation, newBallVelocity));
@@ -506,7 +506,7 @@ namespace RFC.Simulator
             const double KICKER_ACTIVITY_RADIUS = 0.04; //.04
 
             Vector2 robotFaceDir = Vector2.GetUnitVector(robot.Orientation);
-            Vector2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * robotFaceDir;
+            Point2 kickerPosition = robot.Position + CENTER_TO_KICKER_DIST * robotFaceDir;
             if (kickerPosition.distanceSq(ball.Position) < KICKER_ACTIVITY_RADIUS * KICKER_ACTIVITY_RADIUS)
             {
                 Vector2 relative_veloc = ball.Velocity - robot.Velocity;
@@ -524,7 +524,7 @@ namespace RFC.Simulator
 
         //VISION-------------------------------------------------------------------------
 
-        private Vector2 convertToSSLCoords(Vector2 pt)
+        private Vector2 convertToSSLCoords(Point2 pt)
         {
             return new Vector2(pt.X * 1000, pt.Y * 1000); // m to mm
         }
@@ -544,9 +544,9 @@ namespace RFC.Simulator
             return d + getGaussianRandom() * noisyVisionStdev;
         }
 
-        private Vector2 applyVisionNoise(Vector2 v)
+        private Point2 applyVisionNoise(Point2 v)
         {
-            return new Vector2(applyVisionNoise(v.X), applyVisionNoise(v.Y));
+            return new Point2(applyVisionNoise(v.X), applyVisionNoise(v.Y));
         }
 
         private double minDistFromBallToRobot()

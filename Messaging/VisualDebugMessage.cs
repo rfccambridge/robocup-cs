@@ -9,12 +9,12 @@ namespace RFC.Messaging
 {
     public class VisualDebugMessage : Message
     {
-        public Vector2 position;
+        public Point2 position;
         public Color c;
         public bool clear;
 
         // this will add a marker
-        public VisualDebugMessage(Vector2 pos, Color c)
+        public VisualDebugMessage(Point2 pos, Color c)
         {
             this.c = c;
             this.position = pos;

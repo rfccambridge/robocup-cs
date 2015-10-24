@@ -11,8 +11,8 @@ namespace RFC.Strategy
 	public class AssessThreats : DefenseMapper
 	{
 		bool fieldSide;
-		Vector2 goalPostTop;
-		Vector2 goalPostBottom;
+        Point2 goalPostTop;
+        Point2 goalPostBottom;
 		Vector2 otherMidpointGoal;
 		Vector2 centerLine; /*vector connecting midpoints of goals*/
         List<Threat> shooterThreats;
@@ -124,8 +124,8 @@ namespace RFC.Strategy
 				riskRating+=ballRisk;
 			}
 			if(Math.Abs(player.Position.X-Constants.FieldPts.OUR_GOAL.X)>Constants.Field.WIDTH/2||
-                player.Position.distance(new Vector2(Constants.FieldPts.OUR_GOAL.X,Constants.Field.EXTENDED_HEIGHT))<cornerZone||
-                player.Position.distance(new Vector2(Constants.FieldPts.OUR_GOAL.X,0))<cornerZone)/*checks if player is in a non-shooting zone*/
+                player.Position.distance(new Point2(Constants.FieldPts.OUR_GOAL.X,Constants.Field.EXTENDED_HEIGHT))<cornerZone||
+                player.Position.distance(new Point2(Constants.FieldPts.OUR_GOAL.X,0))<cornerZone)/*checks if player is in a non-shooting zone*/
 			/*could also do shot by preserving minimum angle using a circle*/
 			{
 				return riskRating;

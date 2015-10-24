@@ -281,7 +281,7 @@ namespace RFC.Strategy
                 bounceKicker.reset(bounce_op.position.Position);
                 // Console.WriteLine("switching to bounce shot");
                 LineSegment between = new LineSegment(shootingRobot.Position, (bouncingRobot.Position - shootingRobot.Position).cartesianAngle());
-                LineSegment toGoal = new LineSegment(bouncingRobot.Position, Shot1.evaluate(fieldVision, team, bouncingRobot.Position).target - bouncingRobot.Position);
+                LineSegment toGoal = null; // new LineSegment(bouncingRobot.Position, Shot1.evaluate(fieldVision, team, bouncingRobot.Position).target - bouncingRobot.Position);
                 stateCheck = new List<IGeom>();
                 stateCheck.Add(between.offset(Constants.Basic.ROBOT_RADIUS * 5));
                 stateCheck.Add(toGoal.offset(Constants.Basic.ROBOT_RADIUS * 5));
@@ -456,7 +456,7 @@ namespace RFC.Strategy
             if (perpVec.magnitude() < SHOOT_AVOID)
             {
                 perpVec = perpVec.normalizeToLength(SHOOT_AVOID);
-                Vector2 dest = kicker.Position + perpVec + paraVec;
+                Point2 dest = kicker.Position + perpVec + paraVec;
                 RobotInfo destRI = new RobotInfo(dest, ri.Orientation, team, ri.ID);
                 destRI = Avoider.avoid(destRI, kicker.Position, AVOID_RADIUS);
                 msngr.SendMessage(new RobotDestinationMessage(destRI, true, false));

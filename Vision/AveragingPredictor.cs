@@ -57,7 +57,8 @@ namespace RFC.Vision
         /// </summary>
         private RobotInfo flipRobotInfo(RobotInfo info)
         {
-            return new RobotInfo(-info.Position, -info.Velocity, info.AngularVelocity,
+            return new RobotInfo(
+                Point2.ORIGIN - (info.Position - Point2.ORIGIN), -info.Velocity, info.AngularVelocity,
                     info.Orientation + Math.PI, info.Team, info.ID);
         }
 
@@ -79,13 +80,13 @@ namespace RFC.Vision
             // preparing messages
             if (ball != null)
             {
-                if (Flipped) ball = new BallInfo(-ball.Position, -ball.Velocity);
+                if (Flipped) ball = new BallInfo(Point2.ORIGIN - (ball.Position - Point2.ORIGIN), -ball.Velocity);
                 BallVisionMessage ball_msg = new BallVisionMessage(ball);
                 messenger.SendMessage<BallVisionMessage>(ball_msg);
             }
             else
             {
-                ball = new BallInfo(new Vector2()); // todo: mark that this is null
+                ball = new BallInfo(Point2.ORIGIN); // todo: mark that this is null
             }
 
             RobotVisionMessage robots_msg = new RobotVisionMessage(Flipped ? getRobots(Team.Blue).ConvertAll(flipRobotInfo) : getRobots(Team.Blue), Flipped ? getRobots(Team.Yellow).ConvertAll(flipRobotInfo) : getRobots(Team.Yellow));
@@ -122,11 +123,11 @@ namespace RFC.Vision
         private void combineBall()
         {
             double time = HighResTimer.SecondsSinceStart();
-            
+
             // Return the average from all the cameras that see it weighted 
             // by the time since they last saw it                 
 
-            Vector2 avgPosition = null;
+            Vector2 avgPosFromOrigin = null;
             Vector2 avgVelocity = null;
             double avgLastSeen = 0;
             double sum = 0;
@@ -146,7 +147,7 @@ namespace RFC.Vision
                     if (lastBall == null || (ball.Position - lastBall.Position).magnitude() < closestBallDistance)
                     {
                         //resetting the average position to the latest position: we trust it's true
-                        avgPosition = t * ball.Position;
+                        avgPosFromOrigin = t * (ball.Position - Point2.ORIGIN);
                         avgVelocity = t * ball.Velocity;
                         avgLastSeen = t * ball.LastSeen;
                         // set sum to t (here, 1)
@@ -169,14 +170,14 @@ namespace RFC.Vision
             }
             //Now we have information from all the cameras. Let's return a new ball
             BallInfo retBall = null;
-            if (closestBall != null && avgPosition != null) // if we saw at least one ball
+            if (closestBall != null && avgPosFromOrigin != null) // if we saw at least one ball
             {
                 // TODO: how is this not just dividing by 1?
-                avgPosition /= sum;
+                avgPosFromOrigin /= sum;;
                 avgVelocity /= sum;
                 avgLastSeen /= sum;
-                retBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
-                lastBall = new BallInfo(avgPosition, avgVelocity, avgLastSeen);
+                retBall = new BallInfo(Point2.ORIGIN + avgPosFromOrigin, avgVelocity, avgLastSeen);
+                lastBall = new BallInfo(Point2.ORIGIN + avgPosFromOrigin, avgVelocity, avgLastSeen);
             }
             
             // Predict the latest position with zero velocity if all cameras have timed out
@@ -300,7 +301,7 @@ namespace RFC.Vision
                 }
                 double t = time - avgRobot.LastSeen;
                 t = 1;
-                Vector2 avgPosition = t * avgRobot.Position;
+                Vector2 avgPosition = t * (avgRobot.Position - Point2.ORIGIN);
                 Vector2 avgVelocity = t * avgRobot.Velocity;
                 double avgOrientation = t * avgRobot.Orientation;
                 double avgAngVel = t * avgRobot.AngularVelocity;
@@ -312,7 +313,7 @@ namespace RFC.Vision
                     // TODO: This should be modified to not just do the average over many robots.
                     //COMBINE with jitter filter
                     t = 1;
-                    avgPosition += t * sList[i].Position;
+                    avgPosition += t * (sList[i].Position - Point2.ORIGIN);
                     avgVelocity += t * sList[i].Velocity;
                     avgAngVel += t * sList[i].AngularVelocity;
                     avgOrientation += t * sList[i].Orientation;
@@ -326,7 +327,7 @@ namespace RFC.Vision
                 avgLastSeen /= sum;
 
                 // Record result for returning
-                avgRobots.Add(new RobotInfo(avgPosition, avgVelocity, avgAngVel, avgOrientation,
+                avgRobots.Add(new RobotInfo(Point2.ORIGIN + avgPosition, avgVelocity, avgAngVel, avgOrientation,
                                             team, avgRobot.ID, avgLastSeen));
             }
 

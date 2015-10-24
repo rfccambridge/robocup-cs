@@ -22,7 +22,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Creates a robot shape. 
         /// </summary>
-        public RobotShape(Vector2 center, double radius, double orientation, double frontPlateRadius)
+        public RobotShape(Point2 center, double radius, double orientation, double frontPlateRadius)
         {
             double angle = Math.Acos(frontPlateRadius / radius);
 
@@ -42,7 +42,7 @@ namespace RFC.Geometry
         /// Returns a line segment that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public override RobotShape rotateAroundPoint(Vector2 p, double angle)
+        public override RobotShape rotateAroundPoint(Point2 p, double angle)
         {
             return new RobotShape(Arc.rotateAroundPoint(p, angle), Segment.rotateAroundPoint(p, angle));
         }
@@ -52,7 +52,7 @@ namespace RFC.Geometry
             return "RobotShape[" + Arc + ", " + Segment + "]";
         }
         
-        public override double distance(Vector2 p)
+        public override double distance(Point2 p)
         {
             return Math.Min(Arc.distance(p), Segment.distance(p));
         }

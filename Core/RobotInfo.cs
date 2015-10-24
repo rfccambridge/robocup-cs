@@ -9,16 +9,16 @@ namespace RFC.Core
 	[Serializable]
 	public class BallInfo
     {
-        public Vector2 Position { get; set; }
+        public Point2 Position { get; set; }
         public Vector2 Velocity { get; set; }
         public double LastSeen { get; set; }
 
 		/// <summary>
 		/// Creates a BallInfo with zero velocity.
 		/// </summary>
-		public BallInfo(Vector2 position) : this(position, Vector2.ZERO) { }
-		public BallInfo(Vector2 position, Vector2 velocity) : this(position, velocity, -1) { }
-		public BallInfo(Vector2 position, Vector2 velocity, double lastSeen)
+		public BallInfo(Point2 position) : this(position, Vector2.ZERO) { }
+		public BallInfo(Point2 position, Vector2 velocity) : this(position, velocity, -1) { }
+		public BallInfo(Point2 position, Vector2 velocity, double lastSeen)
 		{
 			this.Position = position;
 			this.Velocity = velocity;
@@ -49,11 +49,11 @@ namespace RFC.Core
     public class RobotInfo
     {
         /// <summary>Creates a RobotInfo with zero velocity and angular velocity.</summary>
-        public RobotInfo(Vector2 position, double orientation, Team team, int id)
+        public RobotInfo(Point2 position, double orientation, Team team, int id)
             : this(position, Vector2.ZERO, 0, orientation, team, id)
         { }
 
-        public RobotInfo(Vector2 position, Vector2 velocity, double angularVelocity,
+        public RobotInfo(Point2 position, Vector2 velocity, double angularVelocity,
                          double orientation, Team team, int id, double lastSeen = -1)
         {
             this.Position = position;
@@ -82,7 +82,7 @@ namespace RFC.Core
         */
 
         /// <summary>The position of the robot.</summary>
-        public Vector2 Position { get; set; }
+        public Point2 Position { get; set; }
         /// <summary>The velocity of the robot.</summary>
         public Vector2 Velocity { get; set; }
         /// <summary>The rotational velocity of this robot.  Units are rad/s, CCW direction is positive.</summary>

@@ -38,7 +38,7 @@ namespace RFC.Strategy
             for (int i = 0; i < numRobots; i++)
             {
                 double xDisp = ((i + 1 - numRobots / 2.0) * Constants.Basic.ROBOT_RADIUS * 3.0);
-                Vector2 pos = Constants.FieldPts.TOP - (new Vector2(xDisp, 0));
+                Point2 pos = Constants.FieldPts.TOP - new Vector2(xDisp, 0);
                 RobotInfo ri = new RobotInfo(pos, 0, team, robots[i].ID);
                 msngr.SendMessage(new RobotDestinationMessage(ri, true));
             }
@@ -54,7 +54,7 @@ namespace RFC.Strategy
             double w = 1.0 / 1000.0;
             for (int i = 0; i < numRobots; i++)
             {
-                Vector2 pos = new Vector2(r * Math.Cos(w * t + phase * i), r * Math.Sin(w * t + phase * i));
+                Point2 pos = new Point2(r* Math.Cos(w * t + phase * i), r * Math.Sin(w * t + phase * i));
                 RobotInfo ri = new RobotInfo(pos, 0, team, i);
                 msngr.SendMessage(new RobotDestinationMessage(ri, true));
             }

@@ -10,10 +10,10 @@ namespace RFC.Strategy
 {
     public class ShotOpportunity
     {
-        public Vector2 target;
+        public Point2 target;
         public double arc;
 
-        public ShotOpportunity(Vector2 t, double a)
+        public ShotOpportunity(Point2 t, double a)
         {
             this.target = t;
             this.arc = a;
@@ -40,23 +40,23 @@ namespace RFC.Strategy
 
         // Finds the best place to aim when taking a shot and judges how good
         // a shot it is
-        public static ShotOpportunity evaluate(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
+        public static ShotOpportunity evaluate(FieldVisionMessage fvm, Team team, Point2 hypo_ball)
         {
             return evaluateGoal(fvm, team, hypo_ball);
         }
 
-        public static ShotOpportunity evaluateGoal(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
+        public static ShotOpportunity evaluateGoal(FieldVisionMessage fvm, Team team, Point2 hypo_ball)
         {
             return evaluateGeneral(fvm, team, hypo_ball, Constants.FieldPts.THEIR_GOAL_TOP, Constants.FieldPts.THEIR_GOAL_BOTTOM);
         }
 
-        public static ShotOpportunity evaluateField(FieldVisionMessage fvm, Team team, Vector2 hypo_ball)
+        public static ShotOpportunity evaluateField(FieldVisionMessage fvm, Team team, Point2 hypo_ball)
         {
             return evaluateGeneral(fvm, team, hypo_ball, Constants.FieldPts.TOP_RIGHT, Constants.FieldPts.BOTTOM_RIGHT);
         }
 
         
-        public static ShotOpportunity evaluateGeneral(FieldVisionMessage fvm, Team team, Vector2 shot_position, Vector2 top, Vector2 bottom)
+        public static ShotOpportunity evaluateGeneral(FieldVisionMessage fvm, Team team, Point2 shot_position, Point2 top, Point2 bottom)
         {
             List<RobotInfo> locations = fvm.GetRobots();
 
@@ -129,7 +129,7 @@ namespace RFC.Strategy
             // finding intersection of shot with goal line
             double dx = Constants.FieldPts.THEIR_GOAL.X - shot_position.X;
 
-            Vector2 shot_vec = new Vector2(Constants.FieldPts.THEIR_GOAL.X, shot_position.Y + dx * Math.Tan(shot_angle));
+            Point2 shot_vec = new Point2(Constants.FieldPts.THEIR_GOAL.X, shot_position.Y + dx * Math.Tan(shot_angle));
 
             return new ShotOpportunity(shot_vec, arc);
         }

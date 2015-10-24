@@ -6,7 +6,7 @@ namespace RFC.Geometry
 {
     public class Circle : GeomBase<Circle>
     {
-        public Vector2 Center { get; private set; }
+        public Point2 Center { get; private set; }
         public double Radius { get; private set; }
 
         /// <summary>
@@ -14,14 +14,14 @@ namespace RFC.Geometry
         /// </summary>
         public Circle(double xCenter, double yCenter, double radius)
         {
-            this.Center = new Vector2(xCenter,yCenter);
+            this.Center = new Point2(xCenter,yCenter);
             this.Radius = radius;
         }
 
         /// <summary>
         /// Creates a circle with the given center and radius
         /// </summary>
-        public Circle(Vector2 center, double radius)
+        public Circle(Point2 center, double radius)
         {
             this.Center = center;
             this.Radius = radius;
@@ -32,7 +32,7 @@ namespace RFC.Geometry
         /// </summary>
         public Circle()
         {
-            this.Center = new Vector2();
+            this.Center = new Point2(0, 0);
             this.Radius = 1.0;
         }
 
@@ -45,7 +45,7 @@ namespace RFC.Geometry
         /// Returns a circle that is this circle rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public override Circle rotateAroundPoint(Vector2 p, double angle)
+        public override Circle rotateAroundPoint(Point2 p, double angle)
         {
             return new Circle(Center.rotateAroundPoint(p, angle), Radius);
         }
@@ -53,12 +53,12 @@ namespace RFC.Geometry
         /// <summary>
         /// Checks if this circle contains the given point. Points on the boundary are considered contained.
         /// </summary>
-        public override bool contains(Vector2 p)
+        public override bool contains(Point2 p)
         {
             return p.distanceSq(Center) <= Radius * Radius;
         }
 
-        public override double distance(Vector2 p)
+        public override double distance(Point2 p)
         { 
             return p.distance(Center) - Radius;
         }

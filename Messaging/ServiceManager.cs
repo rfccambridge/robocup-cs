@@ -109,7 +109,7 @@ namespace RFC.Messaging
         {
             vdb(r,new Color());
         }
-        public void vdb(Vector2 r)
+        public void vdb(Point2 r)
         {
             vdb(r, new Color());
         }
@@ -121,7 +121,7 @@ namespace RFC.Messaging
         {
             vdb(r.Position,c);
         }
-        public void vdb(Vector2 r, Color c)
+        public void vdb(Point2 r, Color c)
         {
             SendMessage<VisualDebugMessage>(new VisualDebugMessage(r,c));
         }

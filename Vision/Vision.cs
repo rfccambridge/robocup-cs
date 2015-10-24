@@ -96,10 +96,10 @@ namespace RFC.Vision
 
 					msg.Delay = t_processing;
 
-					//Ball info:
-                    Vector2 last_location;
+                    //Ball info:
+                    Point2 last_location;
                     if (last_ball == null)
-                        last_location = new Vector2();
+                        last_location = Point2.ORIGIN;
                     else
                         last_location = last_ball.Position + DT * last_ball.Velocity;
 
@@ -150,9 +150,9 @@ namespace RFC.Vision
 				ErrorOccured(this, new EventArgs());
 		}
 
-		private Vector2 ConvertFromSSLVisionCoords(Vector2 v)
+		private Point2 ConvertFromSSLVisionCoords(Vector2 v)
 		{
-			return new Vector2(v.X / 1000, v.Y / 1000);
+			return new Point2(v.X / 1000, v.Y / 1000);
 		}
 
 		private void printRobotInfo(SSL_DetectionRobot robot)

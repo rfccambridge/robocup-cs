@@ -14,17 +14,17 @@ namespace RFC.Geometry
         /// <summary>
         /// The starting point defining this line
         /// </summary>
-        public Vector2 P0 { get; private set; }
+        public Point2 P0 { get; private set; }
 
         /// <summary>
         /// The ending point defining this line
         /// </summary>
-        public Vector2 P1 { get; private set; }
+        public Point2 P1 { get; private set; }
 
         /// <summary>
         /// Creates a line extending from p0 to p1
         /// </summary>
-        public Line(Vector2 p0, Vector2 p1)
+        public Line(Point2 p0, Point2 p1)
         {
             this.P0 = p0;
             this.P1 = p1;
@@ -33,7 +33,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Creates a line extending from p0 in the desired direction in radians.
         /// </summary>
-        public Line(Vector2 p0, double direction)
+        public Line(Point2 p0, double direction)
         {
             this.P0 = p0;
             this.P1 = p0 + Vector2.GetUnitVector(direction);
@@ -57,7 +57,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Computes the minimum distance between this line and a point
         /// </summary>
-        public override double distance(Vector2 p)
+        public override double distance(Point2 p)
         {
             double mag = P1.distance(P0);
             double crossp = Vector2.crossproduct(P0, P1, p);
@@ -70,7 +70,7 @@ namespace RFC.Geometry
         /// (facing from p0 -> p1) positive indicates a point to the left of the line 
         /// and negative indicates a point to the right of the line.
         /// </summary>
-        public double signedDistance(Vector2 p)
+        public double signedDistance(Point2 p)
         {
             double mag = P1.distance(P0);
             double crossp = Vector2.crossproduct(P1, P0, p);
@@ -81,7 +81,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Computes the point on the line that that is the closest to the given point
         /// </summary>
-        public Vector2 closestPointTo(Vector2 p)
+        public Point2 closestPointTo(Point2 p)
         {
             return projectionOntoLine(p);
         }
@@ -90,7 +90,7 @@ namespace RFC.Geometry
         /// Computes the point on the line that would result from projecting
         /// p perpendicularly towards the line.
         /// </summary>
-        public Vector2 projectionOntoLine(Vector2 p)
+        public Point2 projectionOntoLine(Point2 p)
         {
             Vector2 tangent = (P1 - P0).normalize();
             double dotp = tangent * (p - P0);
@@ -100,7 +100,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Computes the distance of the projection of p from the starting point of this line.
         /// </summary>
-        public double distanceAlongLine(Vector2 p)
+        public double distanceAlongLine(Point2 p)
         {
             return (p - P0).projectionLength(Direction);
         }
@@ -117,7 +117,7 @@ namespace RFC.Geometry
         /// Returns a line that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public override Line rotateAroundPoint(Vector2 p, double angle)
+        public override Line rotateAroundPoint(Point2 p, double angle)
         {
             return new Line(P0.rotateAroundPoint(p, angle), P1.rotateAroundPoint(p, angle));
         }
@@ -138,7 +138,7 @@ namespace RFC.Geometry
         /// Note: floating point imprecision may be a problem here!
         /// </summary>
         ///         
-        public override bool contains(Vector2 p)
+        public override bool contains(Point2 p)
         {
             return signedDistance(p) == 0;
         }
@@ -159,7 +159,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Creates a line segment extending from p0 to p1
         /// </summary>
-        public LineSegment(Vector2 p0, Vector2 p1)
+        public LineSegment(Point2 p0, Point2 p1)
         {
             this.l = new Line(p0, p1);
         }
@@ -167,7 +167,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Creates a line segment extending from p0 in the desired direction in radians.
         /// </summary>
-        public LineSegment(Vector2 p0, double direction)
+        public LineSegment(Point2 p0, double direction)
         {
             this.l = new Line(p0, direction);
         }
@@ -183,13 +183,13 @@ namespace RFC.Geometry
         /// <summary>
         /// The starting point defining this line segment
         /// </summary>
-        public Vector2 P0
+        public Point2 P0
         { get { return l.P0; } }
 
         /// <summary>
         /// The ending point defining this line segment
         /// </summary>
-        public Vector2 P1
+        public Point2 P1
         { get { return l.P1; } }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace RFC.Geometry
         /// <summary>
         /// Computes the minimum distance between this line segment and a point
         /// </summary>
-        public override double distance(Vector2 p)
+        public override double distance(Point2 p)
         {
             if (Vector2.dotproduct(l.P0, l.P1, p) < 0)
                 return l.P1.distance(p);
@@ -251,7 +251,7 @@ namespace RFC.Geometry
         /// Returns a line segment that is this line rotated a given number of radians in the
         /// counterclockwise direction around p.
         /// </summary>
-        public override LineSegment rotateAroundPoint(Vector2 p, double angle)
+        public override LineSegment rotateAroundPoint(Point2 p, double angle)
         {
             return new LineSegment(l.rotateAroundPoint(p, angle));
         }

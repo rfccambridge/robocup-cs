@@ -49,7 +49,7 @@ namespace RFC.Strategy
                 {
                     // need to move the robot back
                     RobotInfo destination = new RobotInfo(robot);
-                    destination.Position = new Vector2(Constants.FieldPts.THEIR_PENALTY_KICK_MARK.X - .8, robot.Position.Y);
+                    destination.Position = new Point2(Constants.FieldPts.THEIR_PENALTY_KICK_MARK.X - .8, robot.Position.Y);
                     msngr.SendMessage(new RobotDestinationMessage(destination, true));
                 }
             }
@@ -64,7 +64,7 @@ namespace RFC.Strategy
             List<RobotInfo> rest = msg.GetRobotsExcept(team, kicker.ID);
 
             // todo: send kicker into position
-            Vector2 dest = msg.Ball.Position - new Vector2(Constants.Basic.ROBOT_RADIUS * 2, 0);
+            Point2 dest = msg.Ball.Position - new Vector2(Constants.Basic.ROBOT_RADIUS * 2, 0);
             msngr.SendMessage(new RobotDestinationMessage(new RobotInfo(dest,0,team,kicker.ID), true));
 
 
@@ -75,7 +75,7 @@ namespace RFC.Strategy
                 {
                     // need to move the robot back
                     RobotInfo destination = new RobotInfo(robot);
-                    destination.Position = new Vector2(Constants.FieldPts.THEIR_PENALTY_KICK_MARK.X - .8, robot.Position.Y);
+                    destination.Position = new Point2(Constants.FieldPts.THEIR_PENALTY_KICK_MARK.X - .8, robot.Position.Y);
                     msngr.SendMessage(new RobotDestinationMessage(destination, true));
                 }
             }
@@ -103,7 +103,7 @@ namespace RFC.Strategy
             {
                 goalY = Constants.Field.GOAL_YMAX - Constants.Basic.ROBOT_RADIUS;
             }
-            RobotInfo destRI = new RobotInfo(new Vector2(goalieXPos, goalY), goalie.Orientation, team, goalie.ID);
+            RobotInfo destRI = new RobotInfo(new Point2(goalieXPos, goalY), goalie.Orientation, team, goalie.ID);
             msngr.SendMessage(new RobotDestinationMessage(destRI, false, true));
 
             // making sure the rest of ours are behind the line
@@ -114,7 +114,7 @@ namespace RFC.Strategy
                 {
                     // need to move the robot back
                     RobotInfo destination = new RobotInfo(robot);
-                    destination.Position = new Vector2(Constants.FieldPts.OUR_PENALTY_KICK_MARK.X + .8, robot.Position.Y);
+                    destination.Position = new Point2(Constants.FieldPts.OUR_PENALTY_KICK_MARK.X + .8, robot.Position.Y);
 
                     msngr.SendMessage(new RobotDestinationMessage(destination, true));
                 }

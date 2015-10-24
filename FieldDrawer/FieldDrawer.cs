@@ -32,9 +32,9 @@ namespace RFC.FieldDrawer
 
     public class WaypointMovedInfo : WaypointInfo
     {
-        public Vector2 NewLocation;
+        public Point2 NewLocation;
         public double NewOrientation;
-        public WaypointMovedInfo(Object obj, Color color, Vector2 newLocation, double newOrientation)
+        public WaypointMovedInfo(Object obj, Color color, Point2 newLocation, double newOrientation)
             : base(obj, color)
         {
             NewLocation = newLocation;
@@ -72,14 +72,14 @@ namespace RFC.FieldDrawer
 
         private class Marker
         {
-            public Vector2 Location;
+            public Point2 Location;
             public Color Color;
             public object Object;
 
             public bool DoDrawOrientation;
             public double Orientation;
 
-            public Marker(Vector2 loc, Color col, Object obj)
+            public Marker(Point2 loc, Color col, Object obj)
             {
                 Location = loc;
                 Color = col;
@@ -89,7 +89,7 @@ namespace RFC.FieldDrawer
                 Orientation = 0;
             }
 
-            public Marker(Vector2 loc, double orientation, Color col, Object obj)
+            public Marker(Point2 loc, double orientation, Color col, Object obj)
             {
                 Location = loc;
                 Color = col;
@@ -102,10 +102,10 @@ namespace RFC.FieldDrawer
 
         private class Arrow
         {
-            public Vector2 ToPoint;
+            public Point2 ToPoint;
             public Color Color;
 
-            public Arrow(Vector2 toPoint, Color color)
+            public Arrow(Point2 toPoint, Color color)
             {         
                 ToPoint = toPoint;
                 Color = color;
@@ -368,7 +368,7 @@ namespace RFC.FieldDrawer
 
         public void MouseDown(Point loc)
         {
-            Vector2 pt = controlToFieldCoords(loc);
+            Point2 pt = controlToFieldCoords(loc);
             _draggedMarker = null;
             _movedDraggedMarker = false;
             lock (_stateLock) {
@@ -406,7 +406,7 @@ namespace RFC.FieldDrawer
             if (_draggedMarker != null)
             {
                 _movedDraggedMarker = true;
-                Vector2 pt = controlToFieldCoords(loc);
+                Point2 pt = controlToFieldCoords(loc);
                 lock (_collectingStateLock)
                 {
                     _draggedMarker.Location = pt;
@@ -646,12 +646,12 @@ namespace RFC.FieldDrawer
              
             
         }
-        public int AddMarker(Vector2 location, Color color)
+        public int AddMarker(Point2 location, Color color)
         {
             return AddMarker(location, color, null);
         }
 
-        public int AddMarker(Vector2 location, Color color, Object obj)
+        public int AddMarker(Point2 location, Color color, Object obj)
         {
             lock (_stateLock)
             {
@@ -692,7 +692,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        public void DrawArrow(Team team, int robotID, ArrowType type, Vector2 toPoint)
+        public void DrawArrow(Team team, int robotID, ArrowType type, Point2 toPoint)
         {
             Color color = Color.Black;
 
@@ -896,7 +896,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        private bool ptInsideMarker(Marker marker, Vector2 pt)
+        private bool ptInsideMarker(Marker marker, Point2 pt)
         {
             if (pt.X < marker.Location.X - MARKER_SIZE || pt.X > marker.Location.X + MARKER_SIZE
                 || pt.Y < marker.Location.Y - MARKER_SIZE || pt.Y > marker.Location.Y + MARKER_SIZE)
@@ -904,7 +904,7 @@ namespace RFC.FieldDrawer
             return true;
         }
 
-        private void drawArrow(Vector2 fromPoint, Vector2 toPoint, Color color)
+        private void drawArrow(Point2 fromPoint, Point2 toPoint, Color color)
         {
             const double TIP_HEIGHT = 0.15;
             const double TIP_BASE = 0.1;
@@ -1001,21 +1001,21 @@ namespace RFC.FieldDrawer
             GL.End();
         }
 
-        private Vector2 controlToFieldCoords(Point loc)
+        private Point2 controlToFieldCoords(Point loc)
         {
             OpenTK.Vector3 world = screenToWorld(new OpenTK.Vector3(loc.X, loc.Y, 0));
-            return new Vector2(world.X, world.Y);
+            return new Point2(world.X, world.Y);
         }
 
         private void BuildTestScene()
         {
             List<RobotInfo> robots = new List<RobotInfo>();
-            robots.Add(new RobotInfo(new Vector2(0, 0), Math.PI / 2, Team.Yellow, 2));
-            robots.Add(new RobotInfo(new Vector2(2, 1.2), Math.PI, Team.Yellow, 3));
-            BallInfo ball = new BallInfo(new Vector2(1, 2));
+            robots.Add(new RobotInfo(new Point2(0, 0), Math.PI / 2, Team.Yellow, 2));
+            robots.Add(new RobotInfo(new Point2(2, 1.2), Math.PI, Team.Yellow, 3));
+            BallInfo ball = new BallInfo(new Point2(1, 2));
 
-            Vector2 marker1loc = new Vector2(-0.5, 0.5);
-            Vector2 marker2loc = new Vector2(-1.5, 1);
+            Point2 marker1loc = new Point2(-0.5, 0.5);
+            Point2 marker2loc = new Point2(-1.5, 1);
 
             //BeginCollectState();
 
