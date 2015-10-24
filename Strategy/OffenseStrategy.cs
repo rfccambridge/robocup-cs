@@ -61,8 +61,8 @@ namespace RFC.Strategy
 
         // how long should a play continue before it times out (in milliseconds)?
         private const double SHOT_TIMEOUT = 2000;
-        private const double BSHOT_TIMEOUT = 10000;
-        private const double NORMAL_TIMEOUT = 10000; // then start decreasing thresholds
+        private const double BSHOT_TIMEOUT = 2000;
+        private const double NORMAL_TIMEOUT = 2000; // then start decreasing thresholds
 
         // when did the current play start executing?
         private DateTime playStartTime;
@@ -281,7 +281,7 @@ namespace RFC.Strategy
                 bounceKicker.reset(bounce_op.position.Position);
                 // Console.WriteLine("switching to bounce shot");
                 LineSegment between = new LineSegment(shootingRobot.Position, (bouncingRobot.Position - shootingRobot.Position).cartesianAngle());
-                LineSegment toGoal = null; // new LineSegment(bouncingRobot.Position, Shot1.evaluate(fieldVision, team, bouncingRobot.Position).target - bouncingRobot.Position);
+                LineSegment toGoal = new LineSegment(bouncingRobot.Position, Shot1.evaluate(fieldVision, team, bouncingRobot.Position).target);
                 stateCheck = new List<IGeom>();
                 stateCheck.Add(between.offset(Constants.Basic.ROBOT_RADIUS * 5));
                 stateCheck.Add(toGoal.offset(Constants.Basic.ROBOT_RADIUS * 5));

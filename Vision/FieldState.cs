@@ -64,7 +64,7 @@ namespace RFC.Vision
             if (msg.Ball == null)
             {
                 if (ball == null ||
-                    (ball != null && (time - ball.LastSeen <= Constants.Predictor.MAX_SECONDS_TO_KEEP_INFO)))
+                    (ball != null && (time - ball.LastSeen > Constants.Predictor.MAX_SECONDS_TO_KEEP_INFO)))
                     // stop tracking ball
                     ball = null;
             }
