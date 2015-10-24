@@ -18,7 +18,8 @@ namespace RFC.Commands
         public SimulatorSender()
         {
             sender = new ClientMessageSender<RobotCommand>(host, port);
-            new QueuedMessageHandler<CommandMessage>(this, new object());
+            var msngr = ServiceManager.getServiceManager();
+            msngr.RegisterListener(this.Queued<CommandMessage>(new object()));
         }
 
         public void HandleMessage(CommandMessage message)

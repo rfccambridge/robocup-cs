@@ -6,31 +6,22 @@ using System.Threading;
 
 namespace RFC.Messaging
 {
-    public class QueuedMessageHandler<T> where T : Message
+    public class QueuedMessageHandler<T> : IMessageHandler<T> where T : Message
     {
         T lastMessage;
         object lastMessageLock = new object();
 
-        ServiceManager.Handler<T> handler;
+        IMessageHandler<T> handler;
         object lockObject;
         int handling = 0;
 
-        public QueuedMessageHandler(ServiceManager.Handler<T> handler, object lockObject)
+        public QueuedMessageHandler(IMessageHandler<T> handler, object lockObject)
         {
             this.handler = handler;
             this.lockObject = lockObject;
-
-            // register myself to receive messages
-            ServiceManager.getServiceManager().RegisterListener<T>(handleMessage, null);
         }
 
-        public QueuedMessageHandler(IMessageHandler<T> handler, object lockObject) : this(handler.HandleMessage, lockObject)
-        {
-            
-        }
-
-
-        public void handleMessage(T message)
+        public void HandleMessage(T message)
         {
             if (Interlocked.Exchange(ref handling, 1) == 0)
             {
@@ -42,7 +33,7 @@ namespace RFC.Messaging
                 // run handler
                 lock (lockObject)
                 {
-                    handler(message);
+                    handler.HandleMessage(message);
                 }
 
                 // after handling, handle queue if things were added while we were running
@@ -56,7 +47,7 @@ namespace RFC.Messaging
                 {
                     lock (lockObject)
                     {
-                        handler(messageToHandle);
+                        handler.HandleMessage(messageToHandle);
                     }
 
                     lock (lastMessageLock)
@@ -76,6 +67,18 @@ namespace RFC.Messaging
                     lastMessage = message;
                 }
             }
+        }
+    }
+
+    public static partial class MessageHandlerExtensions
+    {
+        /// <summary>
+        /// Returns a modified handler than queues up message, locking on the given object before invoking the current handler
+        /// See <see cref="QueuedMessageHandler{T}"/> for more details
+        /// </summary>
+        public static QueuedMessageHandler<T> Queued<T>(this IMessageHandler<T> handler, object obj) where T : Message
+        {
+            return new QueuedMessageHandler<T>(handler, obj);
         }
     }
 }

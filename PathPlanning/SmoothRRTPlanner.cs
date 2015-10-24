@@ -10,7 +10,7 @@ using RFC.Messaging;
 
 namespace RFC.PathPlanning
 {
-    public class SmoothRRTPlanner
+    public class SmoothRRTPlanner : IMessageHandler<RobotDestinationMessage>
     {
         /// <summary>
         /// Used to specify whether or how the motion planner should stay out of the defense region around a goal.
@@ -133,10 +133,14 @@ namespace RFC.PathPlanning
             msngr = ServiceManager.getServiceManager();
             //msngr.RegisterListener<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
             //new QueuedMessageHandler<RobotDestinationMessage>(handleRobotDestinationMessage, new object());
-            new MultiChannelQueuedMessageHandler<RobotDestinationMessage,int>(handleRobotDestinationMessage, (message) => message.Destination.ID, new object());
+            msngr.RegisterListener<RobotDestinationMessage>(
+                new MultiChannelQueuedMessageHandler<RobotDestinationMessage, int>(
+                    this, (message) => message.Destination.ID, new object()
+                )
+            );
         }
 
-        public void handleRobotDestinationMessage(RobotDestinationMessage message)
+        public void HandleMessage(RobotDestinationMessage message)
         {
             msngr.db("handling destination message");
             if (message.Destination == null || double.IsNaN(message.Destination.Position.X) || double.IsNaN(message.Destination.Position.Y))

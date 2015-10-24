@@ -10,9 +10,8 @@ using RFC.PathPlanning;
 
 namespace RFC.Strategy
 {
-    public class DribbleTest
+    public class DribbleTest : IMessageHandler<FieldVisionMessage>, IMessageHandler<StopMessage>
     {
-
         Team team;
         bool stopped = false;
         ServiceManager msngr;
@@ -22,15 +21,15 @@ namespace RFC.Strategy
         {
             this.team = team;
             object lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(Handle, lockObject);
             msngr = ServiceManager.getServiceManager();
-            msngr.RegisterListener<StopMessage>(stopMessageHandler, lockObject);
+            msngr.RegisterListener(this.Queued<FieldVisionMessage>(lockObject));
+            msngr.RegisterListener(this.LockingOn<StopMessage>(lockObject));
 
             // static debug
 
         }
 
-        public void Handle(FieldVisionMessage msg)
+        public void HandleMessage(FieldVisionMessage msg)
         {
 
             if (!first && msg.GetRobots(team).Count() > 0)
@@ -44,7 +43,7 @@ namespace RFC.Strategy
 
         }
 
-        public void stopMessageHandler(StopMessage message)
+        public void HandleMessage(StopMessage message)
         {
             stopped = true;
         }

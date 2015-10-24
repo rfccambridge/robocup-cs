@@ -35,39 +35,29 @@ namespace RFC.Messaging
         }
         class HandlerHolder<T> : HandlerHolder
         {
-            List<Tuple<Handler<T>, object>> handlers = new List<Tuple<Handler<T>, object>>();
-            public void AddHandler(Handler<T> handler, object lockObject)
+            List<Handler<T>> handlers = new List<Handler<T>>();
+            public void AddHandler(Handler<T> handler)
             {
                 lock (this)
                 {
-                    this.handlers.Add(new Tuple<Handler<T>, object>(handler, lockObject));
+                    this.handlers.Add(handler);
                 }
             }
 
             public override void Invoke(object message)
             {
-
-                lock (this) {
-                    foreach (Tuple<Handler<T>, object> handler in handlers)
+                lock (this)
+                {
+                    foreach (Handler<T> handler in handlers)
                     {
-                        new Task(() => launchThread(handler, message)).Start();
+                        new Task(() => launchThread(handler, (T) message)).Start();
                     }
                 }
             }
 
-            private void launchThread(Tuple<Handler<T>, object> handler, object message)
+            private void launchThread(Handler<T> handler, T message)
             {
-                if (handler.Item2 != null)
-                {
-                    lock (handler.Item2)
-                    {
-                        handler.Item1.Invoke((T)message);
-                    }
-                }
-                else
-                {
-                    handler.Item1.Invoke((T)message);
-                }
+                handler.Invoke(message);
             }
         }
 
@@ -83,11 +73,11 @@ namespace RFC.Messaging
         /// <typeparam name="T"></typeparam>
         /// <param name="handler">a function that takes an argument of a subtype of message that should be called when that type of message is sent</param>
         /// <param name="lockObject">an object to lock when calling the handler, pass null if you will handle concurrency manually</param>
-        public void RegisterListener<T>(Handler<T> handler, object lockObject) where T : Message
+        public void RegisterListener<T>(IMessageHandler<T> handler) where T : Message
         {
             Type type = typeof(T);
             HandlerHolder holder = handlers.GetOrAdd(type, new HandlerHolder<T>());
-            ((HandlerHolder<T>)holder).AddHandler(handler, lockObject);
+            ((HandlerHolder<T>)holder).AddHandler(handler.HandleMessage);
         }
 
         // so that people will actually use the log messages

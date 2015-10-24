@@ -24,20 +24,21 @@ namespace RFC.Logging
                 logger = new System.IO.StreamWriter(@"log.txt", false);
                 secretary = new System.IO.StreamWriter(@"message_logs.txt", false);
 
-                ServiceManager.getServiceManager().RegisterListener<LogMessage>(writeLog, new object());
+                ServiceManager mngr = ServiceManager.getServiceManager();
+                mngr.RegisterListener<LogMessage>(this.LockingOn(new object()));
 
                 // messages to be recorded
-                //new QueuedMessageHandler<VisionMessage>(recordMessage, new object());
-                //new QueuedMessageHandler<RobotVisionMessage>(recordMessage, new object());
-                new QueuedMessageHandler<CommandMessage>(this, new object());
-                new QueuedMessageHandler<RobotDestinationMessage>(this, new object());
-                new QueuedMessageHandler<RobotPathMessage>(this, new object());
-                new QueuedMessageHandler<RefboxStateMessage>(this, new object());
-                //new QueuedMessageHandler<BallMarkMessage>(recordMessage, new object());
-                //new QueuedMessageHandler<BallMovedMessage>(recordMessage, new object());
-                //new QueuedMessageHandler<BallVisionMessage>(recordMessage, new object());
-                new QueuedMessageHandler<KickMessage>(this, new object());
-                new QueuedMessageHandler<FieldVisionMessage>(this, new object());
+                //mngr.RegisterListener(this.Queued<VisionMessage>(new object()));
+                //mngr.RegisterListener(this.Queued<RobotVisionMessage>(new object()));
+                mngr.RegisterListener(this.Queued<CommandMessage>(new object()));
+                mngr.RegisterListener(this.Queued<RobotDestinationMessage>(new object()));
+                mngr.RegisterListener(this.Queued<RobotPathMessage>(new object()));
+                mngr.RegisterListener(this.Queued<RefboxStateMessage>(new object()));
+                //mngr.RegisterListener(this.Queued<BallMarkMessage>(new object()));
+                //mngr.RegisterListener(this.Queued<BallMovedMessage>(new object()));
+                //mngr.RegisterListener(this.Queued<BallVisionMessage>(new object()));
+                mngr.RegisterListener(this.Queued<KickMessage>(new object()));
+                mngr.RegisterListener(this.Queued<FieldVisionMessage>(new object()));
             }
             catch (IOException ex)
             {

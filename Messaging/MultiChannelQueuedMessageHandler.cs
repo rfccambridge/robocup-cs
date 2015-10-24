@@ -14,14 +14,14 @@ namespace RFC.Messaging
     /// </summary>
     /// <typeparam name="T">message type</typeparam>
     /// <typeparam name="U">channel key type</typeparam>
-    public class MultiChannelQueuedMessageHandler<T, U> where T : Message
+    public class MultiChannelQueuedMessageHandler<T, U> : IMessageHandler<T> where T : Message
     {
         Dictionary<U, T> lastMessages =  new Dictionary<U,T>();
         List<U> channelOrder = new List<U>(); // tells us what channels to process, this is used to make sure we are fairly processing each channel, otherwise, we might just keep running the handler for one channel
         int channelOrderCurrentIndex = 0;
         object lastMessageLock = new object(); // if using lastMessages, channelOrder, or channelOrderCurrentIndexx, lock lastMessageLock
 
-        ServiceManager.Handler<T> handler;
+        IMessageHandler<T> handler;
         object lockObject;
         int handling = 0;
 
@@ -34,14 +34,11 @@ namespace RFC.Messaging
         /// <param name="handler">The handler to call for processing messages</param>
         /// <param name="selector">A function from message to channel key, where the most recent message for each key will be processed</param>
         /// <param name="lockObject">This will be locked when calling handler</param>
-        public MultiChannelQueuedMessageHandler(ServiceManager.Handler<T> handler, Selector selector, object lockObject)
+        public MultiChannelQueuedMessageHandler(IMessageHandler<T> handler, Selector selector, object lockObject)
         {
             this.handler = handler;
             this.keySelector = selector;
             this.lockObject = lockObject;
-
-            // register myself to receive messages
-            ServiceManager.getServiceManager().RegisterListener<T>(handleMessage, null);
         }
 
         private T nextQueuedMessageToHandle()
@@ -71,7 +68,7 @@ namespace RFC.Messaging
             return message;
         }
 
-        public void handleMessage(T message)
+        public void HandleMessage(T message)
         {
             U key = keySelector(message);
             if (Interlocked.Exchange(ref handling, 1) == 0)
@@ -84,7 +81,7 @@ namespace RFC.Messaging
                 // run handler
                 lock (lockObject)
                 {
-                    handler(message);
+                    handler.HandleMessage(message);
                 }
 
                 // after handling, handle queue if things were added while we were running
@@ -93,7 +90,7 @@ namespace RFC.Messaging
                 {
                     lock (lockObject)
                     {
-                        handler(messageToHandle);
+                        handler.HandleMessage(messageToHandle);
                     }
 
                     lock (lastMessageLock)

@@ -24,8 +24,8 @@ namespace RFC.PathPlanning
             this.timeOuts = new Dictionary<int, DateTime>();
             this.team = team;
             object lockObj = new object();
-            new QueuedMessageHandler<CommandMessage>(this, lockObj);
-            new QueuedMessageHandler<FieldVisionMessage>(this, lockObj);
+            msngr.RegisterListener(this.Queued<CommandMessage>(lockObj));
+            msngr.RegisterListener(this.Queued<FieldVisionMessage>(lockObj));
         }
 
         public void HandleMessage(CommandMessage msg)

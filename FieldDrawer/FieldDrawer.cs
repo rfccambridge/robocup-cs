@@ -207,13 +207,13 @@ namespace RFC.FieldDrawer
             double ratio = FIELD_HEIGHT / FIELD_WIDTH;
             _fieldDrawerForm = new FieldDrawerForm(this, ratio);
             msngr = ServiceManager.getServiceManager();
-            new QueuedMessageHandler<RobotVisionMessage>(this, new object());
-            new QueuedMessageHandler<BallVisionMessage>(this, new object());
-            new QueuedMessageHandler<RobotPathMessage>(this, new object());
-            new QueuedMessageHandler<RobotDestinationMessage>(this, new object());
-            new QueuedMessageHandler<RefboxStateMessage>(this, new object());
-            new QueuedMessageHandler<VisualDebugMessage>(this, new object());
-            new QueuedMessageHandler<VisualDebugMessage<Lattice<Color>>>(this, new object());
+            msngr.RegisterListener(this.Queued<RobotVisionMessage>(new object()));
+            msngr.RegisterListener(this.Queued<BallVisionMessage>(new object()));
+            msngr.RegisterListener(this.Queued<RobotPathMessage>(new object()));
+            msngr.RegisterListener(this.Queued<RobotDestinationMessage>(new object()));
+            msngr.RegisterListener(this.Queued<RefboxStateMessage>(new object()));
+            msngr.RegisterListener(this.Queued<VisualDebugMessage>(new object()));
+            msngr.RegisterListener(this.Queued<VisualDebugMessage<Lattice<Color>>>(new object()));
         }
 
         public void Init(int w, int h)

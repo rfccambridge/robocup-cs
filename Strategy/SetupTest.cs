@@ -32,7 +32,7 @@ namespace RFC.Strategy
             this.bk.reset(new Point2(1, 0));
             this.pk = new PenaltyKickBehavior(team, goalie);
             this.dk = new KickInBehavior(team, goalie);
-            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
+            msngr.RegisterListener(this.Queued<FieldVisionMessage>(lockObject));
         }
 
         public void HandleMessage(FieldVisionMessage msg)

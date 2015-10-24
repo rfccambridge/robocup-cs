@@ -45,6 +45,7 @@
     <Compile Include="CommandMessage.cs" />
     <Compile Include="FieldVisionMessage.cs" />
     <Compile Include="KickMessage.cs" />
+    <Compile Include="LockingMessageHandler.cs" />
     <Compile Include="LogMessage.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MultiChannelQueuedMessageHandler.cs" />

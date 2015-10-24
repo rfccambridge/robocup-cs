@@ -28,7 +28,7 @@ namespace RFC.Strategy
             this.goalie_id = goalie_id;
             this.msngr = ServiceManager.getServiceManager();
             this.lockObject = new object();
-            new QueuedMessageHandler<FieldVisionMessage>(this, lockObject);
+            msngr.RegisterListener(this.Queued<FieldVisionMessage>(lockObject));
         }
 
         private void timeoutHandle(FieldVisionMessage fieldVision)

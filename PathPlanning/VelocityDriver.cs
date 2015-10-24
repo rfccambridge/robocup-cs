@@ -80,9 +80,9 @@ namespace RFC.PathPlanning
 
             object lockObject = new object();
             msngr = ServiceManager.getServiceManager();
-            new QueuedMessageHandler<RobotVisionMessage>(this, lockObject);
-            new QueuedMessageHandler<RobotPathMessage>(this, lockObject);
-            msngr.RegisterListener<StopMessage>(HandleMessage, lockObject);
+            msngr.RegisterListener(this.Queued<RobotVisionMessage>(lockObject));
+            msngr.RegisterListener(this.Queued<RobotPathMessage>(lockObject));
+            msngr.RegisterListener(this.LockingOn<StopMessage>(lockObject));
 
             sw = Stopwatch.StartNew();
         }
