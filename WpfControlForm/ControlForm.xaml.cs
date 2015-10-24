@@ -22,9 +22,9 @@ namespace RFC.WpfControlForm
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class ControlForm : Window, INotifyPropertyChanged
     {
-        public MainWindow()
+        public ControlForm()
         {
             InitializeComponent();
             Teams = Enum.GetValues(typeof(Team))

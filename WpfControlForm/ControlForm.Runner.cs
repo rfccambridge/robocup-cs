@@ -18,7 +18,7 @@ using RFC.Vision;
 
 namespace RFC.WpfControlForm
 {
-    public partial class MainWindow
+    public partial class ControlForm
     {
         FieldDrawer.FieldDrawer fd = null;
 
