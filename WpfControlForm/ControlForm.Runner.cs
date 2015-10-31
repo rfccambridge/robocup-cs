@@ -26,7 +26,7 @@ namespace RFC.WpfControlForm
         {
             if (Running) return false;
             
-            int maxRobotId = 12;
+            int maxRobotId = 11;
 
             if (SelectedConnection == "Simulator")
             {

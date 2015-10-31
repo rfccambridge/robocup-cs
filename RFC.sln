@@ -31,11 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategy", "Strategy\Strate
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldDrawer", "FieldDrawer\FieldDrawer.csproj", "{27F07D1C-2D92-442A-B283-5CC23507E9C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlForm", "ControlForm\ControlForm.csproj", "{6C30C017-30EB-40DB-87BF-E8DB2A9FCAA6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialControl", "SerialControl\SerialControl.csproj", "{A6C310FC-35B1-40B8-8B0C-92D79EDF7DD1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlFormDummy", "ControlFormDummy\ControlFormDummy.csproj", "{FDF2762C-BE81-4C93-9429-28497AF02BB5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfControlForm", "WpfControlForm\WpfControlForm.csproj", "{A995C294-3E6D-4F9F-96F8-5937B3FEF7AF}"
 EndProject
@@ -101,16 +97,10 @@ Global
 		{27F07D1C-2D92-442A-B283-5CC23507E9C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27F07D1C-2D92-442A-B283-5CC23507E9C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27F07D1C-2D92-442A-B283-5CC23507E9C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C30C017-30EB-40DB-87BF-E8DB2A9FCAA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C30C017-30EB-40DB-87BF-E8DB2A9FCAA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C30C017-30EB-40DB-87BF-E8DB2A9FCAA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C30C017-30EB-40DB-87BF-E8DB2A9FCAA6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6C310FC-35B1-40B8-8B0C-92D79EDF7DD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6C310FC-35B1-40B8-8B0C-92D79EDF7DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6C310FC-35B1-40B8-8B0C-92D79EDF7DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6C310FC-35B1-40B8-8B0C-92D79EDF7DD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FDF2762C-BE81-4C93-9429-28497AF02BB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FDF2762C-BE81-4C93-9429-28497AF02BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A995C294-3E6D-4F9F-96F8-5937B3FEF7AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A995C294-3E6D-4F9F-96F8-5937B3FEF7AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A995C294-3E6D-4F9F-96F8-5937B3FEF7AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
