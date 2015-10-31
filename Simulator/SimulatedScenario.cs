@@ -76,26 +76,31 @@ namespace RFC.Simulator
             List<RobotInfo> yellowRobots = new List<RobotInfo>();
             List<RobotInfo> blueRobots = new List<RobotInfo>();
 
-            yellowRobots.Add(new RobotInfo(new Point2(-1.0, -1), 0, Team.Yellow, 0));
-            
+            // ID range for yellow team is 0-5 and for blue team is 6-infinity
+            // this is due to hard coding of teams to IDs in cmdReceiver_MessageReceived(RobotCommand command)
+            yellowRobots.Add(new RobotInfo(new Point2(-1.0, -1.0), 0, Team.Yellow, 0));
             if (numYellow > 1)
-                yellowRobots.Add(new RobotInfo(new Point2(-1.0, 0), 0, Team.Yellow, 1));
+                yellowRobots.Add(new RobotInfo(new Point2(-1.0, 0.0), 0, Team.Yellow, 1));
             if (numYellow > 2)
-                yellowRobots.Add(new RobotInfo(new Point2(-1.0, 1), 0, Team.Yellow, 2));
+                yellowRobots.Add(new RobotInfo(new Point2(-1.0, 1.0), 0, Team.Yellow, 2));
             if (numYellow > 3)
-                yellowRobots.Add(new RobotInfo(new Point2(-2f, -1), 0, Team.Yellow, 3));
+                yellowRobots.Add(new RobotInfo(new Point2(-2.0, -1.0), 0, Team.Yellow, 3));
             if (numYellow > 4)
-                yellowRobots.Add(new RobotInfo(new Point2(-2f, 1), 0, Team.Yellow, 4));
+                yellowRobots.Add(new RobotInfo(new Point2(-2.0, 0.0), 0, Team.Yellow, 4));
+            if (numYellow > 5)
+                yellowRobots.Add(new RobotInfo(new Point2(-2.0, 1.0), 0, Team.Yellow, 5));
 
-            blueRobots.Add(new RobotInfo(new Point2(1.0, -1), Math.PI, Team.Blue, 5));
+            blueRobots.Add(new RobotInfo(new Point2(1.0, -1.0), Math.PI, Team.Blue, 6));
             if (numBlue > 1)
-                blueRobots.Add(new RobotInfo(new Point2(0.3, 0), Math.PI, Team.Blue, 6));
+                blueRobots.Add(new RobotInfo(new Point2(1.0, 0.0), Math.PI, Team.Blue, 7));
             if (numBlue > 2)
-                blueRobots.Add(new RobotInfo(new Point2(1.0, 1), Math.PI, Team.Blue, 7));
+                blueRobots.Add(new RobotInfo(new Point2(1.0, 1.0), Math.PI, Team.Blue, 8));
             if (numBlue > 3)
-                blueRobots.Add(new RobotInfo(new Point2(2f, -1), Math.PI, Team.Blue, 8));
+                blueRobots.Add(new RobotInfo(new Point2(2.0, -1.0), Math.PI, Team.Blue, 9));
             if (numBlue > 4)
-                blueRobots.Add(new RobotInfo(new Point2(2f, 1), Math.PI, Team.Blue, 9));
+                blueRobots.Add(new RobotInfo(new Point2(2.0, 0.0), Math.PI, Team.Blue, 10));
+            if (numBlue > 5)
+                blueRobots.Add(new RobotInfo(new Point2(2.0, 1.0), Math.PI, Team.Blue, 11));
 
             robots[Team.Yellow] = yellowRobots;
             robots[Team.Blue] = blueRobots;

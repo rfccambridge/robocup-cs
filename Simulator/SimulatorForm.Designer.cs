@@ -141,7 +141,7 @@
             this.txtNumYellow.Name = "txtNumYellow";
             this.txtNumYellow.Size = new System.Drawing.Size(44, 20);
             this.txtNumYellow.TabIndex = 65;
-            this.txtNumYellow.Text = "5";
+            this.txtNumYellow.Text = "6";
             // 
             // txtNumBlue
             // 
@@ -149,7 +149,7 @@
             this.txtNumBlue.Name = "txtNumBlue";
             this.txtNumBlue.Size = new System.Drawing.Size(44, 20);
             this.txtNumBlue.TabIndex = 66;
-            this.txtNumBlue.Text = "5";
+            this.txtNumBlue.Text = "6";
             // 
             // chkReferee
             // 

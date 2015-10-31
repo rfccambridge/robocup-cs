@@ -644,10 +644,11 @@ namespace RFC.Simulator
         {
             lock (updateLock)
             {
+                // TODO Update RobotCommand to include Team so that this is not hard coded
                 // This is not the cleanest, but it's ok, because these IDs are also issued by this
                 // engine -- so, the convention is contained. Adding a team into RobotCommand does 
                 // *not* make much sense.
-                Team team = command.ID < 5 ? Team.Yellow : Team.Blue;
+                Team team = command.ID < 6 ? Team.Yellow : Team.Blue;
 
                 switch (command.command)
                 {

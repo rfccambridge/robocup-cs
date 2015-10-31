@@ -67,15 +67,15 @@ namespace RFC.Simulator
                     if (!parseHost(txtSimRefereeHost.Text, out refBoxIp, out refBoxPort)) return;
 
 					int numBlue = int.Parse(txtNumBlue.Text);
-                    if(txtNumBlue.Enabled && (numBlue <= 0 || numBlue > 5))
+                    if(txtNumBlue.Enabled && (numBlue <= 0 || numBlue > 6))
                     {
-                        MessageBox.Show("Number of blue robots must be between 1 and 5");
+                        MessageBox.Show("Number of blue robots must be between 1 and 6");
                         return;
                     }
 					int numYellow = int.Parse(txtNumYellow.Text);
-                    if (txtNumYellow.Enabled && (numYellow <= 0 || numYellow > 5))
+                    if (txtNumYellow.Enabled && (numYellow <= 0 || numYellow > 6))
                     {
-                        MessageBox.Show("Number of yellow robots must be between 1 and 5");
+                        MessageBox.Show("Number of yellow robots must be between 1 and 6");
                         return;
                     }
                     // For convenience reload constants on every restart
