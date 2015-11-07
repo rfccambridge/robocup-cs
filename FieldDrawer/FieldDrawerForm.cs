@@ -18,13 +18,41 @@ namespace RFC.FieldDrawer
         private Color[] _colors = { Color.Cyan, Color.Red, Color.White, Color.Pink, Color.Purple};
         private int _currentColorIdx = 0;
 
+        OpenTK.GLControl glField;
+
         public FieldDrawerForm(FieldDrawer fieldDrawer, double heightToWidth)
         {
             _fieldDrawer = fieldDrawer;
             InitializeComponent();
+            InitGL();
 
             this.Width = (int)((double)glField.Height / heightToWidth);
             lblMarker.BackColor = _colors[_currentColorIdx];
+        }
+
+        private void InitGL()
+        {
+            glField = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8)) {
+                AllowDrop = true,
+                BackColor = System.Drawing.Color.Black,
+                Dock = System.Windows.Forms.DockStyle.Top,
+                Location = new System.Drawing.Point(0, 0),
+                Name = "glField",
+                Size = new System.Drawing.Size(599, 384),
+                TabIndex = 0,
+                VSync = false
+            };
+            glField.Load += new System.EventHandler(this.glField_Load);
+            glField.DragDrop += new System.Windows.Forms.DragEventHandler(this.glField_DragDrop);
+            glField.DragEnter += new System.Windows.Forms.DragEventHandler(this.glField_DragEnter);
+            glField.Paint += new System.Windows.Forms.PaintEventHandler(this.glField_Paint);
+            glField.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glField_MouseDown);
+            glField.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glField_MouseMove);
+            glField.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glField_MouseUp);
+            glField.Resize += new System.EventHandler(this.glField_Resize);
+
+
+            this.Controls.Add(this.glField);
         }
 
         public void InvalidateGLControl()

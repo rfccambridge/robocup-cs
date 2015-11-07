@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.glField = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
             this.panGameStatus = new System.Windows.Forms.Panel();
             this.lblPlayName = new System.Windows.Forms.Label();
             this.lblMarker = new System.Windows.Forms.Label();
@@ -40,25 +39,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.panGameStatus.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // glField
-            // 
-            this.glField.AllowDrop = true;
-            this.glField.BackColor = System.Drawing.Color.Black;
-            this.glField.Dock = System.Windows.Forms.DockStyle.Top;
-            this.glField.Location = new System.Drawing.Point(0, 0);
-            this.glField.Name = "glField";
-            this.glField.Size = new System.Drawing.Size(599, 384);
-            this.glField.TabIndex = 0;
-            this.glField.VSync = false;
-            this.glField.Load += new System.EventHandler(this.glField_Load);
-            this.glField.DragDrop += new System.Windows.Forms.DragEventHandler(this.glField_DragDrop);
-            this.glField.DragEnter += new System.Windows.Forms.DragEventHandler(this.glField_DragEnter);
-            this.glField.Paint += new System.Windows.Forms.PaintEventHandler(this.glField_Paint);
-            this.glField.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glField_MouseDown);
-            this.glField.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glField_MouseMove);
-            this.glField.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glField_MouseUp);
-            this.glField.Resize += new System.EventHandler(this.glField_Resize);
+           
             // 
             // panGameStatus
             // 
@@ -172,7 +153,6 @@
             this.BackColor = System.Drawing.Color.Green;
             this.ClientSize = new System.Drawing.Size(599, 530);
             this.Controls.Add(this.panGameStatus);
-            this.Controls.Add(this.glField);
             this.ForeColor = System.Drawing.Color.White;
             this.Name = "FieldDrawerForm";
             this.Text = "FieldDrawer";
@@ -184,8 +164,7 @@
         }
 
         #endregion
-
-        private OpenTK.GLControl glField;
+        
         private System.Windows.Forms.Panel panGameStatus;
         private System.Windows.Forms.Label lblRefBoxCmd;
         private System.Windows.Forms.Label lblPlayType;
