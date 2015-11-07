@@ -14,6 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+
 namespace RFC.WpfControlForm
 {
     /// <summary>
@@ -85,10 +89,21 @@ namespace RFC.WpfControlForm
         }
         #endregion
 
+        private GLControl glControl;
+
         public FieldRender()
         {
             DataContext = this;
             InitializeComponent();
+        }
+
+        private void WindowsFormsHost_Initialized(object sender, EventArgs e)
+        {
+            glControl = new GLControl(new GraphicsMode(32, 24), 2, 0);
+            glControl.MakeCurrent();
+            glControl.Paint += GLControl_Paint;
+            glControl.Dock = DockStyle.Fill;
+            (sender as WindowsFormsHost).Child = glControl;
         }
     }
 }
