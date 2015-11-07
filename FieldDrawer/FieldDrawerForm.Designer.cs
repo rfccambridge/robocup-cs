@@ -31,15 +31,7 @@
             this.glField = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
             this.panGameStatus = new System.Windows.Forms.Panel();
             this.lblPlayName = new System.Windows.Forms.Label();
-            this.lblControllerDuration = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.lblLapDuration = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.lblMarker = new System.Windows.Forms.Label();
-            this.lblInterpretDuration = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.lblInterpretFreq = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.lblRefBoxCmd = new System.Windows.Forms.Label();
             this.lblPlayType = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -72,15 +64,7 @@
             // 
             this.panGameStatus.BackColor = System.Drawing.Color.Green;
             this.panGameStatus.Controls.Add(this.lblPlayName);
-            this.panGameStatus.Controls.Add(this.lblControllerDuration);
-            this.panGameStatus.Controls.Add(this.label8);
-            this.panGameStatus.Controls.Add(this.lblLapDuration);
-            this.panGameStatus.Controls.Add(this.label4);
             this.panGameStatus.Controls.Add(this.lblMarker);
-            this.panGameStatus.Controls.Add(this.lblInterpretDuration);
-            this.panGameStatus.Controls.Add(this.label6);
-            this.panGameStatus.Controls.Add(this.lblInterpretFreq);
-            this.panGameStatus.Controls.Add(this.label2);
             this.panGameStatus.Controls.Add(this.lblRefBoxCmd);
             this.panGameStatus.Controls.Add(this.lblPlayType);
             this.panGameStatus.Controls.Add(this.label3);
@@ -103,48 +87,6 @@
             this.lblPlayName.Text = "<?>";
             this.lblPlayName.Visible = false;
             // 
-            // lblControllerDuration
-            // 
-            this.lblControllerDuration.AutoSize = true;
-            this.lblControllerDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblControllerDuration.Location = new System.Drawing.Point(119, 92);
-            this.lblControllerDuration.Name = "lblControllerDuration";
-            this.lblControllerDuration.Size = new System.Drawing.Size(32, 16);
-            this.lblControllerDuration.TabIndex = 16;
-            this.lblControllerDuration.Text = "<?>";
-            this.lblControllerDuration.Visible = false;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(12, 92);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(97, 13);
-            this.label8.TabIndex = 15;
-            this.label8.Text = "Controller Duration:";
-            this.label8.Visible = false;
-            // 
-            // lblLapDuration
-            // 
-            this.lblLapDuration.AutoSize = true;
-            this.lblLapDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLapDuration.Location = new System.Drawing.Point(119, 114);
-            this.lblLapDuration.Name = "lblLapDuration";
-            this.lblLapDuration.Size = new System.Drawing.Size(32, 16);
-            this.lblLapDuration.TabIndex = 14;
-            this.lblLapDuration.Text = "<?>";
-            this.lblLapDuration.Visible = false;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(42, 115);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 13);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "Lap Duration:";
-            this.label4.Visible = false;
-            // 
             // lblMarker
             // 
             this.lblMarker.BackColor = System.Drawing.Color.White;
@@ -156,48 +98,6 @@
             this.lblMarker.Visible = false;
             this.lblMarker.Click += new System.EventHandler(this.lblMarker_Click);
             this.lblMarker.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblMarker_MouseDown);
-            // 
-            // lblInterpretDuration
-            // 
-            this.lblInterpretDuration.AutoSize = true;
-            this.lblInterpretDuration.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInterpretDuration.Location = new System.Drawing.Point(119, 72);
-            this.lblInterpretDuration.Name = "lblInterpretDuration";
-            this.lblInterpretDuration.Size = new System.Drawing.Size(32, 16);
-            this.lblInterpretDuration.TabIndex = 10;
-            this.lblInterpretDuration.Text = "<?>";
-            this.lblInterpretDuration.Visible = false;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 72);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(101, 13);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Interpreter Duration:";
-            this.label6.Visible = false;
-            // 
-            // lblInterpretFreq
-            // 
-            this.lblInterpretFreq.AutoSize = true;
-            this.lblInterpretFreq.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInterpretFreq.Location = new System.Drawing.Point(119, 50);
-            this.lblInterpretFreq.Name = "lblInterpretFreq";
-            this.lblInterpretFreq.Size = new System.Drawing.Size(32, 16);
-            this.lblInterpretFreq.TabIndex = 8;
-            this.lblInterpretFreq.Text = "<?>";
-            this.lblInterpretFreq.Visible = false;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(31, 51);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Interpreter Freq:";
-            this.label2.Visible = false;
             // 
             // lblRefBoxCmd
             // 
@@ -293,15 +193,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblTeam;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label lblInterpretDuration;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label lblInterpretFreq;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblMarker;
-        private System.Windows.Forms.Label lblLapDuration;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label lblControllerDuration;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label lblPlayName;
     }
 }

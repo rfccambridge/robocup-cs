@@ -168,9 +168,6 @@ namespace RFC.FieldDrawer
         Marker _draggedMarker; //The marker currently being dragged
         bool _movedDraggedMarker; //Have we ever moved this marker since the start of the drag?
 
-        const int NUM_VALUES_TO_AVG = 30;
-        double interpretFreqAvg, interpretDurationAvg, controllerDurationAvg;
-        int interpretFreqCnt = 0, interpretDurationCnt = 0, controllerDurationCnt = 0;
         ServiceManager msngr;
 
         public bool Visible
@@ -482,41 +479,6 @@ namespace RFC.FieldDrawer
         public void UpdatePlayType(PlayType playType)
         {
             _fieldDrawerForm.UpdatePlayType(playType);
-        }
-
-        public void UpdateInterpretFreq(double freq)
-        {
-            if (interpretFreqCnt < NUM_VALUES_TO_AVG)
-                interpretFreqCnt++;
-
-            double prop = 1.0 / interpretFreqCnt;
-            interpretFreqAvg = freq * prop + interpretFreqAvg * (1.0 - prop);
-            _fieldDrawerForm.UpdateInterpretFreq(interpretFreqAvg);
-        }
-
-        public void UpdateInterpretDuration(double duration)
-        {
-            if (interpretDurationCnt < NUM_VALUES_TO_AVG)
-                interpretDurationCnt++;
-
-            double prop = 1.0 / interpretDurationCnt;
-            interpretDurationAvg = duration * prop + interpretDurationAvg * (1.0 - prop);
-            _fieldDrawerForm.UpdateInterpretDuration(interpretDurationAvg);
-        }
-
-        public void UpdateLapDuration(double duration)
-        {
-            _fieldDrawerForm.UpdateLapDuration(duration);
-        }
-
-        public void UpdateControllerDuration(double duration)
-        {
-            if (controllerDurationCnt < NUM_VALUES_TO_AVG)
-                controllerDurationCnt++;
-
-            double prop = 1.0 / controllerDurationCnt;
-            controllerDurationAvg = duration * prop + controllerDurationAvg * (1.0 - prop);
-            _fieldDrawerForm.UpdateControllerDuration(controllerDurationAvg);
         }
 
         public void UpdatePlayName(Team team, int robotID, string name)

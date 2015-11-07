@@ -71,38 +71,6 @@ namespace RFC.FieldDrawer
             }));
         }
 
-        public void UpdateInterpretFreq(double freq)
-        {
-            this.BeginInvoke(new VoidDelegate(delegate
-            {
-                lblInterpretFreq.Text = String.Format("{0:F2} Hz", freq);
-            }));
-        }
-
-        public void UpdateInterpretDuration(double duration)
-        {
-            this.BeginInvoke(new VoidDelegate(delegate
-            {
-                lblInterpretDuration.Text = String.Format("{0:F2} ms", duration);
-            }));
-        }
-
-        public void UpdateControllerDuration(double duration)
-        {
-            this.BeginInvoke(new VoidDelegate(delegate
-            {
-                lblControllerDuration.Text = String.Format("{0:F2} ms", duration);
-            }));
-        }
-
-        public void UpdateLapDuration(double duration)
-        {
-            this.BeginInvoke(new VoidDelegate(delegate
-            {
-                lblLapDuration.Text = String.Format("{0:F2} s", duration);
-            }));
-        }
-
         private void FieldDrawerForm_Resize(object sender, EventArgs e)
         {
             glField.Height = panGameStatus.Top;
