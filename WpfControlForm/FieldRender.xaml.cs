@@ -23,7 +23,7 @@ namespace RFC.WpfControlForm
     {
         #region Data Binding
         public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(String prop) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        protected virtual void OnPropertyChanged(string prop) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         private Team _team;
         public Team Team {
@@ -40,12 +40,12 @@ namespace RFC.WpfControlForm
                 }
             }
         }
-        public String TeamName => Team.ToString();
+        public string TeamName => Team.ToString();
         public Color TeamColor => Team == Team.Blue ? Colors.Blue : Colors.Yellow;
 
 
-        private String _refBoxCmd;
-        public String RefBoxCmd {
+        private string _refBoxCmd;
+        public string RefBoxCmd {
             get { return _refBoxCmd; }
             set
             {
@@ -57,8 +57,8 @@ namespace RFC.WpfControlForm
         }
 
 
-        private String _playType;
-        public String PlayType
+        private string _playType;
+        public string PlayType
         {
             get { return _playType; }
             set
@@ -71,8 +71,8 @@ namespace RFC.WpfControlForm
         }
 
 
-        private String _playName;
-        public String PlayName
+        private string _playName;
+        public string PlayName
         {
             get { return _playName; }
             set
