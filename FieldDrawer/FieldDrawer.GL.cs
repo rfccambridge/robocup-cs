@@ -32,8 +32,8 @@ namespace RFC.FieldDrawer
         private void updateProjection()
         {
             double actualAspect = _glControlWidth / _glControlHeight;
-            double desiredW = FIELD_FULL_XMAX - FIELD_FULL_XMIN;
-            double desiredH = FIELD_FULL_YMAX - FIELD_FULL_YMIN;
+            double desiredW = C.FULL_XMAX - C.FULL_XMIN;
+            double desiredH = C.FULL_YMAX - C.FULL_YMIN;
             double desiredAspect = desiredW / desiredH;
 
             double marginX = 0, marginY = 0;
@@ -51,8 +51,8 @@ namespace RFC.FieldDrawer
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
             GL.Ortho(
-                FIELD_FULL_XMIN - marginX, FIELD_FULL_XMAX + marginX,
-                FIELD_FULL_YMIN - marginY, FIELD_FULL_YMAX + marginY,
+                C.FULL_XMIN - marginX, C.FULL_XMAX + marginX,
+                C.FULL_YMIN - marginY, C.FULL_YMAX + marginY,
                 -1, 1
             );
         }
@@ -210,73 +210,73 @@ namespace RFC.FieldDrawer
             // Extended Field border
             GL.Color3(Color.ForestGreen);
             GL.Begin(BeginMode.LineLoop);
-            GL.Vertex2(-EXTENDED_FIELD_WIDTH / 2, -EXTENDED_FIELD_HEIGHT / 2);
-            GL.Vertex2(EXTENDED_FIELD_WIDTH / 2, -EXTENDED_FIELD_HEIGHT / 2);
-            GL.Vertex2(EXTENDED_FIELD_WIDTH / 2, EXTENDED_FIELD_HEIGHT / 2);
-            GL.Vertex2(-EXTENDED_FIELD_WIDTH / 2, EXTENDED_FIELD_HEIGHT / 2);
+            GL.Vertex2(-C.EXTENDED_WIDTH / 2, -C.EXTENDED_HEIGHT / 2);
+            GL.Vertex2(C.EXTENDED_WIDTH / 2, -C.EXTENDED_HEIGHT / 2);
+            GL.Vertex2(C.EXTENDED_WIDTH / 2, C.EXTENDED_HEIGHT / 2);
+            GL.Vertex2(-C.EXTENDED_WIDTH / 2, C.EXTENDED_HEIGHT / 2);
             GL.End();
 
             // Field border
             GL.Color3(Color.White);
             GL.Begin(BeginMode.LineLoop);
-            GL.Vertex2(-FIELD_WIDTH / 2, -FIELD_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2, -FIELD_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2, FIELD_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2, FIELD_HEIGHT / 2);
+            GL.Vertex2(-C.WIDTH / 2, -C.HEIGHT / 2);
+            GL.Vertex2(C.WIDTH / 2, -C.HEIGHT / 2);
+            GL.Vertex2(C.WIDTH / 2, C.HEIGHT / 2);
+            GL.Vertex2(-C.WIDTH / 2, C.HEIGHT / 2);
             GL.End();
 
             // Center line
             GL.Begin(BeginMode.Lines);
-            GL.Vertex2(0, FIELD_HEIGHT / 2);
-            GL.Vertex2(0, -FIELD_HEIGHT / 2);
+            GL.Vertex2(0, C.HEIGHT / 2);
+            GL.Vertex2(0, -C.HEIGHT / 2);
             GL.End();
             GL.Begin(BeginMode.Lines);
-            GL.Vertex2(FIELD_WIDTH / 2, 0);
-            GL.Vertex2(FIELD_WIDTH / 2, 0);
+            GL.Vertex2(C.WIDTH / 2, 0);
+            GL.Vertex2(C.WIDTH / 2, 0);
             GL.End();
 
             // Center circle
             GL.LoadIdentity();
             GL.Translate(0, 0, 0);
-            drawCircle(CENTER_CIRCLE_RADIUS);
+            drawCircle(C.CENTER_CIRCLE_RADIUS);
 
 
             //Goals
             GL.Begin(BeginMode.LineLoop);
-            GL.Vertex2(-FIELD_WIDTH / 2, GOAL_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2 - GOAL_WIDTH, GOAL_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2 - GOAL_WIDTH, -GOAL_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2, -GOAL_HEIGHT / 2);
+            GL.Vertex2(-C.WIDTH / 2, C.GOAL_HEIGHT / 2);
+            GL.Vertex2(-C.WIDTH / 2 - C.GOAL_WIDTH, C.GOAL_HEIGHT / 2);
+            GL.Vertex2(-C.WIDTH / 2 - C.GOAL_WIDTH, -C.GOAL_HEIGHT / 2);
+            GL.Vertex2(-C.WIDTH / 2, -C.GOAL_HEIGHT / 2);
             GL.End();
 
             GL.Begin(BeginMode.LineLoop);
-            GL.Vertex2(FIELD_WIDTH / 2, GOAL_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2 + GOAL_WIDTH, GOAL_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2 + GOAL_WIDTH, -GOAL_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2, -GOAL_HEIGHT / 2);
+            GL.Vertex2(C.WIDTH / 2, C.GOAL_HEIGHT / 2);
+            GL.Vertex2(C.WIDTH / 2 + C.GOAL_WIDTH, C.GOAL_HEIGHT / 2);
+            GL.Vertex2(C.WIDTH / 2 + C.GOAL_WIDTH, -C.GOAL_HEIGHT / 2);
+            GL.Vertex2(C.WIDTH / 2, -C.GOAL_HEIGHT / 2);
             GL.End();
 
             //Defense areas
             GL.LoadIdentity();
-            GL.Translate(-FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT / 2, 0);
-            drawPartialCircle(DEFENSE_AREA_RADIUS, 0, 90);
+            GL.Translate(-C.WIDTH / 2, C.DEFENSE_RECT_HEIGHT / 2, 0);
+            drawPartialCircle(C.DEFENSE_AREA_RADIUS, 0, 90);
             GL.LoadIdentity();
-            GL.Translate(-FIELD_WIDTH / 2, -DEFENSE_RECT_HEIGHT / 2, 0);
-            drawPartialCircle(DEFENSE_AREA_RADIUS, -90, 0);
+            GL.Translate(-C.WIDTH / 2, -C.DEFENSE_RECT_HEIGHT / 2, 0);
+            drawPartialCircle(C.DEFENSE_AREA_RADIUS, -90, 0);
             GL.LoadIdentity();
-            GL.Translate(FIELD_WIDTH / 2, DEFENSE_RECT_HEIGHT / 2, 0);
-            drawPartialCircle(DEFENSE_AREA_RADIUS, 90, 180);
+            GL.Translate(C.WIDTH / 2, C.DEFENSE_RECT_HEIGHT / 2, 0);
+            drawPartialCircle(C.DEFENSE_AREA_RADIUS, 90, 180);
             GL.LoadIdentity();
-            GL.Translate(FIELD_WIDTH / 2, -DEFENSE_RECT_HEIGHT / 2, 0);
-            drawPartialCircle(DEFENSE_AREA_RADIUS, 180, 270);
+            GL.Translate(C.WIDTH / 2, -C.DEFENSE_RECT_HEIGHT / 2, 0);
+            drawPartialCircle(C.DEFENSE_AREA_RADIUS, 180, 270);
             GL.LoadIdentity();
             GL.Begin(BeginMode.Lines);
-            GL.Vertex2(-FIELD_WIDTH / 2 + DEFENSE_AREA_RADIUS, -DEFENSE_RECT_HEIGHT / 2);
-            GL.Vertex2(-FIELD_WIDTH / 2 + DEFENSE_AREA_RADIUS, DEFENSE_RECT_HEIGHT / 2);
+            GL.Vertex2(-C.WIDTH / 2 + C.DEFENSE_AREA_RADIUS, -C.DEFENSE_RECT_HEIGHT / 2);
+            GL.Vertex2(-C.WIDTH / 2 + C.DEFENSE_AREA_RADIUS, C.DEFENSE_RECT_HEIGHT / 2);
             GL.End();
             GL.Begin(BeginMode.Lines);
-            GL.Vertex2(FIELD_WIDTH / 2 - DEFENSE_AREA_RADIUS, -DEFENSE_RECT_HEIGHT / 2);
-            GL.Vertex2(FIELD_WIDTH / 2 - DEFENSE_AREA_RADIUS, DEFENSE_RECT_HEIGHT / 2);
+            GL.Vertex2(C.WIDTH / 2 - C.DEFENSE_AREA_RADIUS, -C.DEFENSE_RECT_HEIGHT / 2);
+            GL.Vertex2(C.WIDTH / 2 - C.DEFENSE_AREA_RADIUS, C.DEFENSE_RECT_HEIGHT / 2);
             GL.End();
         }
 

@@ -139,23 +139,6 @@ namespace RFC.FieldDrawer
             }
         }
 
-
-        //Local copies of constants for the field size and parameters
-        //They will not change when constants are reloaded!
-        double FIELD_WIDTH;
-        double FIELD_HEIGHT;
-        double EXTENDED_FIELD_WIDTH;
-        double EXTENDED_FIELD_HEIGHT;
-        double CENTER_CIRCLE_RADIUS;
-        double GOAL_WIDTH;
-        double GOAL_HEIGHT;
-        double DEFENSE_RECT_HEIGHT;
-        double DEFENSE_AREA_RADIUS;
-        double FIELD_FULL_XMIN;
-        double FIELD_FULL_XMAX;
-        double FIELD_FULL_YMIN;
-        double FIELD_FULL_YMAX;
-
         FieldDrawerForm _fieldDrawerForm;
         State _bufferedState = new State();
         State _state = new State();
@@ -175,22 +158,10 @@ namespace RFC.FieldDrawer
             get { return _fieldDrawerForm.Visible; }
         }
 
+        static private Constants.FieldType C = Constants.Field;
+
         public FieldDrawer()
-        {
-            FIELD_WIDTH = Constants.Field.WIDTH;
-            FIELD_HEIGHT = Constants.Field.HEIGHT;
-            EXTENDED_FIELD_WIDTH = Constants.Field.EXTENDED_WIDTH;
-            EXTENDED_FIELD_HEIGHT = Constants.Field.EXTENDED_HEIGHT;
-            CENTER_CIRCLE_RADIUS = Constants.Field.CENTER_CIRCLE_RADIUS;
-            GOAL_HEIGHT = Constants.Field.GOAL_HEIGHT;
-            GOAL_WIDTH = Constants.Field.GOAL_WIDTH;
-            DEFENSE_RECT_HEIGHT = Constants.Field.DEFENSE_RECT_HEIGHT;
-            DEFENSE_AREA_RADIUS = Constants.Field.DEFENSE_AREA_RADIUS;
-            FIELD_FULL_XMIN = Constants.Field.FULL_XMIN;
-            FIELD_FULL_XMAX = Constants.Field.FULL_XMAX;
-            FIELD_FULL_YMIN = Constants.Field.FULL_YMIN;
-            FIELD_FULL_YMAX = Constants.Field.FULL_YMAX;
-            
+        {            
             _fieldDrawerForm = new FieldDrawerForm(this);
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener(this.Queued<RobotVisionMessage>(new object()));
