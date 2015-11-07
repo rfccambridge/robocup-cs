@@ -1,0 +1,43 @@
+﻿<Window x:Class="RFC.WpfControlForm.FieldRender"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RFC.WpfControlForm"
+        mc:Ignorable="d"
+        Title="FieldRender" Height="400" Width="700">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <WindowsFormsHost>
+        </WindowsFormsHost>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" HorizontalAlignment="Right">Team:</Label>
+            <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Text="{Binding TeamName}" Foreground="{Binding TeamColor}" />
+            
+            <Label Grid.Row="1" HorizontalAlignment="Right">PlayName:</Label>
+            <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Text="{Binding PlayName}" />
+
+            <Label Grid.Row="2" HorizontalAlignment="Right">RefBoxCmd:</Label>
+            <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Text="{Binding RefBoxCmd}" />
+
+            <Label Grid.Row="3" HorizontalAlignment="Right">PlayType:</Label>
+            <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Text="{Binding PlayType}" />
+        </Grid>
+    </Grid>
+</Window>
