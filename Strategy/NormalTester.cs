@@ -35,8 +35,8 @@ namespace RFC.Strategy
         public void HandleMessage(FieldVisionMessage msg)
         {
             NormalBehavior.State currentState = normal.Play(msg);
-            fd.UpdateTeam(team);
-            fd.UpdatePlayType(PlayType.NormalPlay);
+            fd.Team = team;
+            fd.PlayType = PlayType.NormalPlay;
             string playName;
             switch (currentState)
             {

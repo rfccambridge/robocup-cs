@@ -64,7 +64,9 @@ namespace RFC.WpfControlForm
                 predictor = new AveragingPredictor();
 
                 fd = new FieldDrawer.FieldDrawer();
-                fd.Show();
+
+                var fieldDrawerForm = new FieldDrawerForm(fd);
+                fieldDrawerForm.Show();
             }
 
             predictor.Flipped = Flipped;

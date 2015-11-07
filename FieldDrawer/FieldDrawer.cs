@@ -7,7 +7,7 @@ using RFC.Core;
 using RFC.Geometry;
 using RFC.Messaging;
 using RFC.Utilities;
-
+using System.ComponentModel;
 
 namespace RFC.FieldDrawer
 {
@@ -53,6 +53,8 @@ namespace RFC.FieldDrawer
         public event EventHandler<EventArgs<WaypointInfo>> WaypointAdded;
         public event EventHandler<EventArgs<WaypointInfo>> WaypointRemoved;
         public event EventHandler<EventArgs<WaypointMovedInfo>> WaypointMoved;
+
+        public event EventHandler<EventArgs> StateUpdated;
 
         private class RobotDrawingInfo
         {
@@ -123,14 +125,14 @@ namespace RFC.FieldDrawer
 
             public State()
             {
-                Robots.Add(Team.Yellow, new Dictionary<int, RobotDrawingInfo>());
-                Robots.Add(Team.Blue, new Dictionary<int, RobotDrawingInfo>());
+                Robots.Add(Core.Team.Yellow, new Dictionary<int, RobotDrawingInfo>());
+                Robots.Add(Core.Team.Blue, new Dictionary<int, RobotDrawingInfo>());
             }
 
             public void Clear()
             {
-                Robots[Team.Yellow].Clear();
-                Robots[Team.Blue].Clear();
+                Robots[Core.Team.Yellow].Clear();
+                Robots[Core.Team.Blue].Clear();
                 Ball = null;
                 Markers.Clear();
 
@@ -138,8 +140,7 @@ namespace RFC.FieldDrawer
                 NextMarkerHandle = 0;
             }
         }
-
-        FieldDrawerForm _fieldDrawerForm;
+        
         State _bufferedState = new State();
         State _state = new State();
         object _stateLock = new object();
@@ -153,16 +154,11 @@ namespace RFC.FieldDrawer
 
         ServiceManager msngr;
 
-        public bool Visible
-        {
-            get { return _fieldDrawerForm.Visible; }
-        }
 
         static private Constants.FieldType C = Constants.Field;
 
         public FieldDrawer()
-        {            
-            _fieldDrawerForm = new FieldDrawerForm(this);
+        {
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener(this.Queued<RobotVisionMessage>(new object()));
             msngr.RegisterListener(this.Queued<BallVisionMessage>(new object()));
@@ -184,8 +180,8 @@ namespace RFC.FieldDrawer
             GL.LoadIdentity();            
 
             _robotInfos = new Dictionary<Team, Dictionary<int, string>>();
-            _robotInfos.Add(Team.Blue, new Dictionary<int, string>());
-            _robotInfos.Add(Team.Yellow, new Dictionary<int, string>());
+            _robotInfos.Add(Core.Team.Blue, new Dictionary<int, string>());
+            _robotInfos.Add(Core.Team.Yellow, new Dictionary<int, string>());
 
             // For debugging
             //BuildTestScene();
@@ -255,7 +251,7 @@ namespace RFC.FieldDrawer
 
         public void HandleMessage(RefboxStateMessage msg)
         {
-            UpdateRefBoxCmd(msg.PlayType.ToString());
+            RefBoxCmd = msg.PlayType.ToString();
         }
 
         Lattice<Color> last_lattice = null;
@@ -271,17 +267,7 @@ namespace RFC.FieldDrawer
         {
             resizeGL(w, h);
         }
-
-        public void Show()
-        {
-            _fieldDrawerForm.Show();
-        }
-
-        public void Hide()
-        {
-            _fieldDrawerForm.Hide();
-        }
-
+        
         public void MouseDown(Point loc)
         {
             Point2 pt = controlToFieldCoords(loc);
@@ -329,7 +315,7 @@ namespace RFC.FieldDrawer
                                                 new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
                 }
             }
-            _fieldDrawerForm.InvalidateGLControl();
+            StateUpdated?.Invoke(this, null);
         }
 
         public void DragDrop(object obj, Point loc)
@@ -400,7 +386,7 @@ namespace RFC.FieldDrawer
                 }
             }
 
-            _fieldDrawerForm.InvalidateGLControl();
+            StateUpdated?.Invoke(this, null);
         }
 
         public void Paint()
@@ -434,27 +420,76 @@ namespace RFC.FieldDrawer
             }
         }
 
-        Team _team;
-        public void UpdateTeam(Team team)
+        #region Data Binding
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string prop) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        private Team? _team = null;
+        public Team? Team
         {
-            _team = team;
-            _fieldDrawerForm.UpdateTeam(team);
+            get { return _team; }
+            set
+            {
+                var last = _team;
+                _team = value;
+                if (value != last)
+                {
+                    OnPropertyChanged(nameof(Team));
+                    OnPropertyChanged(nameof(TeamName));
+                    OnPropertyChanged(nameof(TeamColor));
+                }
+            }
+        }
+        public string TeamName => Team?.ToString() ?? "";
+        public Color TeamColor => Team == Core.Team.Blue ? Color.Blue : Color.Yellow;
+
+
+        private string _refBoxCmd;
+        public string RefBoxCmd
+        {
+            get { return _refBoxCmd; }
+            set
+            {
+                var last = _refBoxCmd;
+                _refBoxCmd = value;
+                if (value != last)
+                    OnPropertyChanged(nameof(RefBoxCmd));
+            }
         }
 
-        public void UpdateRefBoxCmd(string refBoxCmd)
+
+        private PlayType? _playType;
+        public PlayType? PlayType
         {
-            _fieldDrawerForm.UpdateRefBoxCmd(refBoxCmd);
+            get { return _playType; }
+            set
+            {
+                var last = _playType;
+                _playType = value;
+                if (value != last)
+                    OnPropertyChanged(nameof(PlayType));
+            }
         }
 
-        public void UpdatePlayType(PlayType playType)
+
+        private string _playName = null;
+        public string PlayName
         {
-            _fieldDrawerForm.UpdatePlayType(playType);
+            get { return _playName; }
+            set
+            {
+                var last = _playName;
+                _playName = value;
+                if (value != last)
+                    OnPropertyChanged(nameof(PlayName));
+            }
         }
+        #endregion
 
         public void UpdatePlayName(Team team, int robotID, string name)
         {
             if (team == _team)
-                _fieldDrawerForm.UpdatePlayName(name);
+                PlayName = name;
             lock (_collectingStateLock)
             {
                 if (!_collectingState)
@@ -499,12 +534,8 @@ namespace RFC.FieldDrawer
                 _state.Markers.Clear();
             }
         }
-        public int AddMarker(Point2 location, Color color)
-        {
-            return AddMarker(location, color, null);
-        }
 
-        public int AddMarker(Point2 location, Color color, Object obj)
+        public int AddMarker(Point2 location, Color color, Object obj = null)
         {
             lock (_stateLock)
             {
@@ -596,8 +627,8 @@ namespace RFC.FieldDrawer
         private void BuildTestScene()
         {
             List<RobotInfo> robots = new List<RobotInfo>();
-            robots.Add(new RobotInfo(new Point2(0, 0), Math.PI / 2, Team.Yellow, 2));
-            robots.Add(new RobotInfo(new Point2(2, 1.2), Math.PI, Team.Yellow, 3));
+            robots.Add(new RobotInfo(new Point2(0, 0), Math.PI / 2, Core.Team.Yellow, 2));
+            robots.Add(new RobotInfo(new Point2(2, 1.2), Math.PI, Core.Team.Yellow, 3));
             BallInfo ball = new BallInfo(new Point2(1, 2));
 
             Point2 marker1loc = new Point2(-0.5, 0.5);
@@ -609,8 +640,8 @@ namespace RFC.FieldDrawer
             AddMarker(marker1loc, Color.Red);
             AddMarker(marker2loc, Color.Cyan);
 
-            DrawArrow(Team.Yellow, 2, ArrowType.Destination, marker1loc);
-            DrawArrow(Team.Blue, 2, ArrowType.Waypoint, marker2loc);
+            DrawArrow(Core.Team.Yellow, 2, ArrowType.Destination, marker1loc);
+            DrawArrow(Core.Team.Blue, 2, ArrowType.Waypoint, marker2loc);
 
             //EndCollectState();
         }

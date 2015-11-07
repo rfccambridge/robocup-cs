@@ -9,7 +9,7 @@ using System.Drawing;
 
 namespace RFC.FieldDrawer
 {
-    partial class FieldDrawerForm : Form
+    public partial class FieldDrawerForm : Form
     {
         private delegate void VoidDelegate();
 
@@ -26,6 +26,55 @@ namespace RFC.FieldDrawer
             InitializeComponent();
             InitGL();
             lblMarker.BackColor = _colors[_currentColorIdx];
+
+            fieldDrawer.StateUpdated += FieldDrawer_StateUpdated;
+            fieldDrawer.PropertyChanged += FieldDrawer_PropertyChanged;
+        }
+
+        private void FieldDrawer_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(FieldDrawer.Team):
+                    this.BeginInvoke(new VoidDelegate(delegate
+                    {
+                        lblTeam.Text = _fieldDrawer.Team.ToString();
+                        lblTeam.ForeColor = _fieldDrawer.Team == Team.Yellow ? Color.Yellow : Color.Blue;
+                        label3.Visible = true;
+                        lblTeam.Visible = true;
+                    }));
+                    break;
+
+                case nameof(FieldDrawer.PlayType):
+                    this.BeginInvoke(new VoidDelegate(delegate
+                    {
+                        lblPlayType.Text = _fieldDrawer.PlayType.ToString();
+                        lblPlayType.Visible = true;
+                    }));
+                    break;
+
+                case nameof(FieldDrawer.PlayName):
+                    this.BeginInvoke(new VoidDelegate(delegate
+                    {
+                        lblPlayName.Text = _fieldDrawer.PlayName;
+                        lblPlayName.Visible = true;
+                    }));
+                    break;
+
+                case nameof(FieldDrawer.RefBoxCmd):
+                    this.BeginInvoke(new VoidDelegate(delegate
+                    {
+                        lblRefBoxCmd.Text = _fieldDrawer.RefBoxCmd;
+                        label1.Visible = true;
+                        lblRefBoxCmd.Visible = true;
+                    }));
+                    break;
+            }
+        }
+
+        private void FieldDrawer_StateUpdated(object sender, EventArgs e)
+        {
+            glField.Invalidate();
         }
 
         private void InitGL()
@@ -51,50 +100,6 @@ namespace RFC.FieldDrawer
 
 
             this.Controls.Add(this.glField);
-        }
-
-        public void InvalidateGLControl()
-        {
-            glField.Invalidate();
-        }
-
-        public void UpdateTeam(Team team)
-        {
-            this.BeginInvoke(new VoidDelegate(delegate
-            {
-                lblTeam.Text = team.ToString();
-                lblTeam.ForeColor = team == Team.Yellow ? Color.Yellow : Color.Blue;
-                label3.Visible = true;
-                lblTeam.Visible = true;
-            }));
-        }
-
-        public void UpdateRefBoxCmd(string refBoxCmd)
-        {
-            this.BeginInvoke(new VoidDelegate(delegate
-            {
-                lblRefBoxCmd.Text = refBoxCmd;
-                label1.Visible = true;
-                lblRefBoxCmd.Visible = true;
-            }));
-        }
-
-        public void UpdatePlayType(PlayType playType)
-        {
-            this.BeginInvoke(new VoidDelegate(delegate
-            {
-                lblPlayType.Text = playType.ToString();
-                lblPlayType.Visible = true;
-            }));
-        }
-
-        public void UpdatePlayName(string name)
-        {
-            this.BeginInvoke(new VoidDelegate(delegate
-            {
-                lblPlayName.Text = name;
-                lblPlayName.Visible = true;
-            }));
         }
 
         private void FieldDrawerForm_Resize(object sender, EventArgs e)

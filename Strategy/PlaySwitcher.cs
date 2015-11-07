@@ -75,8 +75,8 @@ namespace RFC.Strategy
                 play = PlayType.NormalPlay;
                 Console.WriteLine("switched to normal");
             }
-            fd.UpdateTeam(team);
-            fd.UpdatePlayType(play);
+            fd.Team = team;
+            fd.PlayType = play;
             NormalBehavior.State currentState = NormalBehavior.State.Unknown;
             switch (play)
             {

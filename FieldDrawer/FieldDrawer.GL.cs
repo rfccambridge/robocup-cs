@@ -125,7 +125,7 @@ namespace RFC.FieldDrawer
                 //GL.Vertex2(waypoint.Position.X, waypoint.Position.Y);
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
-                GL.Color3(path.Team == Team.Yellow ? Color.Yellow : Color.Blue);
+                GL.Color3(path.Team == Core.Team.Yellow ? Color.Yellow : Color.Blue);
                 GL.Translate(waypoint.Position.X, waypoint.Position.Y, 0);
                 drawCircle(WAYPOINT_RADIUS, true);
             }
@@ -292,7 +292,7 @@ namespace RFC.FieldDrawer
             GL.LoadIdentity();
             GL.Translate(robot.Position.X, robot.Position.Y, 0);
             GL.Rotate(angle, 0, 0, 1);
-            GL.Color3(robot.Team == Team.Yellow ? Color.Yellow : Color.Blue);
+            GL.Color3(robot.Team == Core.Team.Yellow ? Color.Yellow : Color.Blue);
             //GL.Begin(BeginMode.Polygon);
 
             //OpenTK.Graphics.Glu.PartialDisk(_robotQuadric, 0, Constants.Basic.ROBOT_RADIUS, SLICES, 1,
