@@ -20,13 +20,11 @@ namespace RFC.FieldDrawer
 
         OpenTK.GLControl glField;
 
-        public FieldDrawerForm(FieldDrawer fieldDrawer, double heightToWidth)
+        public FieldDrawerForm(FieldDrawer fieldDrawer)
         {
             _fieldDrawer = fieldDrawer;
             InitializeComponent();
             InitGL();
-
-            this.Width = (int)((double)glField.Height / heightToWidth);
             lblMarker.BackColor = _colors[_currentColorIdx];
         }
 

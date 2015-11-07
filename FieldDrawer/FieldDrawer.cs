@@ -190,9 +190,8 @@ namespace RFC.FieldDrawer
             FIELD_FULL_XMAX = Constants.Field.FULL_XMAX;
             FIELD_FULL_YMIN = Constants.Field.FULL_YMIN;
             FIELD_FULL_YMAX = Constants.Field.FULL_YMAX;
-
-            double ratio = FIELD_HEIGHT / FIELD_WIDTH;
-            _fieldDrawerForm = new FieldDrawerForm(this, ratio);
+            
+            _fieldDrawerForm = new FieldDrawerForm(this);
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener(this.Queued<RobotVisionMessage>(new object()));
             msngr.RegisterListener(this.Queued<BallVisionMessage>(new object()));
