@@ -21,6 +21,7 @@ namespace RFC.WpfControlForm
     public partial class ControlForm
     {
         FieldDrawer.FieldDrawer fd = null;
+        AveragingPredictor predictor;
 
         public bool Run()
         {
@@ -60,11 +61,13 @@ namespace RFC.WpfControlForm
                 vision.Connect("224.5.23.2", 10002);
                 vision.Start();
 
-                new AveragingPredictor();
+                predictor = new AveragingPredictor();
 
                 fd = new FieldDrawer.FieldDrawer();
                 fd.Show();
             }
+
+            predictor.Flipped = Flipped;
 
             new LogHandler();
 
