@@ -89,14 +89,14 @@ namespace RFC.FieldDrawer
                 TabIndex = 0,
                 VSync = false
             };
-            glField.Load += new System.EventHandler(this.glField_Load);
-            glField.DragDrop += new System.Windows.Forms.DragEventHandler(this.glField_DragDrop);
-            glField.DragEnter += new System.Windows.Forms.DragEventHandler(this.glField_DragEnter);
-            glField.Paint += new System.Windows.Forms.PaintEventHandler(this.glField_Paint);
-            glField.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glField_MouseDown);
-            glField.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glField_MouseMove);
-            glField.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glField_MouseUp);
-            glField.Resize += new System.EventHandler(this.glField_Resize);
+            glField.Load += glField_Load;
+            glField.Paint += glField_Paint;
+            glField.Resize += glField_Resize;
+            glField.DragDrop += glField_DragDrop;
+            glField.DragEnter += glField_DragEnter;
+            glField.MouseDown += glField_MouseDown;
+            glField.MouseMove += glField_MouseMove;
+            glField.MouseUp += glField_MouseUp;
 
 
             this.Controls.Add(this.glField);
