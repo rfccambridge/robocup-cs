@@ -8,6 +8,7 @@ using RFC.Geometry;
 using RFC.Messaging;
 using RFC.Utilities;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace RFC.FieldDrawer
 {
@@ -157,8 +158,13 @@ namespace RFC.FieldDrawer
 
         static private Constants.FieldType C = Constants.Field;
 
-        public FieldDrawer()
+        public FieldDrawer() : base(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8))
         {
+            AllowDrop = true;
+            BackColor = System.Drawing.Color.Black;
+            TabIndex = 0;
+            VSync = false;
+            
             msngr = ServiceManager.getServiceManager();
             msngr.RegisterListener(this.Queued<RobotVisionMessage>(new object()));
             msngr.RegisterListener(this.Queued<BallVisionMessage>(new object()));
@@ -167,24 +173,10 @@ namespace RFC.FieldDrawer
             msngr.RegisterListener(this.Queued<RefboxStateMessage>(new object()));
             msngr.RegisterListener(this.Queued<VisualDebugMessage>(new object()));
             msngr.RegisterListener(this.Queued<VisualDebugMessage<Lattice<Color>>>(new object()));
-        }
-
-        public void Init()
-        {
-            GL.ClearColor(Color.DarkGreen);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();            
 
             _robotInfos = new Dictionary<Team, Dictionary<int, string>>();
             _robotInfos.Add(Core.Team.Blue, new Dictionary<int, string>());
             _robotInfos.Add(Core.Team.Yellow, new Dictionary<int, string>());
-
-            // For debugging
-            //BuildTestScene();
         }
 
         public void HandleMessage(RobotVisionMessage message)
@@ -262,13 +254,8 @@ namespace RFC.FieldDrawer
                 last_lattice = message.value;
             }
         }
-
-        public void Resize(int w, int h)
-        {
-            resizeGL(w, h);
-        }
         
-        public void MouseDown(Point loc)
+        public void HandleMouseDown(Point loc)
         {
             Point2 pt = controlToFieldCoords(loc);
             _draggedMarker = null;
@@ -281,7 +268,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        public void MouseUp(Point loc)
+        public void HandleMouseUp(Point loc)
         {
             if (_draggedMarker != null)
             {
@@ -302,7 +289,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        public void MouseMove(Point loc)
+        public void HandleMouseMove(Point loc)
         {
             if (_draggedMarker != null)
             {
@@ -318,7 +305,7 @@ namespace RFC.FieldDrawer
             StateUpdated?.Invoke(this, null);
         }
 
-        public void DragDrop(object obj, Point loc)
+        public void HandleDragDrop(object obj, Point loc)
         {
             if (obj.GetType() == typeof(EventArgs<WaypointInfo>))
             {
@@ -389,8 +376,12 @@ namespace RFC.FieldDrawer
             StateUpdated?.Invoke(this, null);
         }
 
-        public void Paint()
+        protected override void OnPaint(PaintEventArgs e)
         {
+            if (!controlLoaded) return;
+
+            MakeCurrent();
+
             lock (_stateLock)
             {
                 updateProjection();
@@ -418,6 +409,8 @@ namespace RFC.FieldDrawer
                 if (_state.Ball != null)
                     drawBall(_state.Ball);
             }
+
+            SwapBuffers();
         }
 
         #region Data Binding

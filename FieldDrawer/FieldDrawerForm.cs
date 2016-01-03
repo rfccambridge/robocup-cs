@@ -14,17 +14,24 @@ namespace RFC.FieldDrawer
         private delegate void VoidDelegate();
 
         private FieldDrawer _fieldDrawer;
-        private bool _glFieldLoaded = false;
         private Color[] _colors = { Color.Cyan, Color.Red, Color.White, Color.Pink, Color.Purple};
         private int _currentColorIdx = 0;
-
-        OpenTK.GLControl glField;
 
         public FieldDrawerForm(FieldDrawer fieldDrawer)
         {
             _fieldDrawer = fieldDrawer;
+            _fieldDrawer.Dock = System.Windows.Forms.DockStyle.Top;
+            _fieldDrawer.Location = new System.Drawing.Point(0, 0);
+            _fieldDrawer.Name = "glField";
+            _fieldDrawer.Size = new System.Drawing.Size(599, 384);
+            _fieldDrawer.DragDrop += FieldDrawer_DragDrop;
+            _fieldDrawer.DragEnter += FieldDrawer_DragEnter;
+            _fieldDrawer.MouseDown += FieldDrawer_MouseDown;
+            _fieldDrawer.MouseMove += FieldDrawer_MouseMove;
+            _fieldDrawer.MouseUp += FieldDrawer_MouseUp;
+            Controls.Add(_fieldDrawer);
+
             InitializeComponent();
-            InitGL();
             lblMarker.BackColor = _colors[_currentColorIdx];
 
             fieldDrawer.StateUpdated += FieldDrawer_StateUpdated;
@@ -74,77 +81,30 @@ namespace RFC.FieldDrawer
 
         private void FieldDrawer_StateUpdated(object sender, EventArgs e)
         {
-            glField.Invalidate();
-        }
-
-        private void InitGL()
-        {
-            glField = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8)) {
-                AllowDrop = true,
-                BackColor = System.Drawing.Color.Black,
-                Dock = System.Windows.Forms.DockStyle.Top,
-                Location = new System.Drawing.Point(0, 0),
-                Name = "glField",
-                Size = new System.Drawing.Size(599, 384),
-                TabIndex = 0,
-                VSync = false
-            };
-            glField.Load += glField_Load;
-            glField.Paint += glField_Paint;
-            glField.Resize += glField_Resize;
-            glField.DragDrop += glField_DragDrop;
-            glField.DragEnter += glField_DragEnter;
-            glField.MouseDown += glField_MouseDown;
-            glField.MouseMove += glField_MouseMove;
-            glField.MouseUp += glField_MouseUp;
-
-
-            this.Controls.Add(this.glField);
+            _fieldDrawer.Invalidate();
         }
 
         private void FieldDrawerForm_Resize(object sender, EventArgs e)
         {
-            glField.Height = panGameStatus.Top;
+            _fieldDrawer.Height = panGameStatus.Top;
         }
 
-        private void glField_Paint(object sender, PaintEventArgs e)
+        private void FieldDrawer_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!_glFieldLoaded)
-                return;
-            glField.MakeCurrent();
-            _fieldDrawer.Paint();            
-            glField.SwapBuffers();
+            _fieldDrawer.HandleMouseDown(e.Location);
         }
 
-        private void glField_Load(object sender, EventArgs e)
+        private void FieldDrawer_MouseUp(object sender, MouseEventArgs e)
         {
-            _glFieldLoaded = true;
-            _fieldDrawer.Init();
-            _fieldDrawer.Resize(glField.Width, glField.Height);
+            _fieldDrawer.HandleMouseUp(e.Location);
         }
 
-        private void glField_Resize(object sender, EventArgs e)
+        private void FieldDrawer_MouseMove(object sender, MouseEventArgs e)
         {
-            _fieldDrawer.Resize(glField.Width, glField.Height);
-            glField.Invalidate();
+            _fieldDrawer.HandleMouseMove(e.Location);
         }
 
-        private void glField_MouseDown(object sender, MouseEventArgs e)
-        {
-            _fieldDrawer.MouseDown(e.Location);
-        }
-
-        private void glField_MouseUp(object sender, MouseEventArgs e)
-        {
-            _fieldDrawer.MouseUp(e.Location);
-        }
-
-        private void glField_MouseMove(object sender, MouseEventArgs e)
-        {
-            _fieldDrawer.MouseMove(e.Location);
-        }
-
-        private void glField_DragEnter(object sender, DragEventArgs e)
+        private void FieldDrawer_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(Color)))
             {
@@ -152,19 +112,19 @@ namespace RFC.FieldDrawer
             }
         }
 
+        private void FieldDrawer_DragDrop(object sender, DragEventArgs e)
+        {
+            // TODO: Add ability to set orientation (and id?)
+            if (e.Data.GetDataPresent(typeof(Color)))
+                _fieldDrawer.HandleDragDrop(new EventArgs<WaypointInfo>(new WaypointInfo(
+                                        new RobotInfo(null, 0, Team.Yellow, -1), _colors[_currentColorIdx])),
+                                        _fieldDrawer.PointToClient(new Point(e.X, e.Y)));
+        }
+
         private void lblMarker_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
                 lblMarker.DoDragDrop(lblMarker.BackColor, DragDropEffects.All);
-        }
-
-        private void glField_DragDrop(object sender, DragEventArgs e)
-        {
-            // TODO: Add ability to set orientation (and id?)
-            if (e.Data.GetDataPresent(typeof(Color)))
-                _fieldDrawer.DragDrop(new EventArgs<WaypointInfo>(new WaypointInfo(
-                                        new RobotInfo(null, 0, Team.Yellow, -1), _colors[_currentColorIdx])), 
-                                        glField.PointToClient(new Point(e.X, e.Y)));
         }
 
         private void lblMarker_Click(object sender, EventArgs e)

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace RFC.FieldDrawer
 {
-    partial class FieldDrawer
+    partial class FieldDrawer : OpenTK.GLControl
     {
         OpenTK.Graphics.TextPrinter _printer = new OpenTK.Graphics.TextPrinter();
         double[] _modelViewMatrix = new double[16];
@@ -22,11 +22,37 @@ namespace RFC.FieldDrawer
         double _glControlWidth;
         double _glControlHeight;
 
+        bool controlLoaded = false;
+
         private void resizeGL(int w, int h)
         {
+            if (!controlLoaded) return;
+
             _glControlWidth = w;
             _glControlHeight = h;
             GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            GL.ClearColor(Color.DarkGreen);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            controlLoaded = true;
+            resizeGL(Width, Height);
+            base.OnLoad(e);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            resizeGL(Width, Height);
+            Invalidate();
+            base.OnResize(e);
         }
 
         private void updateProjection()
