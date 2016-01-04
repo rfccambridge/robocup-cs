@@ -101,6 +101,12 @@ namespace RFC.FieldDrawer
                 DoDrawOrientation = true;
                 Orientation = orientation;
             }
+
+            public bool contains(Point2 pt)
+            {
+                return !(pt.X < Location.X - Marker.SIZE || pt.X > Location.X + Marker.SIZE
+                    || pt.Y < Location.Y - Marker.SIZE || pt.Y > Location.Y + Marker.SIZE);
+            }
         }
 
         public class Arrow
@@ -263,7 +269,7 @@ namespace RFC.FieldDrawer
             lock (_stateLock)
             {
                 foreach (Marker marker in _state.Markers.Values)
-                    if (ptInsideMarker(marker, pt))
+                    if (marker.contains(pt))
                         _draggedMarker = marker;
             }
         }
@@ -604,12 +610,6 @@ namespace RFC.FieldDrawer
             }
         }
 
-
-        private bool ptInsideMarker(Marker marker, Point2 pt)
-        {
-            return !(pt.X < marker.Location.X - Marker.SIZE || pt.X > marker.Location.X + Marker.SIZE
-                || pt.Y < marker.Location.Y - Marker.SIZE || pt.Y > marker.Location.Y + Marker.SIZE);
-        }
 
         private Point2 controlToFieldCoords(Point loc)
         {
