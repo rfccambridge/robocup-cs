@@ -57,7 +57,7 @@ namespace RFC.FieldDrawer
 
         public event EventHandler<EventArgs> StateUpdated;
 
-        private class RobotDrawingInfo
+        public class RobotDrawingInfo
         {
             public RobotInfo RobotInfo;
             public Dictionary<ArrowType, Arrow> Arrows = new Dictionary<ArrowType, Arrow>();
@@ -71,7 +71,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        private class Marker
+        public class Marker
         {
             public const double SIZE = 0.02;
 
@@ -103,7 +103,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        private class Arrow
+        public class Arrow
         {
             public Point2 ToPoint;
             public Color Color;
@@ -115,7 +115,7 @@ namespace RFC.FieldDrawer
             }
         }
 
-        private class State
+        public class State
         {
             public Dictionary<Team, Dictionary<int, RobotDrawingInfo>> Robots = new Dictionary<Team, Dictionary<int, RobotDrawingInfo>>();
             public BallInfo Ball;
