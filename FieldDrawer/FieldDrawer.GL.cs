@@ -24,6 +24,12 @@ namespace RFC.FieldDrawer
 
         bool controlLoaded = false;
 
+        public Point2 FieldCoordsOf(Point loc)
+        {
+            OpenTK.Vector3 world = screenToWorld(new OpenTK.Vector3(loc.X, loc.Y, 0));
+            return new Point2(world.X, world.Y);
+        }
+
         private void resizeGL(int w, int h)
         {
             if (!controlLoaded) return;

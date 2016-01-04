@@ -263,7 +263,7 @@ namespace RFC.FieldDrawer
         
         public void HandleMouseDown(Point loc)
         {
-            Point2 pt = controlToFieldCoords(loc);
+            Point2 pt = FieldCoordsOf(loc);
             _draggedMarker = null;
             _movedDraggedMarker = false;
             lock (_stateLock)
@@ -300,7 +300,7 @@ namespace RFC.FieldDrawer
             if (_draggedMarker != null)
             {
                 _movedDraggedMarker = true;
-                Point2 pt = controlToFieldCoords(loc);
+                Point2 pt = FieldCoordsOf(loc);
                 lock (_collectingStateLock)
                 {
                     _draggedMarker.Location = pt;
@@ -317,7 +317,7 @@ namespace RFC.FieldDrawer
             {
                 EventArgs<WaypointInfo> eventArgs = obj as EventArgs<WaypointInfo>;
                 RobotInfo waypoint = eventArgs.Data.Object as RobotInfo;
-                waypoint.Position = controlToFieldCoords(loc);
+                waypoint.Position = FieldCoordsOf(loc);
                 WaypointAdded?.Invoke(this, eventArgs);
             }
         }
@@ -608,13 +608,6 @@ namespace RFC.FieldDrawer
                 if (_bufferedState.Robots[team].ContainsKey(robotID))
                     _bufferedState.Robots[team][robotID].Path = path;
             }
-        }
-
-
-        private Point2 controlToFieldCoords(Point loc)
-        {
-            OpenTK.Vector3 world = screenToWorld(new OpenTK.Vector3(loc.X, loc.Y, 0));
-            return new Point2(world.X, world.Y);
         }
 
         private void BuildTestScene()
