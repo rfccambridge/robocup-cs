@@ -261,9 +261,9 @@ namespace RFC.FieldDrawer
             }
         }
         
-        public void HandleMouseDown(Point loc)
+        protected override void OnMouseDown(MouseEventArgs e)
         {
-            Point2 pt = FieldCoordsOf(loc);
+            Point2 pt = FieldCoordsOf(e.Location);
             _draggedMarker = null;
             _movedDraggedMarker = false;
             lock (_stateLock)
@@ -272,9 +272,11 @@ namespace RFC.FieldDrawer
                     if (marker.contains(pt))
                         _draggedMarker = marker;
             }
+
+            base.OnMouseDown(e);
         }
 
-        public void HandleMouseUp(Point loc)
+        protected override void OnMouseUp(MouseEventArgs loc)
         {
             if (_draggedMarker != null)
             {
@@ -293,14 +295,15 @@ namespace RFC.FieldDrawer
                 _draggedMarker = null;
                 _movedDraggedMarker = false;
             }
+            base.OnMouseUp(loc);
         }
 
-        public void HandleMouseMove(Point loc)
+        protected override void OnMouseMove(MouseEventArgs loc)
         {
             if (_draggedMarker != null)
             {
                 _movedDraggedMarker = true;
-                Point2 pt = FieldCoordsOf(loc);
+                Point2 pt = FieldCoordsOf(loc.Location);
                 lock (_collectingStateLock)
                 {
                     _draggedMarker.Location = pt;
@@ -309,17 +312,36 @@ namespace RFC.FieldDrawer
                 }
             }
             StateUpdated?.Invoke(this, null);
+
+            base.OnMouseMove(loc);
         }
 
-        public void HandleDragDrop(object obj, Point loc)
+
+        protected override void OnDragEnter(DragEventArgs e)
         {
-            if (obj.GetType() == typeof(EventArgs<WaypointInfo>))
+            if (e.Data.GetDataPresent(typeof(Color)))
             {
-                EventArgs<WaypointInfo> eventArgs = obj as EventArgs<WaypointInfo>;
-                RobotInfo waypoint = eventArgs.Data.Object as RobotInfo;
-                waypoint.Position = FieldCoordsOf(loc);
+                e.Effect = DragDropEffects.Copy;
+            }
+        }
+
+        protected override void OnDragDrop(DragEventArgs e)
+        {
+            Point location = PointToClient(new Point(e.X, e.Y));
+
+            // TODO: Add ability to set orientation (and id?)
+            object data = e.Data.GetData(typeof(Color));
+            if (data is Color)
+            {
+                EventArgs<WaypointInfo> eventArgs = new EventArgs<WaypointInfo>(
+                    new WaypointInfo(
+                        new RobotInfo(FieldCoordsOf(location), 0, Team.Yellow, -1),
+                        (Color) data
+                    )
+                );
                 WaypointAdded?.Invoke(this, eventArgs);
             }
+            base.OnDragDrop(e);
         }
 
         /*public void BeginCollectState()

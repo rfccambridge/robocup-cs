@@ -24,11 +24,6 @@ namespace RFC.FieldDrawer
             _fieldDrawer.Location = new System.Drawing.Point(0, 0);
             _fieldDrawer.Name = "glField";
             _fieldDrawer.Size = new System.Drawing.Size(599, 384);
-            _fieldDrawer.DragDrop += FieldDrawer_DragDrop;
-            _fieldDrawer.DragEnter += FieldDrawer_DragEnter;
-            _fieldDrawer.MouseDown += FieldDrawer_MouseDown;
-            _fieldDrawer.MouseMove += FieldDrawer_MouseMove;
-            _fieldDrawer.MouseUp += FieldDrawer_MouseUp;
             Controls.Add(_fieldDrawer);
 
             InitializeComponent();
@@ -88,39 +83,7 @@ namespace RFC.FieldDrawer
         {
             _fieldDrawer.Height = panGameStatus.Top;
         }
-
-        private void FieldDrawer_MouseDown(object sender, MouseEventArgs e)
-        {
-            _fieldDrawer.HandleMouseDown(e.Location);
-        }
-
-        private void FieldDrawer_MouseUp(object sender, MouseEventArgs e)
-        {
-            _fieldDrawer.HandleMouseUp(e.Location);
-        }
-
-        private void FieldDrawer_MouseMove(object sender, MouseEventArgs e)
-        {
-            _fieldDrawer.HandleMouseMove(e.Location);
-        }
-
-        private void FieldDrawer_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(Color)))
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
-        }
-
-        private void FieldDrawer_DragDrop(object sender, DragEventArgs e)
-        {
-            // TODO: Add ability to set orientation (and id?)
-            if (e.Data.GetDataPresent(typeof(Color)))
-                _fieldDrawer.HandleDragDrop(new EventArgs<WaypointInfo>(new WaypointInfo(
-                                        new RobotInfo(null, 0, Team.Yellow, -1), _colors[_currentColorIdx])),
-                                        _fieldDrawer.PointToClient(new Point(e.X, e.Y)));
-        }
-
+        
         private void lblMarker_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
