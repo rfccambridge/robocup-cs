@@ -126,6 +126,7 @@ namespace RFC.FieldDrawer
             public Dictionary<Team, Dictionary<int, RobotDrawingInfo>> Robots = new Dictionary<Team, Dictionary<int, RobotDrawingInfo>>();
             public BallInfo Ball;
             public Dictionary<int, Marker> Markers = new Dictionary<int, Marker>();
+            public Lattice<Color> DebugLattice;
 
             public int NextRobotHandle = 0;
             public int NextMarkerHandle = 0;
@@ -251,13 +252,12 @@ namespace RFC.FieldDrawer
         {
             RefBoxCmd = msg.PlayType.ToString();
         }
-
-        Lattice<Color> last_lattice = null;
+        
         public void HandleMessage(VisualDebugMessage<Lattice<Color>> message)
         {
             lock (_stateLock)
             {
-                last_lattice = message.value;
+                _state.DebugLattice = message.value;
             }
         }
         
@@ -414,8 +414,8 @@ namespace RFC.FieldDrawer
             {
                 updateProjection();
                 drawField();
-                if (last_lattice != null)
-                    drawLattice(last_lattice);
+                if (_state.DebugLattice != null)
+                    drawLattice(_state.DebugLattice);
                 // TODO actually fix instead of ignore errors--probably fine since this is only used for debugging offense mapping
                 try
                 {
