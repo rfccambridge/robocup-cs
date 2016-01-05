@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 //Disable warnings about deprecated objects (the GLU classes)
 #pragma warning disable 0612, 0618
@@ -15,6 +16,8 @@ namespace RFC.FieldDrawer
 {
     partial class FieldDrawer : OpenTK.GLControl
     {
+        static private Constants.FieldType C = Constants.Field;
+
         OpenTK.Graphics.TextPrinter _printer = new OpenTK.Graphics.TextPrinter();
         double[] _modelViewMatrix = new double[16];
         double[] _projectionMatrix = new double[16];
@@ -29,6 +32,133 @@ namespace RFC.FieldDrawer
             OpenTK.Vector3 world = screenToWorld(new OpenTK.Vector3(loc.X, loc.Y, 0));
             return new Point2(world.X, world.Y);
         }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (!controlLoaded) return;
+
+            MakeCurrent();
+
+            lock (_stateLock)
+            {
+                updateProjection();
+                drawField();
+                if (_state.DebugLattice != null)
+                    drawLattice(_state.DebugLattice);
+                // TODO actually fix instead of ignore errors--probably fine since this is only used for debugging offense mapping
+                try
+                {
+                    foreach (Marker marker in _state.Markers.Values)
+                    {
+                        drawMarker(marker);
+
+                    }
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Markers already changed--cannot draw.");
+                }
+
+                foreach (Team team in Enum.GetValues(typeof(Team)))
+                    foreach (RobotDrawingInfo robot in _state.Robots[team].Values)
+                        drawRobot(robot);
+
+                if (_state.Ball != null)
+                    drawBall(_state.Ball);
+            }
+
+            SwapBuffers();
+        }
+
+        #region Drag and drop
+        //Marker drag and drop
+        Marker _draggedMarker; //The marker currently being dragged
+        bool _movedDraggedMarker; //Have we ever moved this marker since the start of the drag?
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            Point2 pt = FieldCoordsOf(e.Location);
+            _draggedMarker = null;
+            _movedDraggedMarker = false;
+            lock (_stateLock)
+            {
+                foreach (Marker marker in _state.Markers.Values)
+                    if (marker.contains(pt))
+                        _draggedMarker = marker;
+            }
+
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs loc)
+        {
+            if (_draggedMarker != null)
+            {
+                if (loc.X < 0 || loc.X > _glControlWidth || loc.Y < 0 || loc.Y > _glControlHeight)
+                {
+                    WaypointRemoved?.Invoke(this, new EventArgs<WaypointInfo>(
+                                                new WaypointInfo(_draggedMarker.Object, _draggedMarker.Color)));
+                }
+
+                if (!_movedDraggedMarker)
+                {
+                    _draggedMarker.Orientation += Math.PI / 8;
+                    WaypointMoved?.Invoke(this, new EventArgs<WaypointMovedInfo>(
+                                                new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
+                }
+                _draggedMarker = null;
+                _movedDraggedMarker = false;
+            }
+            base.OnMouseUp(loc);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs loc)
+        {
+            if (_draggedMarker != null)
+            {
+                _movedDraggedMarker = true;
+                Point2 pt = FieldCoordsOf(loc.Location);
+                lock (_collectingStateLock)
+                {
+                    _draggedMarker.Location = pt;
+                    WaypointMoved?.Invoke(this, new EventArgs<WaypointMovedInfo>(
+                                                new WaypointMovedInfo(_draggedMarker.Object, _draggedMarker.Color, _draggedMarker.Location, _draggedMarker.Orientation)));
+                }
+            }
+            StateUpdated?.Invoke(this, null);
+
+            base.OnMouseMove(loc);
+        }
+
+
+        protected override void OnDragEnter(DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(Color)))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+        }
+
+        protected override void OnDragDrop(DragEventArgs e)
+        {
+            Point location = PointToClient(new Point(e.X, e.Y));
+
+            // TODO: Add ability to set orientation (and id?)
+            object data = e.Data.GetData(typeof(Color));
+            if (data is Color)
+            {
+                EventArgs<WaypointInfo> eventArgs = new EventArgs<WaypointInfo>(
+                    new WaypointInfo(
+                        new RobotInfo(FieldCoordsOf(location), 0, Core.Team.Yellow, -1),
+                        (Color)data
+                    )
+                );
+                WaypointAdded?.Invoke(this, eventArgs);
+            }
+            base.OnDragDrop(e);
+        }
+        #endregion
+
 
         private void resizeGL(int w, int h)
         {
