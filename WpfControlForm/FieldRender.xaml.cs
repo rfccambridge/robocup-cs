@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
+using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -30,7 +32,8 @@ namespace RFC.WpfControlForm
         protected virtual void OnPropertyChanged(string prop) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         private Team _team;
-        public Team Team {
+        public Team Team
+        {
             get { return _team; }
             set
             {
@@ -49,7 +52,8 @@ namespace RFC.WpfControlForm
 
 
         private string _refBoxCmd;
-        public string RefBoxCmd {
+        public string RefBoxCmd
+        {
             get { return _refBoxCmd; }
             set
             {
@@ -99,9 +103,8 @@ namespace RFC.WpfControlForm
 
         private void WindowsFormsHost_Initialized(object sender, EventArgs e)
         {
-            glControl = new GLControl(new GraphicsMode(32, 24), 2, 0);
+            glControl = new GLControl(new GraphicsMode(32, 24));
             glControl.MakeCurrent();
-            glControl.Paint += GLControl_Paint;
             glControl.Dock = DockStyle.Fill;
             (sender as WindowsFormsHost).Child = glControl;
         }

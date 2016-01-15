@@ -27,7 +27,8 @@ namespace RFC.WpfControlForm
         {
             if (Running) return false;
             
-            int maxRobotId = 11;
+            // misnomer; really is one plus the maxRobotId since IDs start at zero
+            int maxRobotId = 12;
 
             if (SelectedConnection == "Simulator")
             {
